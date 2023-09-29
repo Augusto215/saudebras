@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block 'conteudo' %}
+<div class="container" style="padding-top:10rem !important; flex-grow:1;">
+  <input type="text" id="estado_input" placeholder="Selecione um Estado" value="{{ request.GET.estado }}">
+  <ul id="estado_list"></ul>
+
+  <input type="text" id="especialidade_input" placeholder="Especialidade ou Nome" value="{{ request.GET.especialidade }}{{ request.GET.nome }}{{ request.GET.tipo_profissional }}">
+  <ul id="especialidade_list"></ul>
+  
+  <button id="search_button">Pesquisar</button>
+
+
+<div>
+  <div class="mt-3 mb-3" id="bairros_section">
+    <!-- Aqui vão ser inseridos os checkboxes -->
+  </div>
+  <button id="show_button">Mostrar</button>
+</div>
+
+{% for profissional in profissionais %}
+<div>
+  <h2 style="color:#000 !important;">{{ profissional.nome }}</h2>
+  <!-- outras informações -->
+</div>
+{% endfor %}
+</div>
+<script>
+
+</script>
+
+
+<script src="{%static 'js/profissionais.js'%}">
+</script>
+{% endblock %}

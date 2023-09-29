@@ -1,0 +1,403 @@
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, max-scale=1.0, min-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional JavaScript -->
+    <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+    {% if messages %}
+<div class="container">
+<ul class="messages">
+    {% for message in messages %}
+        <li  {% if message.tags %}> <p class="{{ message.tags }}"></p>{% endif %}{{ message }}</li>
+    {% endfor %}
+</ul>
+</div>
+
+
+{% endif %}
+
+
+
+<header>
+<nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-center align-items-center p-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+          
+          </li>
+          <li class="nav-item">
+            <a  href="#" data-bs-toggle="modal" data-bs-target="#registerModalCliente">
+                Registrar Cliente
+           </a>
+          </li>
+          <li class="nav-item">
+         
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Dropdown link
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+  
+
+   
+    <!-- Modal Registro -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">Registrar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm" action="{% url 'registerProfissional' %} " method="post">
+                        {% csrf_token %}
+                      
+                        <div class="mb-3" id="tipoProfissionalDiv" >
+                            <label for="tipoProfissional" class="form-label">Tipo de Profissional</label>
+                            <select class="form-control" name="tipo_profissional" id="tipoProfissional">
+                                <option value="dentista">Dentista</option>
+                                <option value="medico">Médico</option>
+                            </select>
+                        </div>
+                  
+                        
+                        <div class="mb-3" id="especialidadesDiv">
+                            
+                            <div id="especialidades">
+                                {% for especialidade in especialidades %}
+                                <label for="especialidades" class="form-label">Especialidades</label>
+                                <div class="form-check medico">
+                                    <input type="checkbox" class="form-check-input" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
+                                    <label class="form-check-label" for="{{ especialidade.id }}">{{ especialidade.nome }}</label>
+                                </div>
+                            {% endfor %}
+                                <div class="form-check dentista">
+                                    <input type="checkbox" class="form-check-input" id="implante_dentario" name="especialidades" value="implante_dentario">
+                                    <label class="form-check-label" for="implante_dentario">Implante Dentário</label>
+                                </div>
+                                <div class="form-check dentista">
+                                    <input type="checkbox" class="form-check-input" id="cirurgia_dentaria" name="especialidades" value="cirurgia_dentaria">
+                                    <label class="form-check-label" for="cirurgia_dentaria">Cirurgia Dentária</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" id="registerEmail">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerCpf" class="form-label">CPF</label>
+                            <input type="text" name="cpf" class="form-control" id="registerCpf">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="registerNome" class="form-label">Nome</label>
+                            <input type="text" name="nome" class="form-control" id="registerNome">
+                        </div> 
+
+                        <div class="mb-3">
+                            <label for="registerSobrenome" class="form-label">Sobrenome</label>
+                            <input type="text" name="sobrenome" class="form-control" id="registerSobrenome">
+                        </div> 
+
+                        <div class="mb-3">
+                            <label for="registerTelefone" class="form-label">Telefone</label>
+                            <input type="text" name="telefone" class="form-control" id="registerTelefone">
+                        </div> 
+
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Senha</label>
+                            <input type="password" name="password1" class="form-control" id="registerPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Senha</label>
+                            <input type="password" name="password2" class="form-control" id="confirmPassword">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerCEP" class="form-label">CEP</label>
+                            <input type="text" name="cep" class="form-control" id="registerCEP">
+                        </div>
+                        <!-- Aqui vão os outros campos relacionados ao CEP -->
+                        <div id="cepInfo"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+
+     <!-- Modal Registro Cliente -->
+     <div class="modal fade" id="registerModalCliente" tabindex="-1" aria-labelledby="registerModalClienteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalClienteLabel">Registrar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm" action="{% url 'registerCliente' %} " method="post">
+                        {% csrf_token %}
+                      
+                     
+    
+                        
+                    
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" id="registerEmail">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerCpf" class="form-label">CPF</label>
+                            <input type="text" name="cpf" class="form-control" id="registerCpf">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="registerNome" class="form-label">Nome</label>
+                            <input type="text" name="nome" class="form-control" id="registerNome">
+                        </div> 
+
+                        <div class="mb-3">
+                            <label for="registerSobrenome" class="form-label">Sobrenome</label>
+                            <input type="text" name="sobrenome" class="form-control" id="registerSobrenome">
+                        </div> 
+
+                        <div class="mb-3">
+                            <label for="registerTelefone" class="form-label">Telefone</label>
+                            <input type="text" name="telefone" class="form-control" id="registerTelefone">
+                        </div> 
+
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Senha</label>
+                            <input type="password" name="password1" class="form-control" id="registerPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Senha</label>
+                            <input type="password" name="password2" class="form-control" id="confirmPassword">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerCEP" class="form-label">CEP</label>
+                            <input type="text" name="cep" class="form-control" id="registerCEP">
+                        </div>
+                        <!-- Aqui vão os outros campos relacionados ao CEP -->
+                        <div id="cepInfo"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm" action="{% url 'login'%}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="text" class="form-control" name="username" placeholder="Email" id="loginEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Senha</label>
+                            <input type="password" name="password" class="form-control" placeholder="Senha" id="loginPassword">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if user.is_authenticated %}
+        <h5 style="text-align:center;">WHAT'S UP {{ user.username }}!</h5>
+    {% else %}
+        <h5 style="text-align:center; width:100%;">Hello, visitor!</h5>
+    {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+   <div class="container">
+    <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+   </div>
+    {% endif %}
+
+
+    <form id="search-form">
+        <input type="text" id="especialidade" placeholder="Especialidade" />
+        <input type="text" id="estado" placeholder="Estado" />
+        <button type="submit">Pesquisar</button>
+    </form>
+    <div id="estado-suggestions" style="display: none;">
+        <!-- Sugestões de estados vão aqui -->
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#registerCEP").blur(function() {
+                var cep = $(this).val().replace(/\D/g, '');
+                if (cep != "") {
+                    var validacep = /^[0-9]{8}$/;
+                    if (validacep.test(cep)) {
+                        $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function(dados) {
+                            if (!("erro" in dados)) {
+                                var infoCep = `<p><strong>Estado:</strong> ${dados.uf}</p>
+                                               <p><strong>Cidade:</strong> ${dados.localidade}</p>
+                                               <p><strong>Bairro:</strong> ${dados.bairro}</p>
+                                               <p><strong>Logradouro:</strong> ${dados.logradouro}</p>`;
+                                $("#cepInfo").html(infoCep);
+                            } else {
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } else {
+                        alert("Formato de CEP inválido.");
+                    }
+                } else {
+                    alert("Por favor, preencha o CEP.");
+                }
+
+                $("#estado").on("input", function() {
+                    var query = $(this).val();
+                    if (query.length > 0) {
+                        $.ajax({
+                            url: "/buscar_estados/",
+                            data: {
+                                'query': query
+                            },
+                            success: function(data) {
+                                $("#estado-suggestions").empty();
+                                data.estados.forEach(function(estado) {
+                                    $("#estado-suggestions").append(`<div>${estado}</div>`);
+                                  });
+                                $("#estado-suggestions").show();
+                            }
+                        });
+                    } else {
+                        $("#estado-suggestions").hide();
+                    }
+            });
+            
+            
+            
+                
+        
+            // Dispara o evento change inicialmente para configurar as especialidades
+            $("#user_type").change();
+            
+            $("#tipoProfissional").change(function() {
+                var selectedProf = $(this).val();
+                $(".medico, .dentista").hide();
+                $('input[type=checkbox]').prop('checked', false);
+                if (selectedProf === "medico") {
+                    $(".medico").show();
+                    $("#especialidadesDiv").show();
+                    $(".medico input[type=checkbox]").on("change", function() {
+                        $(".medico input[type=checkbox]").not(this).prop('checked', false);
+                    });
+                } else if (selectedProf === "dentista") {
+                    $(".dentista").show();
+                    $("#especialidadesDiv").show();
+                    $(".medico input[type=checkbox]").off("change");
+                } else {
+                    $("#especialidadesDiv").hide();
+                }
+            });
+    
+    
+        
+    
+            $("#search-form").on("submit", function(e) {
+                e.preventDefault();
+                var especialidade = $("#especialidade").val();
+                var estado = $("#estado").val();
+                window.location.href = `/profissionais/?especialidade=${especialidade}&estado=${estado}`;
+            });
+    
+
+      
+            $('#search').on('input', function(){
+                let query = $(this).val();
+                if (query.length > 1) {
+                    $.ajax({
+                        url: '/buscar_estados/',  // Substitua pela URL correta da sua view
+                        data: {
+                            'query': query
+                        },
+                        dataType: 'json',
+                        success: function(data){
+                            let resultsHtml = "";
+                            data.estados.forEach(function(estado){
+                                resultsHtml += `<p>${estado}</p>`;
+                            });
+                            $('#results').html(resultsHtml);
+                        }
+                    });
+                } else {
+                    $('#results').html("");
+                }
+            });
+        });
+    });
+      
+    </script>
+    
+</body>
+</html>

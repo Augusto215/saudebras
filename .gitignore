@@ -1,0 +1,40 @@
+# .gitignore para projeto Django
+
+# Arquivos Byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambiente virtual
+venv/
+myenv/
+.env
+
+# Banco de dados
+*.sqlite3
+db.sqlite3
+
+# Arquivos de backup e temporários
+*.bak
+*.swp
+*~
+.temp
+
+# Diretório de mídia
+media/
+
+# Diretório de arquivos estáticos gerados
+static/
+
+# Arquivos de configuração sensíveis
+secrets.json
+.env
+
+# Ferramentas de desenvolvimento
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Outros
+.DS_Store
