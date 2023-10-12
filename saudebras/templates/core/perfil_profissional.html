@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+
+{%load static%}
+
+{% block 'conteudo' %}
+<div class="container mt-5" style=" flex-grow:1;">
+
+
+
+  <h1 style="color:#000 !important;">Perfil de {{ profissional.nome }}</h1>
+  <p style="color:000 !important;">Email: {{ profissional.email }}</p>
+
+</div>
+  <!-- E assim por diante, para todos os campos que você quer mostrar -->
+
+{% endblock %}

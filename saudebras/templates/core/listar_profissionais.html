@@ -1,35 +1,155 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
-<div class="container" style="padding-top:10rem !important; flex-grow:1;">
-  <input type="text" id="estado_input" placeholder="Selecione um Estado" value="{{ request.GET.estado }}">
-  <ul id="estado_list"></ul>
 
-  <input type="text" id="especialidade_input" placeholder="Especialidade ou Nome" value="{{ request.GET.especialidade }}{{ request.GET.nome }}{{ request.GET.tipo_profissional }}">
-  <ul id="especialidade_list"></ul>
+
+ <div class="fluid-container w-100" style="background-color:#C2F1F5;">
+          <div class="mt-4 container">
+          <!-- Formulário para Cidade -->
+          <form id="cidade_form" class="mb-2">
+            <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; " class="w-30 p-2" id="convenios_select">
+             
+              <!-- Opções de cidade aqui -->
+            </select>
+           
+          </form>
+        </div>
+        </div>      
+        <div class="container mt-5" style=" flex-grow:1;">
+
+
+
+
+          {% for profissional in profissionais %}
+          <div class="mb-5">
+            <div class="d-flex">
+              <img src="{{ profissional.foto }}">
+              <div class="d-flex flex-column">
+                <span style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+                <div class="d-flex">
+                <span style="color:#000 !important; font-size:1rem !important;">
+                  {% for especialidade in profissional.especialidades.all %}
+                    {{ especialidade.nome }}
+                    {% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </span> 
+                <a class="d-flex align-items-center text-center justify-content-center" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+              </div>
+              <span style="font-size:1rem; color:#000 !important;">Avaliações</span>
+              <div class="d-flex">
+              {% for convenios in profissional.convenios.all %}
+
+            <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenios.nome }}</span>
+            {% if not forloop.last %} {% endif %}
+          {% endfor %}
+              </div>
+              <div class="d-flex">
+                {% for enderecos in profissional.enderecos.all %}
   
-  <button id="search_button">Pesquisar</button>
+              <span style="margin-right:  .7rem !important;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.cep }}</span>
+              {% if not forloop.last %} {% endif %}
+            {% endfor %}
+
+            {% for enderecos in profissional.enderecos.all %}
+            {%if enderecos.latitude != None and enderecos.longitude != None %}
+            <a href="#" class="showMapModal" 
+            data-latitude="{{ enderecos.latitude }}" 
+            data-longitude="{{ enderecos.longitude }}" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+                </div>
+                {%endif%}
+                {% endfor %}
+          
+
+        </span>
+              
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        </div>  
+        <div id="mapModal" style="display:none;">
+          <div id="map" style="height: 400px; width: 100%;"></div>
+          <button type="button" onclick="hideMapModal()">Fechar</button>
+        </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll(".showMapModal");
+    let map;  // Declarar o mapa fora da função
+
+    buttons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            let latitude = this.getAttribute("data-latitude");
+            let longitude = this.getAttribute("data-longitude");
+            latitude = latitude.replace(',', '.');
+            longitude = longitude.replace(',', '.');
+            console.log('Latitude:', latitude);
+            console.log('Longitude:', longitude);
+            showMapModal(latitude, longitude);
+        });
+    });
+});
+
+let map;  // Declaração global para o mapa
+
+function showMapModal(latitude, longitude) {
+    var mapModal = document.getElementById("mapModal");
+    mapModal.style.display = "block";
+
+    if (!map) {
+        // Inicializa o mapa se ainda não foi inicializado
+        map = L.map('map').setView([latitude, longitude], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    } else {
+        // Atualiza a posição do mapa e do marcador
+        map.setView([latitude, longitude], 15);
+    }
+
+    // Adiciona/Atualiza o marcador
+    L.marker([latitude, longitude]).addTo(map);
+}
+
+function hideMapModal() {
+    var mapModal = document.getElementById("mapModal");
+    mapModal.style.display = "none";
+    // Não remova o mapa para evitar o erro
+}
 
 
-<div>
-  <div class="mt-3 mb-3" id="bairros_section">
-    <!-- Aqui vão ser inseridos os checkboxes -->
-  </div>
-  <button id="show_button">Mostrar</button>
+</script>
 </div>
 
-{% for profissional in profissionais %}
-<div>
-  <h2 style="color:#000 !important;">{{ profissional.nome }}</h2>
-  <!-- outras informações -->
+{% load url_filters %}
+<div class="container mt-4 mb-4 pagination">
+
+{% with queries=request.GET.copy %}
+<div class="pagination">
+    <span class="step-links">
+        {% if profissionais.has_previous %}
+            <a style="text-decoration:none  !important; color: #000 !important;" href="?{{ request.GET|add_page_to_query:1 }}">primeira página</a>
+            <a style="text-decoration:none !important; color: #000 !important;" href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">página anterior</a>
+        {% endif %}
+        
+        <span class="current">
+            Página {{ profissionais.number }} de {{ profissionais.paginator.num_pages }}.
+        </span>
+        
+        {% if profissionais.has_next %}
+            <a style="text-decoration:none !important; color: #000 !important;"  href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">próxima página</a>
+            <a style="text-decoration:none !important; color: #000 !important;" href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">última página</a>
+        {% endif %}
+    </span>
 </div>
-{% endfor %}
+{% endwith %}
+
+</div>
+
 </div>
 <script>
 
 </script>
 
 
-<script src="{%static 'js/profissionais.js'%}">
+<script src="{%static 'js/filtrarProfissionais.js'%}">
 </script>
 {% endblock %}

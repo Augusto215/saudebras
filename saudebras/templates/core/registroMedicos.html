@@ -2,17 +2,17 @@
 {%load static%}
 {%block 'conteudo'%}
 <div class="container d-flex" style="flex-grow:1;">
-    <div class="div-parte1 d-flex align-items-center w-50">
-        <form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'registerProfissional'  %}">
+    <div class="div-parte1 w-50">
+<form id="regForm"  method="post" action="{% url 'registerProfissional' tipo_profissional='Médico'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Registrar Profissional:</h3>
+   <h1>Register:</h1>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
       Nome:
       <p><input type="text" placeholder="Nome..." oninput="this.className = ''" name="nome"></p>
       Sobrenome:
       <p><input type="text" placeholder="Sobrenome..." oninput="this.className = ''" name="sobrenome"></p>
-      
+      <input type="hidden" name="tipo_profissional" value="Médico">
    </div>
    <div class="tab">
       Email:
@@ -24,115 +24,25 @@
    </div>
 
    <div class="tab">
-        CEP:
-        <div class="d-flex flex-column justify-content-center align-items-center">
-        <div class="d-flex flex-column justify-content-center align-items-center" id="cep-fields">
-            <input style="width:fit-content !important;" type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
-            
-        </div>
-        <button class="mb-5" style="width:fit-content !important;" type="button" id="add-cep">+</button>
-        
-    </div>
     
-    <script> document.getElementById('add-cep').addEventListener('click', function() {
-        const newCepInput = document.createElement('input');
-        newCepInput.type = 'text';
-        newCepInput.name = 'cep[]';
-        newCepInput.placeholder = 'Digite o CEP';
-        document.getElementById('cep-fields').appendChild(newCepInput);
-    });
-    </script>
+        CEP:
+        <p><input type="text" id="registerCEP" placeholder="CEP..." oninput="this.className = ''" name="cep"></p>
+        Número de registro (ex. CRM):
+        <p><input type="text" placeholder="Número de registro..." oninput="this.className = ''" name="codigo"></p>
         
         
        
            
       
     </div>
-  
    <div class="tab">
-
-    Tipo Profissional:
-  
-                
-                    <div class="form-check medico" style="display: flex;
-                    align-items: center;
-                    justify-content: start;
-                    padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  id="medico-check" class="form-check-input registrar-check medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
-                        <label class="form-check-label" for="medico-check">Médico</label>
-                    </div>
-             
-            
-                <div class="form-check medico" style="display: flex;
-                align-items: center;
-                justify-content: start;
-                padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  id="dentista-check" class="form-check-input registrar-check dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
-                    <label class="form-check-label" for="dentista-check">Dentista</label>
-                </div>
-           
-
-    <script>
-        function uncheckAllCheckboxes(containerId) {
-            const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
-            checkboxes.forEach((checkbox) => {
-                checkbox.checked = false;
-            });
-        }
-        
-        function toggleEspecialidadesLabel() {
-            const deciderMedicos = document.querySelector('.medico_check').checked;
-            const deciderDentistas = document.getElementById('switchDentistas').checked;
-            const especialidadesLabel = document.getElementById('especialidadesLabel');
-        
-            if (deciderMedicos || deciderDentistas) {
-                especialidadesLabel.style.display = 'inline';
-            } else {
-                especialidadesLabel.style.display = 'none';
-            }
-        }
-
-        function changeMedico() {
-            const deciderMedicos = document.querySelector('.medico_check');
-            const convenioMedicos = document.getElementById('convenio_medico')
-            const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
-            if(deciderMedicos.checked){
-                medicoEspecialidade.style.display = 'block';
-                convenioMedicos.style.display = 'block'
-            } else {
-                medicoEspecialidade.style.display = 'none';
-                convenioMedicos.style.display = 'none';
-                uncheckAllCheckboxes('espcialidadesMedicos');
-            }
-            toggleEspecialidadesLabel();
-        }
-        
-        function changeDentista() {
-            const deciderDentistas = document.querySelector('.dentista_check');
-            const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
-            const convenioDentistas = document.getElementById('convenio_dentista');
-            if(deciderDentistas.checked){
-                dentistaEspecialidade.style.display = 'block';
-                convenioDentistas.style.display = 'block';
-            } else {
-                dentistaEspecialidade.style.display = 'none';
-                convenioDentistas.style.display = 'none';
-                uncheckAllCheckboxes('espcialidadesDentistas');
-            }
-            toggleEspecialidadesLabel();
-        }
-
-        
-
-        
-    </script>
-
-
-    <div class="mb-3 mt-3" id="especialidadesDiv">
-        <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label">Especialidades:</label>
-        <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
+    
+    
+    <div class="mb-3" id="especialidadesDiv">
+        <label for="especialidades" class="form-label">Especialidades:</label>
+        <div id="especialidades">
             <!-- Checkbox para médicos -->
-            <div id="espcialidadesMedicos" style="display:none;">
+            <div style="max-height:12rem; overflow-y:scroll;">
             {% for especialidade in especialidades %}
                 {% if especialidade.tipo_profissional == 'Médico' %}
                 
@@ -146,27 +56,7 @@
                
                 {% endif %}
             {% endfor %}
-
-            
                 </div>
-           <div id="espcialidadesDentistas" style=" display:none;">
-            {% for especialidade in especialidades %}
-                {% if especialidade.tipo_profissional == 'Dentista' %}
-                
-                    <div class="form-check medico" style="display: flex;
-                    align-items: center;
-                    justify-content: start;
-                    padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
-                        <label class="form-check-label" for="{{ especialidade.id }}">{{ especialidade.nome }}</label>
-                    </div>
-               
-                {% endif %}
-            {% endfor %}
-
-            
-                </div>         
-                
         </div>
            
         </div>
@@ -204,9 +94,8 @@
     <div id="convenios">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
-        <div id="convenio_medico">
         {% for convenio in convenios %}
-            {% if convenio.tipo_profissional == 'Médico' %}
+            {% if convenio.tipo_profissional == 'Médico' or convenio.tipo_profissional == 'Ambos' %}
             
                 <div class="form-check" style="display: flex;
                 align-items: center;
@@ -218,23 +107,6 @@
            
             {% endif %}
         {% endfor %}
-            </div>
-
-        <div id="convenio_dentista">
-        {% for convenio in convenios %}
-        {% if convenio.tipo_profissional == 'Dentista' %}
-        
-            <div class="form-check" style="display: flex;
-            align-items: center;
-            justify-content: start;
-            padding-left: 0 !important;">
-                <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
-                <label class="form-check-label" for="{{ convenio.id }}">{{ convenio.nome }}</label>
-            </div>
-       
-        {% endif %}
-    {% endfor %}
-        </div>
             </div>
     </div>
        
@@ -298,12 +170,11 @@
          <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
-         
       </div>
 </form>
 </div>
 <div class="div-parte2 w-50 d-flex justify-content-center align-items-center" >
-    <img style="max-height:20rem;" src=" {%static 'img/Doctors-bro.png' %}">
+    <img style="max-height:20rem;" src=" {%static 'img/online-medic.png' %}">
 </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -382,15 +253,15 @@
    x[n].className += " active";
    }
 
-   //document.addEventListener("DOMContentLoaded", function() {
-   // var checkboxes = document.querySelectorAll("input[type='checkbox'][name='especialidades[]']");
-   // checkboxes.forEach(function(checkbox) {
-    //    checkbox.addEventListener("click", function() {
+   document.addEventListener("DOMContentLoaded", function() {
+    var checkboxes = document.querySelectorAll("input[type='checkbox'][name='especialidades[]']");
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener("click", function() {
             // Forçar que a caixa de seleção permaneça marcada ou desmarcada como desejado
-     //       this.checked = !this.checked ? false : true;
-    //    });
-  //  });
-// });
+            this.checked = !this.checked ? false : true;
+        });
+    });
+});
 
 
 

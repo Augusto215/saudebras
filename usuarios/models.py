@@ -1,21 +1,38 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
+
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django import forms
+from PIL import Image
+import requests
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 TIPO_PROFISSIONAL_CHOICES = [
-    ('medico', 'Médico'),
-    ('dentista', 'Dentista'),
+    ('Médico', 'Médico'),
+    ('Dentista', 'Dentista'),
     # ... adicione outros tipos conforme necessário
 ]
 
+
+
 ESPECIALIDADE_CHOICES = [
-    ('cardiologista', 'Cardiologista'),
-    ('ortopedista', 'Ortopedista'),
+    ('Cardiologista', 'Cardiologista'),
+    ('Ortopedista', 'Ortopedista'),
     # Adicione mais aqui
+]
+
+CONVENIO_CHOICES = [
+    ('Médico', 'Médico'),
+    ('Dentista', 'Dentista'),
+    ('Ambos', 'Ambos'),
+    # ... adicione outros tipos conforme necessário
 ]
 
 
@@ -91,6 +108,7 @@ class Especialidade(models.Model):
     
 class Convenio(models.Model):
     nome = models.CharField(max_length=100)
+    tipo_profissional = models.CharField(max_length=50, choices=CONVENIO_CHOICES, blank=True)
     
 
     def __str__(self):
@@ -112,6 +130,18 @@ class Servico(models.Model):
     def __str__(self):
         return self.nome
 
+
+class TipoClinica(models.Model):
+    nome = models.CharField(max_length=100)
+   
+    def __str__(self):
+        return self.nome
+
+class TipoProfissional(models.Model):
+    nome = models.CharField(max_length=100)
+   
+    def __str__(self):
+        return self.nome
 
 class Estado(models.Model):
     nome = models.CharField(max_length=100)
@@ -135,6 +165,51 @@ class Bairro(models.Model):
     def __str__(self):
         return self.nome
 
+
+class CEP(models.Model):
+    codigo = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return self.codigo
+
+class Avaliacao(models.Model):
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    descricao = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Vinculando com o Cliente que fez a avaliação
+    cliente = models.ForeignKey('Cliente', related_name='avaliacoes', on_delete=models.CASCADE)
+
+    # Campos para relacionamento genérico
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+class PerguntaResposta(models.Model):
+    pergunta = models.TextField()
+    resposta = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Campos para relacionamento genérico
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')    
+
+class Endereco(models.Model):
+    rua = models.CharField(max_length=255)
+    numero = models.IntegerField(null=True, blank=True)
+    complemento = models.CharField(max_length=50, null=True, blank=True)
+    bairro = models.ForeignKey(Bairro, on_delete=models.CASCADE)
+    cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE)
+    estado = models.ForeignKey(Estado, on_delete=models.CASCADE)
+    cep = models.ForeignKey(CEP, on_delete=models.CASCADE)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.rua}, {self.bairro}, {self.cidade}, {self.estado}, {self.cep}, {self.latitude}, {self.longitude}"
+
 class Cliente(CustomUser):
     is_active = models.BooleanField(_('active'), default=False)
     estado = models.ForeignKey(Estado, on_delete=models.CASCADE, blank=True, null=True)
@@ -143,20 +218,81 @@ class Cliente(CustomUser):
 
 class Profissional(CustomUser):
     is_active = models.BooleanField(_('active'), default=False)
-    estado = models.ForeignKey(Estado, on_delete=models.CASCADE, blank=True, null=True)
-    cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE, blank=True, null=True)
-    bairro = models.ForeignKey(Bairro, on_delete=models.CASCADE, blank=True, null=True)
-    convenio = models.ManyToManyField('Convenio')
+    estado = models.ManyToManyField('Estado', blank=True)
+    cidade = models.ManyToManyField('Cidade', blank=True)
+    bairro = models.ManyToManyField('Bairro', blank=True)
+    convenios = models.ManyToManyField('Convenio', blank=True)
     tipo_profissional = models.CharField(max_length=50, choices=TIPO_PROFISSIONAL_CHOICES, blank=True)
-    servicos = models.ManyToManyField('Servico')
-    idiomas = models.ManyToManyField('Idioma')
+    servicos = models.ManyToManyField('Servico', blank=True)
+    idiomas = models.ManyToManyField('Idioma', blank=True)
     especialidades = models.ManyToManyField('Especialidade')
-    
+    foto = models.ImageField(upload_to='images/', blank=True, null=True, default="/images/unknown.png")
     codigo = models.CharField( max_length=30, blank=True)
+    enderecos = models.ManyToManyField(Endereco, blank=True, related_name='profissionais')
+    ceps = models.ManyToManyField(CEP, blank=True, related_name='profissionais')
+    descricao = models. TextField(blank=True)
+    avaliacoes = GenericRelation(Avaliacao)
+    perguntas_respostas = GenericRelation(PerguntaResposta)
+    
+    def save(self, *args, **kwargs):
+        if not self.foto:
+            if self.tipo_profissional == "Médico":
+                self.foto = "/images/medico_default.png"
+            elif self.tipo_profissional == "Dentista":
+                self.foto = "/images/dentista_default.png"
+            # adicione mais condições conforme necessário
+            else:
+                self.foto = "/images/unknown.png"
+        super(Profissional, self).save(*args, **kwargs)
 
-class Clinica(AbstractBaseUser, PermissionsMixin):
+class Clinica(CustomUser):
+   
     is_active = models.BooleanField(_('active'), default=False)
-    estado = models.ForeignKey(Estado, on_delete=models.CASCADE, blank=True, null=True)
-    cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE, blank=True, null=True)
-    bairro = models.ForeignKey(Bairro, on_delete=models.CASCADE, blank=True, null=True)
-    convenio = models.ManyToManyField('Convenio')
+    estados = models.ManyToManyField('Estado', blank=True)
+    cidades = models.ManyToManyField('Cidade', blank=True)
+    bairros = models.ManyToManyField('Bairro', blank=True)
+    convenios = models.ManyToManyField('Convenio', blank=True)
+    tipo_clinica = models.ManyToManyField('TipoClinica', blank=True)
+    tipo_profissional = models.ManyToManyField('TipoProfissional', blank=True)
+    especialidades = models.ManyToManyField('Especialidade')
+    servicos = models.ManyToManyField('Servico', blank=True)
+    idiomas = models.ManyToManyField('Idioma', blank=True)
+    foto = models.ImageField(upload_to='images/', blank=True, null=True, default="/images/unknown.png")
+    ceps = models.ManyToManyField(CEP, blank=True, related_name='clinicas')
+    enderecos = models.ManyToManyField(Endereco, blank=True, related_name='clinicas')
+    descricao = models. TextField(blank=True)
+    avaliacoes = GenericRelation(Avaliacao)
+    perguntas_respostas = GenericRelation(PerguntaResposta)
+    
+    def save(self, *args, **kwargs):
+        if not self.foto:
+            if "Hospital" in self.tipo_clinica.values_list('nome', flat=True):
+                self.foto = "/images/hospital_default.png"
+            elif "Clínica Dental" in self.tipo_clinica.values_list('nome', flat=True):
+                self.foto = "/images/clinica_dental_default.png"
+            # adicione mais condições conforme necessário
+            else:
+                self.foto = "/images/unknown.png"
+        super(Clinica, self).save(*args, **kwargs)
+
+
+
+
+
+
+
+
+def get_lat_lng_from_cep(cep):
+    response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+    data = response.json()
+    localidade = data.get('localidade')
+    uf = data.get('uf')
+
+    response = requests.get(f'https://nominatim.openstreetmap.org/search?city={localidade}&state={uf}&format=json')
+    data = response.json()
+    if data:
+        latitude = float(data[0]['lat'])
+        longitude = float(data[0]['lon'])
+        return latitude, longitude
+    else:
+        return None, None

@@ -2,7 +2,19 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.core.mail import send_mail
 from django.http import JsonResponse
-from .forms import ClienteRegistrationForm, ProfissionalRegistrationForm, LoginForm
+from django.db import transaction
+import requests
+from geopy.geocoders import Nominatim
+import time
+from usuarios.forms import *
+from django.core.exceptions import ObjectDoesNotExist
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+
+
+
+from .forms import *
 import uuid
 from .models import *
 from datetime import timedelta
@@ -10,56 +22,17 @@ from django.utils import timezone
 from .models import Bairro, Cidade, Estado # Adicionei as importações dos modelos Dentista e Medico
 import requests
 from django.contrib import messages
+from usuarios.models import Especialidade
 
+from django.forms import formset_factory
 
 
 from django.shortcuts import render, redirect
 from .forms import ClienteRegistrationForm, ProfissionalRegistrationForm
 from .models import Cliente, Profissional, Estado, Cidade, Bairro
 
-def registerProfissional(request):
-    form = ProfissionalRegistrationForm()
 
-    if request.method == 'POST':
-        form = ProfissionalRegistrationForm(request.POST)
 
-        if form.is_valid():
-            # Processando o CEP
-            cep = form.cleaned_data['cep']
-            response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-            data = response.json()
-
-            if response.status_code == 200 and not data.get('erro'):
-                estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-
-                user = Profissional.objects.create_user(
-                    nome=form.cleaned_data['nome'],
-                    sobrenome=form.cleaned_data['sobrenome'],
-                    username=form.cleaned_data['username'],
-                    telefone=form.cleaned_data['telefone'],
-                    email=form.cleaned_data['email'],
-                    password=form.cleaned_data['password1'],
-                    estado=estado,
-                    cidade=cidade,
-                    bairro=bairro,
-                    tipo_profissional=form.cleaned_data['tipo_profissional'],
-                )
-
-                # Configurando as especialidades
-                selected_especialidades = form.cleaned_data['especialidades']
-                user.especialidades.set(selected_especialidades)
-                user.save()
-
-                return redirect('login')
-            else:
-                print("CEP inválido ou não encontrado")
-        else:
-            print("Formulário inválido")
-            print(form.errors)
-
-    return render(request, 'core/index.html', {'form': form})
 
 
 def registerCliente(request):
@@ -89,6 +62,7 @@ def registerCliente(request):
                     estado=estado,
                     cidade=cidade,
                     bairro=bairro,
+                    cep=cep,
                  
                   
                 )
@@ -105,7 +79,234 @@ def registerCliente(request):
             print("Formulário inválido")
             print(form.errors)
     
-    return render(request, 'core/', {'form': form})
+    return render(request, 'core/registroClientes.html', {'form': form})
+
+
+
+
+
+
+from django.shortcuts import render, redirect
+from .models import Clinica, Estado, Cidade, Bairro, TipoClinica, Especialidade, Convenio, Idioma
+from .forms import ClinicaForm
+import requests
+
+from django.db import transaction
+import requests
+from .models import Especialidade, TipoClinica, TipoProfissional, Idioma, Convenio, Estado, Cidade, Bairro, CEP, Endereco
+from django.shortcuts import render, redirect
+from .forms import ClinicaForm
+
+def obter_coordenadas(endereco_completo, meu_user_agent="meuGeocoder"):
+    geolocator = Nominatim(user_agent=meu_user_agent)
+    location = geolocator.geocode(endereco_completo)
+    if location:
+        return location.latitude, location.longitude
+    return None, None
+
+
+def registerProfissional(request):
+    especialidades = Especialidade.objects.all()
+    idiomas = Idioma.objects.all()
+    convenios = Convenio.objects.all()
+    tipo_profissional = TipoProfissional.objects.all()
+    form = ProfissionalRegistrationForm()
+
+    if request.method == 'POST':
+        form = ProfissionalRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            with transaction.atomic():  # Início da transação atômica
+                user = form.save(commit=False)
+
+                enderecos = []
+                estados = []
+                cidades = []
+                bairros = []
+                ceps_list = []
+
+                ceps = request.POST.getlist('cep[]')
+                for cep in ceps:
+                    response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                    data = response.json()
+                    
+                    if response.status_code == 200 and not data.get('erro'):
+                        estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                        cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                        bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                        cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                        endereco_completo = f"{data['logradouro']}, {data['localidade']}, {data['uf']}"
+                        latitude, longitude = obter_coordenadas(endereco_completo)
+                        
+                        endereco, _ = Endereco.objects.get_or_create(
+                            rua=data['logradouro'],
+                            complemento=data['complemento'],
+                            bairro=bairro,
+                            cidade=cidade,
+                            estado=estado,
+                            cep=cep_obj,
+                            latitude=latitude,  # Adicionado
+                            longitude=longitude
+                        )
+
+                        estados.append(estado)
+                        cidades.append(cidade)
+                        bairros.append(bairro)
+                        enderecos.append(endereco)
+                        ceps_list.append(cep_obj)
+
+                # Salve o usuário antes de adicionar relações
+                user.save()
+                    
+                user.set_password(form.cleaned_data['password1'])
+                user.tipo_profissional = form.cleaned_data['tipo_profissional']
+                user.email =form.cleaned_data['email']
+                user.telefone = form.cleaned_data['telefone']
+                user.nome = form.cleaned_data['nome']
+                user.username = form.cleaned_data['username']
+                user.sobrenome = form.cleaned_data['sobrenome']
+                user.descricao = form.cleaned_data['descricao']
+                user.codigo = form.cleaned_data['codigo']
+                user.foto = form.cleaned_data['foto']
+                selected_especialidades = form.cleaned_data['especialidades']
+                selected_convenios = form.cleaned_data['convenios']
+                selected_idiomas = form.cleaned_data['idiomas']
+                
+                user.estado.set(estados)
+                user.cidade.set(cidades)
+                user.bairro.set(bairros)
+                user.ceps.set(ceps_list)
+                user.especialidades.set(selected_especialidades)
+                user.convenios.set(selected_convenios)
+                user.idiomas.set(selected_idiomas)
+                user.enderecos.set(enderecos)
+
+                user.save()
+
+                return redirect('login')
+
+        else:
+            print("Formulário inválido")
+            print(form.errors)
+
+    context = {
+        'especialidades': especialidades,
+        'convenios': convenios,
+        'idiomas': idiomas,
+        'form': form,
+        'tipo_profissionais': tipo_profissional,
+    }
+
+    return render(request, 'core/registroProfissionais.html', context)
+
+    
+
+
+
+def registerClinica(request):
+    especialidades = Especialidade.objects.all()
+    tipo_clinica = TipoClinica.objects.all()
+    tipo_profissional = TipoProfissional.objects.all()
+    idiomas = Idioma.objects.all()
+    convenios = Convenio.objects.all()
+    form = ClinicaForm()
+
+    if request.method == 'POST':
+        form = ClinicaForm(request.POST, request.FILES)
+        if form.is_valid():
+            with transaction.atomic():  # Início da transação atômica
+                clinica = form.save(commit=False)
+
+                enderecos = []
+                estados = []
+                cidades = []
+                bairros = []
+                ceps_list = []
+
+                ceps = request.POST.getlist('cep[]')
+                for cep in ceps:
+                    response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                    data = response.json()
+                    
+                    if response.status_code == 200 and not data.get('erro'):
+                        estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                        cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                        bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                        cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                        endereco_completo = f"{data['logradouro']}, {data['localidade']}, {data['uf']}"
+                        latitude, longitude = obter_coordenadas(endereco_completo)
+                        
+                        endereco, _ = Endereco.objects.get_or_create(
+                                rua=data['logradouro'],
+                                complemento=data['complemento'],
+                                bairro=bairro,
+                                cidade=cidade,
+                                estado=estado,
+                                cep=cep_obj,
+                                latitude=latitude,  # Adicionado
+                                longitude=longitude
+                            )
+
+                        estados.append(estado)
+                        cidades.append(cidade)
+                        bairros.append(bairro)
+                        enderecos.append(endereco)
+                        ceps_list.append(cep_obj)
+
+                # Agora, salve a clínica antes de adicionar relações
+                clinica.save()
+                    
+                clinica.set_password(form.cleaned_data['password1'])
+                clinica.email = form.cleaned_data['email']
+                clinica.telefone = form.cleaned_data['telefone']
+                clinica.nome = form.cleaned_data['nome']
+                clinica.sobrenome = form.cleaned_data['sobrenome']
+                clinica.username = form.cleaned_data['username']
+                clinica.descricao = form.cleaned_data['descricao']
+                clinica.foto = form.cleaned_data['foto']
+                selected_tipoClinica = form.cleaned_data['tipo_clinica']
+                selected_tipoProfissional = form.cleaned_data['tipo_profissional']
+                selected_especialidades = form.cleaned_data['especialidades']
+                selected_convenios = form.cleaned_data['convenios']
+                selected_idiomas = form.cleaned_data['idiomas']
+                
+                
+
+                clinica.estados.set(estados)
+                clinica.tipo_clinica.set(selected_tipoClinica)
+                clinica.cidades.set(cidades)
+                clinica.bairros.set(bairros)
+                clinica.ceps.set(ceps_list)
+                clinica.tipo_profissional.set(selected_tipoProfissional)
+                clinica.convenios.set(selected_convenios)
+                clinica.especialidades.set(selected_especialidades)
+                clinica.idiomas.set(selected_idiomas)
+                clinica.enderecos.set(enderecos)
+                
+
+                clinica.save()
+
+                return redirect('login')
+
+        
+            
+        else:
+            print("Formulário inválido")
+            print(form.errors)
+
+    context = {
+        'especialidades': especialidades,
+        'convenios': convenios,
+        'idiomas': idiomas,
+        'form': form,
+        'tipos_clinicas': tipo_clinica,
+        'tipos_profissionais': tipo_profissional
+    }
+
+    return render(request, 'core/registroClinicas.html', context)
+
+
+
+
 
 
 from django.contrib.auth import login as auth_login
@@ -129,3 +330,52 @@ def user_login(request):
         form = LoginForm()
         
     return render(request, 'core/index.html', {'form': form})
+
+
+#EDITAR PERFIL
+@login_required
+def editar_perfil(request):
+    if request.method == 'POST':
+        acao = request.POST.get('acao')
+        profissional_form = ProfissionalUpdateForm(request.POST, instance=request.user.profissional)
+        endereco_form = EnderecoForm(request.POST)
+        
+        if profissional_form.is_valid():
+            profissional_form.save()
+        
+        if acao == 'criar':
+            if endereco_form.is_valid():
+                novo_endereco = endereco_form.save(commit=False)
+                novo_endereco.profissional = request.user.profissional
+                novo_endereco.save()
+                messages.success(request, 'Endereço adicionado com sucesso.')
+        
+        elif acao == 'atualizar':
+            endereco_id = request.POST.get('endereco_id')
+            try:
+                endereco_instance = Endereco.objects.get(id=endereco_id, profissional=request.user.profissional)
+                endereco_form = EnderecoForm(request.POST, instance=endereco_instance)
+                if endereco_form.is_valid():
+                    endereco_form.save()
+                    messages.success(request, 'Endereço atualizado com sucesso.')
+            except Endereco.DoesNotExist:
+                messages.error(request, 'Endereço não encontrado.')
+        
+        elif acao == 'excluir':
+            endereco_id = request.POST.get('endereco_id')
+            try:
+                endereco = Endereco.objects.get(id=endereco_id, profissional=request.user.profissional)
+                endereco.delete()
+                messages.success(request, 'Endereço excluído com sucesso.')
+            except Endereco.DoesNotExist:
+                messages.error(request, 'Endereço não encontrado.')
+    else:
+        profissional_form = ProfissionalUpdateForm(instance=request.user.profissional)
+        endereco_form = EnderecoForm()
+
+    enderecos_do_profissional = Endereco.objects.filter(profissional=request.user.profissional)
+    return render(request, 'core/editar_perfil.html', {
+        'profissional_form': profissional_form,
+        'endereco_form': endereco_form,
+        'enderecos': enderecos_do_profissional
+    })

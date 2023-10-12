@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block 'conteudo' %}
+<div class="container mt-5" style=" flex-grow:1;">
+
+
+ 
+          
+          <!-- Formulário para Cidade -->
+          <form id="cidade_form" class="mb-4">
+            <select class="w-100 p-2" id="convenios_select">
+             
+              <!-- Opções de cidade aqui -->
+            </select>
+           
+          </form>
+          
+
+
+
+{% for clinica in clinicas %}
+  <div class="mb-5">
+    <h2 style="color:#000 !important;">{{ clinica.nome }}</h2>
+    <p style="color:#000 !important;">Email: {{ clinica.email }}</p>
+    <!-- Outros campos que você quer mostrar -->
+    <a style="color:#000 !important;" href="{% url 'perfil_clinica' clinica.id %}">Ver Perfil</a>
+  </div>
+{% endfor %}
+</div>
+
+<div class="container mt-4 mb-4 pagination">
+
+
+
+{% load url_filters %}
+
+{% with queries=request.GET.copy %}
+<div class="pagination">
+    <span class="step-links">
+        {% if clinicas.has_previous %}
+            <a href="?{{ request.GET|add_page_to_query:1 }}">primeira página</a>
+            <a href="?{{ request.GET|add_page_to_query:clinicas.previous_page_number }}">página anterior</a>
+        {% endif %}
+        
+        <span class="current">
+            Página {{ clinicas.number }} de {{ clinicas.paginator.num_pages }}.
+        </span>
+        
+        {% if clinicas.has_next %}
+            <a href="?{{ request.GET|add_page_to_query:clinicas.next_page_number }}">próxima página</a>
+            <a href="?{{ request.GET|add_page_to_query:clinicas.paginator.num_pages }}">última página</a>
+        {% endif %}
+    </span>
+</div>
+{% endwith %}
+
+</div>
+<script>
+
+</script>
+
+
+<script src="{%static 'js/filtrarClinicas.js'%}">
+</script>
+{% endblock %}
