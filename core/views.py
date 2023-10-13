@@ -132,13 +132,13 @@ def buscar_cidades_por_tipo_clinica(request):
             
     return JsonResponse({'cidades': sorted(list(cidades))})
 
-
 def buscar_convenios_por_tipo_clinica(request):
     q_objects = Q(is_active=True) & Q(email_verified=True)
     especialidade = request.GET.get('especialidade', None)
     tipo_clinica = request.GET.get('tipo_clinica', None)
     estado_nome = request.GET.get('estados', None)
     tipo_profissional = request.GET.get('tipo_profissional', None)
+    cidade_nome = request.GET.get('cidade', None)  # novo campo
 
     convenios = set()
 
@@ -151,6 +151,8 @@ def buscar_convenios_por_tipo_clinica(request):
         q_objects &= Q(estados__nome__icontains=estado_nome)
     if tipo_profissional:
         q_objects &= Q(tipo_profissional__nome__icontains=tipo_profissional)
+    if cidade_nome:
+        q_objects &= Q(cidades__nome__icontains=cidade_nome)  # nova condição
 
     clinicas_ativas = Clinica.objects.filter(q_objects).prefetch_related('convenios', 'estados')
 
@@ -160,7 +162,6 @@ def buscar_convenios_por_tipo_clinica(request):
             convenios.add(convenio.nome)
 
     return JsonResponse({'convenios': sorted(list(convenios))})
-    
 
 
 def buscar_estados(request):
@@ -215,12 +216,11 @@ def get_cities(request):
 
 
 
-
-
 def buscar_convenios_por_tipo_profissional(request):
     state_name = request.GET.get('estado', None)
     tipo_profissional = request.GET.get('tipo_profissional', None)
-    especialidade_query = request.GET.get('especialidade', None)  # novo campo
+    especialidade_query = request.GET.get('especialidade', None)
+    city_name = request.GET.get('cidade', None)  # novo campo
 
     q_objects = Q(is_active=True) & Q(email_verified=True)
 
@@ -230,6 +230,10 @@ def buscar_convenios_por_tipo_profissional(request):
     if state_name:
         estado = Estado.objects.get(nome=state_name)
         q_objects &= Q(estado=estado)
+
+    if city_name:
+        cidade = Cidade.objects.get(nome=city_name)
+        q_objects &= Q(cidade=cidade)  # nova condição
 
     if especialidade_query:
         q_objects &= Q(especialidades__nome__icontains=especialidade_query)
@@ -243,7 +247,7 @@ def buscar_convenios_por_tipo_profissional(request):
             convenios.add(convenio.nome)
 
     return JsonResponse({'convenios': list(convenios)})
-    
+
 
 
 from django.shortcuts import render

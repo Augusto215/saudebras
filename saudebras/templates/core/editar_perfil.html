@@ -9,7 +9,6 @@
     <button type="submit" name="acao" value="atualizar_profissional">Atualizar Perfil Profissional</button>
   </form>
   
-  <!-- Listar e Excluir Endereços -->
   {% for endereco in enderecos %}
   <div>
     {{ endereco.rua }} - {{ endereco.bairro.nome }} - {{ endereco.cidade.nome }}
@@ -17,10 +16,10 @@
       {% csrf_token %}
       <input type="hidden" name="endereco_id" value="{{ endereco.id }}">
       <button type="submit" name="acao" value="excluir">Excluir</button>
+      <button type="submit" name="acao" value="editar">Editar</button>
     </form>
   </div>
   {% endfor %}
-  
   <!-- Adicionar Novo Endereço -->
   <form method="post">
     {% csrf_token %}

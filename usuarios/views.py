@@ -123,7 +123,8 @@ def registerProfissional(request):
                 cidades = []
                 bairros = []
                 ceps_list = []
-
+                
+                user.save()
                 ceps = request.POST.getlist('cep[]')
                 for cep in ceps:
                     response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
@@ -145,7 +146,8 @@ def registerProfissional(request):
                             estado=estado,
                             cep=cep_obj,
                             latitude=latitude,  # Adicionado
-                            longitude=longitude
+                            longitude=longitude,
+                            profissional=user
                         )
 
                         estados.append(estado)
@@ -222,6 +224,8 @@ def registerClinica(request):
                 bairros = []
                 ceps_list = []
 
+                
+                clinica.save()
                 ceps = request.POST.getlist('cep[]')
                 for cep in ceps:
                     response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
@@ -243,7 +247,8 @@ def registerClinica(request):
                                 estado=estado,
                                 cep=cep_obj,
                                 latitude=latitude,  # Adicionado
-                                longitude=longitude
+                                longitude=longitude,
+                                clinica=clinica
                             )
 
                         estados.append(estado)
@@ -349,7 +354,14 @@ def editar_perfil(request):
                 novo_endereco.profissional = request.user.profissional
                 novo_endereco.save()
                 messages.success(request, 'Endereço adicionado com sucesso.')
-        
+        elif acao == 'editar':
+            endereco_id = request.POST.get('endereco_id')
+            try:
+                endereco_instance = Endereco.objects.get(id=endereco_id, profissional=request.user.profissional)
+                endereco_form = EnderecoForm(instance=endereco_instance)
+            except Endereco.DoesNotExist:
+                messages.error(request, 'Endereço não encontrado.')
+
         elif acao == 'atualizar':
             endereco_id = request.POST.get('endereco_id')
             try:

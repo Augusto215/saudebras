@@ -206,6 +206,8 @@ class Endereco(models.Model):
     cep = models.ForeignKey(CEP, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    profissional = models.ForeignKey('Profissional', related_name='enderecos_fk', on_delete=models.CASCADE, null=True, blank=True)
+    clinica = models.ForeignKey('Clinica', related_name='enderecos_fk', on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
         return f"{self.rua}, {self.bairro}, {self.cidade}, {self.estado}, {self.cep}, {self.latitude}, {self.longitude}"

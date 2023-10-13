@@ -1,16 +1,22 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
-<div class="container mt-5" style=" flex-grow:1;">
+<div class="fluid-container flex-column d-flex align-items-center" style="flex-grow:1; background:#FAFAFA">
+  <div class="w-100 d-flex justify-content-center flex-column align-items-center text-center" style="background-color:#21BFA6; min-height:20rem;">
 
 
+            <div class=" mt-5  d-flex justify-content-between align-items-center" style="width:30rem; max-width:90%;"><h3 style="text-align:start;color:#fff !important;">
+              
+              Exames Clínicos e<br>Laboratoriais<h3> <img style="max-height:4rem;" src="{%static 'img/emergency-services.png' %}"></div>
 
+            <div class=" mt-4 d-flex p-4 flex-column" style="max-width:30rem; background:#fff; border-radius:12px; 
+            width:90%; margin-bottom: -4rem; filter: drop-shadow(2px 4px 6px #A2A2A2);"> 
 
-            <div class="d-flex  p-1 flex-column mb-2">
-          </form>
+            
+     
           <!-- Formulário para Estado -->
           <form id="estado_form"  class="mb-2" >
-            <select class="w-100 p-2" id="estado_select">
+            <select class="w-100 p-2" id="estado_select" style="height:3.5rem; max-height: 100px; overflow-y: auto;">
               
               <!-- Opções de estado aqui -->
             </select>
@@ -21,18 +27,25 @@
           
           <!-- Formulário para Cidade -->
           <form id="cidade_form" class="mb-4">
-            <select class="w-100 p-2" id="cidade_select">
+            <select class="w-100 p-2" id="cidade_select" style="height:3.5rem; max-height: 100px; overflow-y: auto;">
              
               <!-- Opções de cidade aqui -->
             </select>
            
           </form>
           
-          <button class=" fw-bold p-1" style="border:none; outline:none; width:fit-content; margin:0 auto; padding:.7rem 1.5rem !important; border-radius:4px; background:blue; color:#fff;" id="mostrarPrincipal">Mostrar</button>
+          <button class=" fw-bold p-1" style="
+          background-color:#21BFA6; border:none; outline:none; width:fit-content; margin:0 auto; padding:.7rem 1.5rem !important; border-radius:4px; color:#fff;" id="mostrarPrincipal">Buscar</button>
           </div>
 
-
+<div>
+</div>
           
+
+</div>
+<div class="d-flex justify-content-center align-items-center mb-5" style=" margin-top:6rem; width:25rem; max-width:90%; gap:2rem;">
+  <span> Já possuiu conta? </span>  <div> <span>Entrar |</span> <span>Cadastrar</span></div>
+
 </div>
 
 {% for profissional in profissionais %}

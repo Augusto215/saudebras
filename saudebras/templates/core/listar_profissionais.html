@@ -4,9 +4,26 @@
 
 
  <div class="fluid-container w-100" style="background-color:#C2F1F5;">
-          <div class="mt-4 container">
-          <!-- Formulário para Cidade -->
-          <form id="cidade_form" class="mb-2">
+          <div class="mt-4 container d-flex flex-column align-items-center justify-content-center">
+            <div class="d-flex w-100 justify-content-between">
+
+              
+              <div class="d-flex  justify-content-center flex-column align-items-start">
+                <span id="tipoProfissionalSpan">
+                </span> 
+                <div class="d-flex" style="gap:1rem;">
+          <span id="estadoSpan">
+          </span>
+          <span id="especialidadeSpan">
+          </span>
+          <span id="cidadeSpan">
+          </span>
+        </div>
+        </div>
+         
+          <img style="max-height:4rem;" class="mb-3" id="suaImagem" src="">
+          </div>
+          <form id="cidade_form"  class="mb-2 w-100 d-flex justify-content-end">
             <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; " class="w-30 p-2" id="convenios_select">
              
               <!-- Opções de cidade aqui -->
@@ -143,13 +160,15 @@ function hideMapModal() {
 {% endwith %}
 
 </div>
+<span id="dentistaImg" style="display:none;">{% static 'img\cuidado-dental.svg' %}</span>
+
+<span id="medicoImg" style="display:none;">{% static 'img\estetoscopio-instrumento-medico-1.svg' %}</span>
 
 </div>
-<script>
 
-</script>
 
 
 <script src="{%static 'js/filtrarProfissionais.js'%}">
 </script>
+
 {% endblock %}
