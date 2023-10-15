@@ -3,20 +3,22 @@
 {% block 'conteudo' %}
 
 
- <div class="fluid-container w-100" style="background-color:#C2F1F5;">
+ <div class="fluid-container w-100" style="background-color:#EDF5F2;">
           <div class="mt-4 container d-flex flex-column align-items-center justify-content-center">
             <div class="d-flex w-100 justify-content-between">
 
               
               <div class="d-flex  justify-content-center flex-column align-items-start">
-                <span id="tipoProfissionalSpan">
+                <span style="color:#17ABA0; font-size:1.5rem; font-weight:600;" id="tipoProfissionalSpan">
                 </span> 
-                <div class="d-flex" style="gap:1rem;">
-          <span id="estadoSpan">
+                <div class="d-flex align-items-center" style="gap:1rem;">
+                   <span style="font-weight:600;color:gray; font-size:1.3rem;">&gt;</span><span id="especialidadeSpan" style="font-weight:600;color:gray;">
           </span>
-          <span id="especialidadeSpan">
+          <span id="estadoSpan" style="font-weight:600;color:gray;">
           </span>
-          <span id="cidadeSpan">
+          <span style="font-weight:600;color:gray; font-size:1.5rem;" >&#183;
+          </span>
+          <span id="cidadeSpan" style="font-weight:600;color:gray;">
           </span>
         </div>
         </div>
@@ -32,109 +34,182 @@
           </form>
         </div>
         </div>      
-        <div class="container mt-5" style=" flex-grow:1;">
+        <div class="container mt-5 d-flex justify-content-between" style=" flex-grow:1;">
 
 
-
+          <div>
 
           {% for profissional in profissionais %}
           <div class="mb-5">
-            <div class="d-flex">
-              <img src="{{ profissional.foto }}">
+            <div class="d-flex flex-column align-items-start justify-content-center">
+            <div class="d-flex" style="gap:1rem;">
+              <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
               <div class="d-flex flex-column">
                 <span style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
-                <div class="d-flex">
-                <span style="color:#000 !important; font-size:1rem !important;">
+                <div class="d-flex mb-3">
+                
                   {% for especialidade in profissional.especialidades.all %}
+                  <span style="color:#000 !important; font-size:1rem !important;">
                     {{ especialidade.nome }}
                     {% if not forloop.last %}, {% endif %}
+                  </span> 
                   {% endfor %}
-                </span> 
-                <a class="d-flex align-items-center text-center justify-content-center" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+                
+                <a class="d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
               </div>
-              <span style="font-size:1rem; color:#000 !important;">Avaliações</span>
-              <div class="d-flex">
+              <span class="mb-3" style="font-size:1rem; color:#000 !important;">Avaliações</span>
+              <div class="d-flex mb-3">
               {% for convenios in profissional.convenios.all %}
 
             <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenios.nome }}</span>
             {% if not forloop.last %} {% endif %}
           {% endfor %}
               </div>
-              <div class="d-flex">
-                {% for enderecos in profissional.enderecos.all %}
-  
-              <span style="margin-right:  .7rem !important;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.cep }}</span>
-              {% if not forloop.last %} {% endif %}
-            {% endfor %}
-
-            {% for enderecos in profissional.enderecos.all %}
-            {%if enderecos.latitude != None and enderecos.longitude != None %}
-            <a href="#" class="showMapModal" 
-            data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
-                </div>
-                {%endif%}
-                {% endfor %}
+             
           
 
         </span>
               
+    
               </div>
             </div>
+              <div class="d-flex mb-3">
+                {% for enderecos in profissional.enderecos.all %}
+                {% if forloop.first %}
+              <span style="margin-right:  .7rem !important;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
+              {% endif %}
+             
+            {% endfor %}
+
+            {% for enderecos in profissional.enderecos.all %}
+            {%if enderecos.latitude != None and enderecos.longitude != None %}
+            {% if forloop.first %}
+            <a href="#" class="showMapModal" 
+            data-latitude="{{ enderecos.latitude }}" 
+            data-longitude="{{ enderecos.longitude }}" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            {% endif %}
+                {%endif%}
+                {% endfor %}
+              </div>
+              <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
+              padding-top: 1.3rem;">
+                <a href="{{ profissional.telefone }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+              </div>
+              <!-- Mapa Estático -->
+            </div>
+
           </div>
         {% endfor %}
-        </div>  
-        <div id="mapModal" style="display:none;">
-          <div id="map" style="height: 400px; width: 100%;"></div>
-          <button type="button" onclick="hideMapModal()">Fechar</button>
         </div>
+    
+        <div id="mapStatic" style="height: 100%; width: 30%;"></div>
+      </div>  
+
+       <!-- Mapa Modal -->
+<!-- Mapa Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mapModalLabel">Localização</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="map" style="height: 400px; width: 100%;"></div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const buttons = document.querySelectorAll(".showMapModal");
-    let map;  // Declarar o mapa fora da função
-
-    buttons.forEach(function(button) {
-        button.addEventListener("click", function() {
-            let latitude = this.getAttribute("data-latitude");
-            let longitude = this.getAttribute("data-longitude");
-            latitude = latitude.replace(',', '.');
-            longitude = longitude.replace(',', '.');
-            console.log('Latitude:', latitude);
-            console.log('Longitude:', longitude);
-            showMapModal(latitude, longitude);
+  let map, mapStatic;
+  let marker, markerStatic;
+  
+  function initMap() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const estado = urlParams.get("estado");
+    const cidade = urlParams.get("cidade");
+    const location = `${cidade}, ${estado}`;
+  
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE`)
+      .then((response) => response.json())
+      .then((data) => {
+        const initialPos = {
+          lat: data.results[0].geometry.location.lat,
+          lng: data.results[0].geometry.location.lng
+        };
+        
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: initialPos,
+          zoom: 15,
         });
+  
+        mapStatic = new google.maps.Map(document.getElementById("mapStatic"), {
+          center: initialPos,
+          zoom: 15,
+        });
+        
+        fetchActiveProfessionals();
+      });
+  }
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".showMapModal");
+  
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        let latitude = parseFloat(this.getAttribute("data-latitude").replace(",", "."));
+        let longitude = parseFloat(this.getAttribute("data-longitude").replace(",", "."));
+        showMapModal(latitude, longitude);
+      });
     });
-});
-
-let map;  // Declaração global para o mapa
-
-function showMapModal(latitude, longitude) {
-    var mapModal = document.getElementById("mapModal");
-    mapModal.style.display = "block";
-
-    if (!map) {
-        // Inicializa o mapa se ainda não foi inicializado
-        map = L.map('map').setView([latitude, longitude], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  });
+  
+  function fetchActiveProfessionals() {
+    fetch("/get_enderecos/")
+      .then((response) => response.json())
+      .then((data) => {
+        data.forEach((prof) => {
+          if (prof.enderecos__latitude !== null && prof.enderecos__longitude !== null) {
+            const position = { lat: prof.enderecos__latitude, lng: prof.enderecos__longitude };
+            new google.maps.Marker({
+              position,
+              map: mapStatic,
+            });
+          }
+        });
+      });
+  }
+  
+  function showMapModal(latitude, longitude) {
+    const position = { lat: latitude, lng: longitude };
+  
+    map.setCenter(position);
+  
+    if (marker) {
+      marker.setPosition(position);
     } else {
-        // Atualiza a posição do mapa e do marcador
-        map.setView([latitude, longitude], 15);
+      marker = new google.maps.Marker({
+        position,
+        map,
+      });
     }
-
-    // Adiciona/Atualiza o marcador
-    L.marker([latitude, longitude]).addTo(map);
-}
-
-function hideMapModal() {
-    var mapModal = document.getElementById("mapModal");
-    mapModal.style.display = "none";
-    // Não remova o mapa para evitar o erro
-}
-
-
+  
+    const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+    mapModal.show();
+  }
+  
+  function hideMapModal() {
+    const mapModal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
+    mapModal.hide();
+  }
+  
 </script>
-</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script>
 
 {% load url_filters %}
 <div class="container mt-4 mb-4 pagination">
@@ -143,8 +218,8 @@ function hideMapModal() {
 <div class="pagination">
     <span class="step-links">
         {% if profissionais.has_previous %}
-            <a style="text-decoration:none  !important; color: #000 !important;" href="?{{ request.GET|add_page_to_query:1 }}">primeira página</a>
-            <a style="text-decoration:none !important; color: #000 !important;" href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">página anterior</a>
+            <a class="p-2" style="text-decoration:none  !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt;</a>
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">&lt;</a>
         {% endif %}
         
         <span class="current">
@@ -152,8 +227,8 @@ function hideMapModal() {
         </span>
         
         {% if profissionais.has_next %}
-            <a style="text-decoration:none !important; color: #000 !important;"  href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">próxima página</a>
-            <a style="text-decoration:none !important; color: #000 !important;" href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">última página</a>
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;"  href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">&gt;</a>
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">&gt;&gt;</a>
         {% endif %}
     </span>
 </div>

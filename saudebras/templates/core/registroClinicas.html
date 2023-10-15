@@ -22,24 +22,52 @@
    </div>
 
    <div class="tab">
-        CEP:
-        <div class="d-flex flex-column justify-content-center align-items-center">
+    Endereço:<br><br>
+    CEP:
+    <div class="d-flex flex-column justify-content-center align-items-center">
         <div class="d-flex flex-column justify-content-center align-items-center" id="cep-fields">
-            <input style="width:fit-content !important;" type="text" name="cep[]" placeholder="Digite o CEP">
-            
+            <div class="cep-complemento-group">
+                <input type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
+                Complemento:
+                <input type="text" name="complemento[]" id="complemento" placeholder="Complemento">
+            </div>
         </div>
         <button class="mb-5" style="width:fit-content !important;" type="button" id="add-cep">+</button>
-        
     </div>
-    
-    <script> document.getElementById('add-cep').addEventListener('click', function() {
-        const newCepInput = document.createElement('input');
-        newCepInput.type = 'text';
-        newCepInput.name = 'cep[]';
-        newCepInput.placeholder = 'Digite o CEP';
-        document.getElementById('cep-fields').appendChild(newCepInput);
+
+
+<script>
+document.getElementById('add-cep').addEventListener('click', function() {
+    const newGroup = document.createElement('div');
+    newGroup.className = 'cep-complemento-group';
+
+    const newCepInput = document.createElement('input');
+    newCepInput.type = 'text';
+    newCepInput.name = 'cep[]';
+    newCepInput.placeholder = 'Digite o CEP';
+
+    const newComplementoField = document.createElement('input');
+    newComplementoField.type = 'text';
+    newComplementoField.name = 'complemento[]';
+    newComplementoField.placeholder = 'Complemento';
+
+    const newDeleteButton = document.createElement('button');
+    newDeleteButton.type = 'button';
+    newDeleteButton.className = 'delete-button';
+    newDeleteButton.textContent = '🗑️';
+    newDeleteButton.addEventListener('click', function() {
+        newGroup.remove();
     });
-    </script>
+    newGroup.appendChild(document.createTextNode(' CEP: '));
+    newGroup.appendChild(newCepInput);
+    newGroup.appendChild(document.createTextNode(' Complemento: '));
+    newGroup.appendChild(newComplementoField);
+    newGroup.appendChild(newDeleteButton);
+
+    document.getElementById('cep-fields').appendChild(newGroup);
+});
+</script>
+
         
         
        

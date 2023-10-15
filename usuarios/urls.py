@@ -8,11 +8,12 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('registrarProfissional/', registerProfissional, name='registerProfissional'),
-    path('registerCliente/', registerCliente, name='registerCliente'),
+    path('registrarCliente/', registerCliente, name='registerCliente'),
     path('login/', user_login, name='login'),
     path('sair/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('registrarClinica/', registerClinica, name='registerClinica'),
-    path('editar_perfil/', editar_perfil, name='editar_perfil')
+    path('editar_perfil/', editar_perfil, name='editar_perfil'),
+    
 ]
 
 

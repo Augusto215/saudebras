@@ -2,6 +2,7 @@ import requests
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from usuarios.models import *
+from django.db.models import Exists, OuterRef
 from django.db.models import Q
 import http
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -20,20 +21,128 @@ def home_view(request):
 from django.http import JsonResponse
 from usuarios.models import Profissional  
 
+from usuarios.forms import AvaliacaoForm  # Certifique-se de que o caminho para importar o AvaliacaoForm está correto
+
+from django.contrib.contenttypes.models import ContentType
+
+def calcular_media(objeto, Modelo):
+    media = Avaliacao.objects.filter(
+        content_type=ContentType.objects.get_for_model(Modelo), 
+        object_id=objeto.id
+    ).aggregate(Avg('rating'))
+    return media['rating__avg']
+
+# Função para calcular o total de avaliações
+def total_avaliacoes(objeto, Modelo):
+    return Avaliacao.objects.filter(
+        content_type=ContentType.objects.get_for_model(Modelo),
+        object_id=objeto.id
+    ).count()
+def calculate_stars(media):
+    # Se a média for None, retornamos uma lista de estrelas vazias
+    if media is None:
+        return ["empty"] * 5
+    
+    # Calculamos o número de estrelas completas
+    full_stars = int(media)
+    
+    # Verificamos se há necessidade de uma meia estrela
+    half_star = 0 if media == full_stars else 1
+    
+    # Calculamos o número de estrelas vazias
+    empty_stars = 5 - full_stars - half_star
+    
+    # Criamos e retornamos a lista final de estrelas
+    return ["full"] * full_stars + ["half"] * half_star + ["empty"] * empty_stars
 def perfil_profissional(request, profissional_id):
     profissional = get_object_or_404(Profissional, id=profissional_id)
-    print(profissional)  # Para debug
+    
+    # Já estamos calculando esses valores aqui, então não precisamos repetir isso depois
+    media = calcular_media(profissional, Profissional)
+    stars = calculate_stars(media)
+    total_av = total_avaliacoes(profissional, Profissional)
+
+    avaliacoes = Avaliacao.objects.filter(
+        content_type=ContentType.objects.get_for_model(profissional),
+        object_id=profissional.id
+    )
+    
+    is_cliente = hasattr(request.user, 'cliente')
+    
+    if request.method == 'POST':
+        form = AvaliacaoForm(request.POST)
+        
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.cliente = request.user.cliente  # Assumindo que o cliente é o usuário logado
+            avaliacao.content_type = ContentType.objects.get_for_model(profissional)
+            avaliacao.object_id = profissional.id
+            avaliacao.save()
+            
+            # Recalcular a média após nova avaliação
+            media = calcular_media(profissional)
+            total_av += 1  # Atualizar o número total de avaliações
+        else:
+            print(form.errors)  # Debug: Imprimir os erros do formulário
+    else:
+        form = AvaliacaoForm()
+
     context = {
         'profissional': profissional,
+        'form': form,
+        'is_cliente': is_cliente,  
+        'media': media,
+        'total_avaliacoes': total_av,  # Aqui usamos total_av
+        'avaliacoes': avaliacoes,
+        'stars': stars
     }
+
     return render(request, 'core/perfil_profissional.html', context)
+
 
 def perfil_clinica(request, clinica_id):
     clinica = get_object_or_404(Clinica, id=clinica_id)
+    has_emergency = clinica.tipo_clinica.filter(nome__icontains='Emergência').exists()
+    is_cliente = isinstance(request.user, Cliente)
+    
+    # Calculando valores aqui para evitar redundância
+    media = calcular_media(clinica, Clinica)
+    stars = calculate_stars(media)
+    total_av = total_avaliacoes(clinica, Clinica)  # Renomeado para evitar conflito com a função
+    
+    if request.method == 'POST':
+        form = AvaliacaoForm(request.POST)
+        
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.cliente = request.user  # Asumindo que o cliente é o usuário logado
+            avaliacao.content_type = ContentType.objects.get_for_model(clinica)
+            avaliacao.object_id = clinica.id
+            avaliacao.save()
+            
+            # Recalcular a média e total de avaliações após nova avaliação
+            media = calcular_media(clinica)
+            total_av += 1  # Atualizar o número total de avaliações
+            
+            # Aqui você pode adicionar algum redirecionamento ou mensagem de sucesso
+            
+    else:
+        form = AvaliacaoForm()
+
     context = {
         'clinica': clinica,
+        'form': form,
+        'is_cliente': is_cliente,
+        'has_emergency': has_emergency,
+        'media': media,
+        'total_avaliacoes': total_av,  # Usando total_av aqui
+        'stars': stars
     }
+
     return render(request, 'core/perfil_clinica.html', context)
+
+
+
 
 def buscar_profissionais_por_tipo_clinica(request):
     
@@ -256,55 +365,73 @@ def listar_profissionais(request):
     # Inicializa a query com a condição de que os profissionais sejam ativos e verificados por email
     q_objects = Q(is_active=True, email_verified=True)
     
+    # Obtém os parâmetros da URL
     especialidade = request.GET.get('especialidade', None)
     estado = request.GET.get('estado', None)
     tipo_profissional = request.GET.get('tipo_profissional', None)
     bairros = request.GET.getlist('bairro', None)  # Obtém uma lista de bairros
     cidade = request.GET.get('cidade', None)
     convenios = request.GET.get('convenios', None)
-    
+
+    # Adiciona filtros à query com base nos parâmetros recebidos
     if tipo_profissional:
         q_objects &= Q(tipo_profissional=tipo_profissional)
-
-    
     if especialidade:
         q_objects &= Q(especialidades__nome__icontains=especialidade)
-        
     if estado:
         q_objects &= Q(estado__nome__icontains=estado)
-    
     if cidade:
         q_objects &= Q(cidade__nome__icontains=cidade)
-        
-    
-
     if bairros:
         q_objects &= Q(bairro__nome__in=bairros)
-        
-        
     if convenios:
-        q_objects &=Q(convenios__nome__icontains=convenios)    
-        
+        q_objects &= Q(convenios__nome__icontains=convenios)
+
     # Filtra apenas profissionais ativos
     queryset = Profissional.objects.filter(q_objects)
-    
-    paginator = Paginator(queryset, 2)  # Mostra 10 profissionais por página
-    
+
+    # Paginação
+    paginator = Paginator(queryset, 10)  # Mostra 2 profissionais por página
     page = request.GET.get('page')
+    context = {}
+
     try:
         profissionais = paginator.page(page)
+        enderecos = []
+        
+        for profissional in profissionais:
+            profissional.media = calcular_media(profissional, Profissional)
+            profissional.total_avaliacoes = total_avaliacoes(profissional, Profissional)
+            enderecos.extend(list(profissional.enderecos.all().values('latitude', 'longitude')))
+        
+        context = {
+            'profissionais': profissionais,
+            'enderecos_json': json.dumps(enderecos)
+        }
+
     except PageNotAnInteger:
         # Se a página não for um inteiro, entrega a primeira página
         profissionais = paginator.page(1)
+        context['profissionais'] = profissionais
+
     except EmptyPage:
         # Se a página estiver fora do alcance, entrega a última página de resultados
         profissionais = paginator.page(paginator.num_pages)
-        
-    context = {
-        'profissionais': profissionais,
-    }
-    
+        context['profissionais'] = profissionais
+
     return render(request, 'core/listar_profissionais.html', context)
+
+
+
+
+def get_enderecos(request):
+    active_professionals = Profissional.objects.filter(is_active=True, email_verified=True).values('id', 'enderecos__latitude', 'enderecos__longitude')
+    return JsonResponse(list(active_professionals), safe=False)
+
+
+def get_enderecos_clinica(request):
+    active_clinicas = Clinica.objects.filter(is_active=True, email_verified=True).values('id', 'enderecos__latitude', 'enderecos__longitude')
+    return JsonResponse(list(active_clinicas), safe=False)
 
 
 
@@ -344,12 +471,19 @@ def listar_clinicas(request):
         
     # Filtra apenas profissionais ativos
     queryset = Clinica.objects.filter(q_objects)
+
+    # Anotações adicionais (aqui você já pode usar 'queryset' porque ele já foi inicializado)
+    has_emergency_subquery = Clinica.tipo_clinica.through.objects.filter(clinica_id=OuterRef('id'), tipoclinica__nome__icontains='Emergência')
+    queryset = queryset.annotate(has_emergency=Exists(has_emergency_subquery))
     
-    paginator = Paginator(queryset, 1)  # Mostra 10 clínicas por página
+    paginator = Paginator(queryset, 10)  # Mostra 10 clínicas por página
     
     page = request.GET.get('page')
     try:
         clinicas = paginator.page(page)
+        for clinica in clinicas:
+            clinica.media = calcular_media(clinica, Clinica)
+            clinica.total_avaliacoes = total_avaliacoes(clinica, Clinica)
     except PageNotAnInteger:
         # Se a página não for um inteiro, entrega a primeira página
         clinicas = paginator.page(1)

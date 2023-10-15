@@ -3,14 +3,189 @@
 {%load static%}
 
 {% block 'conteudo' %}
-<div class="container mt-5" style=" flex-grow:1;">
+<div class="fluid-container" style=" flex-grow:1; background:#FAFAFA;">
+<div class="container mt-5 d-flex flex-content-center" style="gap:2rem;">
+  <div class="p-4" style="background:#fff; border-radius:12px; width:65%; filter: drop-shadow(2px 4px 6px #DBDBDB);
+">
+  <div class="d-flex flex-column align-items-start justify-content-center">
+    <div class="d-flex" style="gap:1rem;">
+      <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
+      <div class="d-flex flex-column">
+        <span class="mb-2" style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+        <div class="d-flex mb-2">
+        
+          {% for especialidade in profissional.especialidades.all %}
+          <span style="color:#000 !important; font-size:1rem !important;">
+            {{ especialidade.nome }}
+            {% if not forloop.last %}, {% endif %}
+          </span> 
+          {% endfor %}
+        
+      </div>
+      {%load floor%}
+      <span class="mb-3" style="font-size:1rem; color:#000 !important;"><span><div class="rating-display d-flex align-items-center mb-2">
+        <div class="rating">
+          
+          {% for star in stars %}
+              {% if star == "full" %}
+                  <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
+              {% elif star1 == "half" %}
+                  <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
+              {% else %}
+                  <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+              {% endif %}
+          {% endfor %}
+      </div>
+      &nbsp;de {{ total_avaliacoes }} avaliações</span>  </div> 
+    </span>
+      <div class="d-flex mb-3">
+      {% for convenios in profissional.convenios.all %}
 
+    <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenios.nome }}</span>
+    {% if not forloop.last %} {% endif %}
+  {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="tab-container">
+    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center " style="gap:1.5rem;">
+      <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button active" onclick="showTab(0)">Consultórios</a>
+      <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(1)">Serviços</a>
+      <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(2)">Opiniões</a>
+      <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(3)">Dúvidas</a>
+      <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(4)">Experiência</a>
+    </div>
+    <div class="tab-content">
+      <div class="tab-pane active">Conteúdo da Tab 1
+        <br>{{profissional.descricao}}
+      </div>
+      <div class="tab-pane">Conteúdo da Tab 2
+        {%for endereco in profissional.enderecos.all%}
+        <br>{{endereco.bairro.nome}}, {{endereco.cidade.nome}}, {{endereco.rua}}
+       
+        {%endfor%}
+      </div>
+      <div class="tab-pane">
+        
 
+          {% for avaliacao in avaliacoes %}
+          {{ avaliacao.rating }}
 
-  <h1 style="color:#000 !important;">Perfil de {{ profissional.nome }}</h1>
-  <p style="color:000 !important;">Email: {{ profissional.email }}</p>
+          <div class="avaliacao">
+          <div class="estrelas">
+            {% for i in "12345"|make_list %}
+            {% if forloop.counter <= avaliacao.rating|safe %}
+            ⭐  <!-- Estrela preenchida -->
+            {% else %}
+            ⭐️  <!-- Estrela vazia -->
+            {% endif %}
+            {% endfor %}
+          </div>
+          <!-- Fecha div estrelas -->
+          <div class="descricao">
+            {{ avaliacao.descricao }}
+          </div>
+          <!-- Fecha div descricao -->
+          <div class="data">
+            {{ avaliacao.created_at }}
+          </div>
+        </div>
+          <!-- Fecha div data -->
+          {% endfor %}
+       
+        {% load user_tags %}
+        {%if user.is_authenticated%}
+        {% if is_cliente %}
+        <form method="post">
+          {% csrf_token %}
+          <label for="rating">Avaliação: </label>
+          <div class="rating">
+            <span class="star" data-value="5">☆</span>
+            <span class="star" data-value="4">☆</span>
+            <span class="star" data-value="3">☆</span>
+            <span class="star" data-value="2">☆</span>
+            <span class="star" data-value="1">☆</span>
+            <input type="hidden" id="ratingInput" name="rating">
+
+            
+        </div>
+          
+          <label for="descricao">Descrição (Opcional): </label>
+          <textarea name="descricao"></textarea>
+          
+          <button type="submit">Avaliar</button>
+      </form>
+      {% else %}
+      <h3>Apenas clientes podem avaliar</h3>
+  {% endif %}
+
+      {%else%}
+      <h3> Você precisa estar logado para avaliar </h3> 
+      {%endif%}
+      </div>
+      <div class="tab-pane">Conteúdo da Tab 4
+        <br>Conteúdo 4
+      </div>
+
+      <div class="tab-pane">Conteúdo da Tab 5
+        <br>Conteúdo 5
+      </div>
+    </div>
+  </div>
+</div>
+<div class="p-4"
+style="width:35%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB);">
 
 </div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+  function showTab(index) {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+  
+    tabButtons.forEach((btn, i) => {
+      btn.classList.remove('active');
+      tabPanes[i].classList.remove('active');
+    });
+  
+    tabButtons[index].classList.add('active');
+    tabPanes[index].classList.add('active');
+  }
+
+
+
+</script>
+
+<script>
+  const stars = document.querySelectorAll('.star');
+  const ratingInput = document.getElementById('ratingInput');
+  
+  stars.forEach((star) => {
+      star.addEventListener('click', function () {
+          const value = this.getAttribute('data-value');
+  
+          // Atualiza a aparência das estrelas
+          stars.forEach((s, index) => {
+              if (index < value) {
+                  s.classList.add('selected');
+              } else {
+                  s.classList.remove('selected');
+              }
+          });
+  
+          // Atualiza o valor do input oculto
+          ratingInput.value = value;
+      });
+  });
+</script>
   <!-- E assim por diante, para todos os campos que você quer mostrar -->
 
 {% endblock %}

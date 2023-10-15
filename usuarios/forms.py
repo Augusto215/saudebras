@@ -42,7 +42,7 @@ class ClienteRegistrationForm(UserCreationForm):
 
     class Meta:
         model = Cliente
-        fields = ['email', 'password1', 'password2', 'cep', 'nome', 'sobrenome', 'username', 'telefone']
+        fields = ['email', 'password1', 'password2', 'cep', 'nome', 'sobrenome', 'username', 'telefone', 'foto']
         
         
         
@@ -123,3 +123,7 @@ class LoginForm(AuthenticationForm):
         self.fields['username'] = self.fields.get('email')
         
         
+class AvaliacaoForm(forms.ModelForm):
+    class Meta:
+        model = Avaliacao
+        fields = ['rating', 'descricao']

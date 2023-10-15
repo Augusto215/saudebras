@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block 'conteudo' %}
+<div class="container mt-5" style=" flex-grow:1;">
+
+  <div class="d-flex mb-5">
+
+    <form id="tipo_profissional_form" class="p-1"> 
+      <select id="tipo_profissional_select">
+        
+        <!-- Opções de especialidade aqui -->
+      </select>
+    </form>
+    <!-- Formulário para Especialidade -->
+<form id="especialidade_form" class="p-1"> 
+  <select id="especialidade_select">
+    
+    <!-- Opções de especialidade aqui -->
+  </select>
+
+</form>
+<!-- Formulário para Estado -->
+<form id="estado_form" class="p-1">
+  <select id="estado_select">
+    
+    <!-- Opções de estado aqui -->
+  </select>
+
+</form>
+
+
+
+<!-- Formulário para Cidade -->
+<form id="cidade_form" class="p-1">
+  <select id="cidade_select">
+   
+    <!-- Opções de cidade aqui -->
+  </select>
+ 
+</form>
+
+<button id="mostrarPrincipal">Mostrar</button>
+</div>
+
+<div>
+
+
+</div>
+
+{% for profissional in profissionais %}
+  <div class="mb-5">
+    <h2 style="color:#000 !important;">{{ profissional.nome }}</h2>
+    <p style="color:#000 !important;">Email: {{ profissional.email }}</p>
+    <!-- Outros campos que você quer mostrar -->
+    <a style="color:#000 !important;" href="{% url 'perfil_profissional' profissional.id %}">Ver Perfil</a>
+  </div>
+{% endfor %}
+</div>
+
+<div class="container mb-4 pagination">
+  <span class="step-links">
+      {% if profissionais.has_previous %}
+          <a style="color:#000 !important;" href="?page=1">primeira</a>
+          <a style="color:#000 !important;" href="?page={{ profissionais.previous_page_number }}">anterior</a>
+      {% endif %}
+      
+      <span class="current">
+          Página {{ profissionais.number }} de {{ profissionais.paginator.num_pages }}.
+      </span>
+      
+      {% if profissionais.has_next %}
+          <a style="color:#000 !important;" href="?page={{ profissionais.next_page_number }}">próxima</a>
+          <a style="color:#000 !important;" href="?page={{ profissionais.paginator.num_pages }}">última</a>
+      {% endif %}
+  </span>
+</div>
+
+
+
+<script>
+
+</script>
+
+
+<script src="{%static 'js/profissionais.js'%}">
+</script>
+{% endblock %}

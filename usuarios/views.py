@@ -58,6 +58,7 @@ def registerCliente(request):
                     username = form.cleaned_data['username'],
                     telefone = form.cleaned_data['telefone'],
                     email=form.cleaned_data['email'],
+                    foto = form.cleaned_data['foto'],
                     password=form.cleaned_data['password1'],
                     estado=estado,
                     cidade=cidade,
@@ -97,12 +98,19 @@ from .models import Especialidade, TipoClinica, TipoProfissional, Idioma, Conven
 from django.shortcuts import render, redirect
 from .forms import ClinicaForm
 
-def obter_coordenadas(endereco_completo, meu_user_agent="meuGeocoder"):
-    geolocator = Nominatim(user_agent=meu_user_agent)
-    location = geolocator.geocode(endereco_completo)
-    if location:
-        return location.latitude, location.longitude
+import googlemaps
+
+def obter_coordenadas(endereco_completo, google_maps_api_key):
+    gmaps = googlemaps.Client(key=google_maps_api_key)
+    geocode_result = gmaps.geocode(endereco_completo)
+    
+    if geocode_result:
+        latitude = geocode_result[0]['geometry']['location']['lat']
+        longitude = geocode_result[0]['geometry']['location']['lng']
+        return latitude, longitude
+    
     return None, None
+
 
 
 def registerProfissional(request):
@@ -126,7 +134,8 @@ def registerProfissional(request):
                 
                 user.save()
                 ceps = request.POST.getlist('cep[]')
-                for cep in ceps:
+                complementos = request.POST.getlist('complemento[]')
+                for i, cep in enumerate(ceps):
                     response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
                     data = response.json()
                     
@@ -135,12 +144,14 @@ def registerProfissional(request):
                         cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
                         bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
                         cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                        endereco_completo = f"{data['logradouro']}, {data['localidade']}, {data['uf']}"
-                        latitude, longitude = obter_coordenadas(endereco_completo)
+                        endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
                         
+                        
+                        complemento_atual = complementos[i]
                         endereco, _ = Endereco.objects.get_or_create(
                             rua=data['logradouro'],
-                            complemento=data['complemento'],
+                            complemento=complemento_atual,
                             bairro=bairro,
                             cidade=cidade,
                             estado=estado,
@@ -148,6 +159,7 @@ def registerProfissional(request):
                             latitude=latitude,  # Adicionado
                             longitude=longitude,
                             profissional=user
+                            
                         )
 
                         estados.append(estado)
@@ -227,7 +239,8 @@ def registerClinica(request):
                 
                 clinica.save()
                 ceps = request.POST.getlist('cep[]')
-                for cep in ceps:
+                complementos = request.POST.getlist('complemento[]')
+                for i, cep in enumerate(ceps):
                     response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
                     data = response.json()
                     
@@ -236,12 +249,13 @@ def registerClinica(request):
                         cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
                         bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
                         cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                        endereco_completo = f"{data['logradouro']}, {data['localidade']}, {data['uf']}"
-                        latitude, longitude = obter_coordenadas(endereco_completo)
-                        
+                        endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+                        complemento_atual = complementos[i]
                         endereco, _ = Endereco.objects.get_or_create(
+
                                 rua=data['logradouro'],
-                                complemento=data['complemento'],
+                                complemento=complemento_atual,
                                 bairro=bairro,
                                 cidade=cidade,
                                 estado=estado,
@@ -334,7 +348,7 @@ def user_login(request):
     else:
         form = LoginForm()
         
-    return render(request, 'core/index.html', {'form': form})
+    return render(request, 'core/login.html', {'form': form})
 
 
 #EDITAR PERFIL

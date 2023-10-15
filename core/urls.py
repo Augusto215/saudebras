@@ -26,7 +26,9 @@ urlpatterns = [
     path('buscar_convenios_por_tipo_clinica/', buscar_convenios_por_tipo_clinica, name='uscar_convenios_por_tipo_clinica'),
     path('buscar_convenios_por_tipo_profissional/', buscar_convenios_por_tipo_profissional, name ="buscar_convenios_por_tipo_profissional"),
     path('pesquisar/<str:tipo_profissional>/', pesquisarProfissionais, name='pesquisarProfissionais'),
-    path('pesquisarClinica/<str:tipo_clinica>/', pesquisarClinicas, name='pesquisarClinicas')
+    path('pesquisarClinica/<str:tipo_clinica>/', pesquisarClinicas, name='pesquisarClinicas'),
+    path('get_enderecos/', get_enderecos, name='get_enderecos'),
+    path('get_enderecos_clinica/', get_enderecos_clinica, name='get_enderecos_clinica')
     
 
 

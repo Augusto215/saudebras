@@ -210,13 +210,18 @@ class Endereco(models.Model):
     clinica = models.ForeignKey('Clinica', related_name='enderecos_fk', on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f"{self.rua}, {self.bairro}, {self.cidade}, {self.estado}, {self.cep}, {self.latitude}, {self.longitude}"
+        return f"{self.rua}, {self.bairro}, {self.cidade}, {self.estado}, {self.cep}, {self.complemento}, {self.latitude}, {self.longitude}"
+
+from django.db.models import Avg
+
 
 class Cliente(CustomUser):
     is_active = models.BooleanField(_('active'), default=False)
     estado = models.ForeignKey(Estado, on_delete=models.CASCADE, blank=True, null=True)
     cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE, blank=True, null=True)
     bairro = models.ForeignKey(Bairro, on_delete=models.CASCADE, blank=True, null=True)
+    foto = models.ImageField(upload_to='images/', blank=True, null=True, default="/images/unknown.png")
+    cep = models.CharField(max_length=50, blank=True, null=True)
 
 class Profissional(CustomUser):
     is_active = models.BooleanField(_('active'), default=False)
@@ -268,10 +273,10 @@ class Clinica(CustomUser):
     
     def save(self, *args, **kwargs):
         if not self.foto:
-            if "Hospital" in self.tipo_clinica.values_list('nome', flat=True):
+            if "Emergência" in self.tipo_clinica.values_list('nome', flat=True):
                 self.foto = "/images/hospital_default.png"
-            elif "Clínica Dental" in self.tipo_clinica.values_list('nome', flat=True):
-                self.foto = "/images/clinica_dental_default.png"
+            elif "Laboratório" in self.tipo_clinica.values_list('nome', flat=True):
+                self.foto = "/images/laboratorio_dental_default.png"
             # adicione mais condições conforme necessário
             else:
                 self.foto = "/images/unknown.png"
