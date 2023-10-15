@@ -99,7 +99,6 @@ def perfil_profissional(request, profissional_id):
 
     return render(request, 'core/perfil_profissional.html', context)
 
-
 def perfil_clinica(request, clinica_id):
     clinica = get_object_or_404(Clinica, id=clinica_id)
     has_emergency = clinica.tipo_clinica.filter(nome__icontains='Emergência').exists()
@@ -400,8 +399,6 @@ def listar_profissionais(request):
         enderecos = []
         
         for profissional in profissionais:
-            profissional.media = calcular_media(profissional, Profissional)
-            profissional.total_avaliacoes = total_avaliacoes(profissional, Profissional)
             enderecos.extend(list(profissional.enderecos.all().values('latitude', 'longitude')))
         
         context = {
@@ -481,9 +478,6 @@ def listar_clinicas(request):
     page = request.GET.get('page')
     try:
         clinicas = paginator.page(page)
-        for clinica in clinicas:
-            clinica.media = calcular_media(clinica, Clinica)
-            clinica.total_avaliacoes = total_avaliacoes(clinica, Clinica)
     except PageNotAnInteger:
         # Se a página não for um inteiro, entrega a primeira página
         clinicas = paginator.page(1)
