@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-%9zlaip=y$6^+4h384l^b!!t#%w2a7n!+92wn(a5eu3$kr92!e
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'https://saudebras.onrender.com']
 
 
 # Application definition
