@@ -1,6 +1,8 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
+{% load get_item %}
+
 
 
  <div class="fluid-container w-100" style="background-color:#EDF5F2;">
@@ -46,29 +48,87 @@
               <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
               <div class="d-flex flex-column">
                 <span style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
-                <div class="d-flex mb-3">
+                <div class="d-flex mb-2">
                 
                   {% for especialidade in profissional.especialidades.all %}
+                  {% if forloop.first %}
                   <span style="color:#000 !important; font-size:1rem !important;">
                     {{ especialidade.nome }}
-                    {% if not forloop.last %}, {% endif %}
+                    
                   </span> 
+                  {%endif%}
                   {% endfor %}
                 
                 <a class="d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
               </div>
-              <span class="mb-3" style="font-size:1rem; color:#000 !important;">Avaliações</span>
-              <div class="d-flex mb-3">
-              {% for convenios in profissional.convenios.all %}
+           
+              {% load floor %}
 
-            <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenios.nome }}</span>
-            {% if not forloop.last %} {% endif %}
-          {% endfor %}
+              <span style="font-size:1rem; color:#000 !important;">
+                  <div class="rating-display d-flex align-items-center mb-2">
+                      <div class="rating">
+                          {% if profissional.media %}
+                              {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
+                                  {% for i in "12345"|make_list %}
+                                      {% if i|add:"0" <= full_stars|add:"0" %}
+                                          <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
+                                      {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
+                                          <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
+                                      {% else %}
+                                          <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% endwith %}
+                          {% else %}
+                              {% for i in "12345"|make_list %}
+                                  <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+                              {% endfor %}
+                          {% endif %}
+                      </div>
+                      &nbsp;{% if profissional.total_avaliacoes %} de {{ profissional.total_avaliacoes }} avaliações {% else %} Sem avaliações {% endif %}
+                  </div>
+              </span>
+            </span> 
+
+            
+
+            <div class="d-flex mb-3">
+              {% for convenio in profissional.convenios.all %}
+                {% if forloop.counter < 3 %}
+                  <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+                {% endif %}
+              {% endfor %}
+          
+              {% if profissional.convenios.all.count > 2 %}
+                <a href="#" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+              {% endif %}
+            </div>
+          
+            <!-- Modal com todos os convênios -->
+            <div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="conveniosModalLabel-{{ profissional.id }}">Convênios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {%for convenio in profissional.convenios.all%}
+                    <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+                    {%endfor%}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  </div>
+                </div>
               </div>
+            </div>
+         
+              
              
           
 
-        </span>
+       
               
     
               </div>
@@ -93,8 +153,13 @@
               </div>
               <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
               padding-top: 1.3rem;">
-                <a href="{{ profissional.telefone }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
-                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+              {%if user.is_authenticated%}
+              <a href="tel:{{ profissional.telefone|slice:":1" }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                {%else%}
+                <a href="{% url 'login' %}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                {%endif%}
               </div>
               <!-- Mapa Estático -->
             </div>
@@ -123,6 +188,22 @@
   </div>
 </div>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
+    agendamentoBtns.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let rawPhone = this.getAttribute('data-phone');
+            let rawNome = this.getAttribute('data-nome');
+            let formattedPhone = rawPhone.replace('+', '');
+            
+            window.location.href = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`;
+        });
+    });
+});
+
+</script>
 
 <script>
   let map, mapStatic;

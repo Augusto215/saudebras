@@ -5,7 +5,7 @@
 {% block 'conteudo' %}
 <div class="fluid-container" style=" flex-grow:1; background:#FAFAFA;">
 <div class="container mt-5 d-flex flex-content-center" style="gap:2rem;">
-  <div class="p-4" style="background:#fff; border-radius:12px; width:65%; filter: drop-shadow(2px 4px 6px #DBDBDB);
+  <div class="p-4 mb-5" style="background:#fff; border-radius:12px; width:80%; filter: drop-shadow(2px 4px 6px #DBDBDB);
 ">
   <div class="d-flex flex-column align-items-start justify-content-center">
     <div class="d-flex" style="gap:1rem;">
@@ -49,7 +49,8 @@
   </div>
 </div>
   <div class="tab-container">
-    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center " style="gap:1.5rem;">
+    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center " style="gap:1.5rem; overflow-x:auto; element::-webkit-scrollbar {
+      display: none; -ms-overflow-style: none; scrollbar-width: none; ">
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button active" onclick="showTab(0)">Consultórios</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(1)">Serviços</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(2)">Opiniões</a>
@@ -57,93 +58,218 @@
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(4)">Experiência</a>
     </div>
     <div class="tab-content">
-      <div class="tab-pane active">Conteúdo da Tab 1
-        <br>{{profissional.descricao}}
-      </div>
-      <div class="tab-pane">Conteúdo da Tab 2
-        {%for endereco in profissional.enderecos.all%}
-        <br>{{endereco.bairro.nome}}, {{endereco.cidade.nome}}, {{endereco.rua}}
+      <div class="tab-pane active">
+        <div class=" mb-4 d-flex justify-content-center align-items-center flex-column">
+
+          <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+          <span class="w-100 d-flex text-center justify-content-center" style="font-size:1.2rem; font-weight:600;">Endereços:</span>
        
-        {%endfor%}
-      </div>
-      <div class="tab-pane">
+        {%for endereco in profissional.enderecos.all%}
+
+       
+        <br>
+        <div class="mb-3"><span ><i class="bi bi-geo-alt-fill"></i>&nbsp;{{endereco.rua}},{%if endereco.complemento %}&nbsp;{{endereco.complemento}},{%endif%}&nbsp;{{endereco.bairro.nome}},
+        &nbsp;{{endereco.cidade.nome}}&nbsp;-&nbsp;{{endereco.estado.nome}}</span>
+       
         
 
-          {% for avaliacao in avaliacoes %}
-          {{ avaliacao.rating }}
 
-          <div class="avaliacao">
-          <div class="estrelas">
-            {% for i in "12345"|make_list %}
-            {% if forloop.counter <= avaliacao.rating|safe %}
-            ⭐  <!-- Estrela preenchida -->
-            {% else %}
-            ⭐️  <!-- Estrela vazia -->
-            {% endif %}
-            {% endfor %}
-          </div>
-          <!-- Fecha div estrelas -->
-          <div class="descricao">
-            {{ avaliacao.descricao }}
-          </div>
-          <!-- Fecha div descricao -->
-          <div class="data">
-            {{ avaliacao.created_at }}
-          </div>
+        {%if endereco.latitude != None and endereco.longitude != None %}
+        <a href="#" class="showMapModal"  data-latitude="{{ endereco.latitude }}" 
+        data-longitude="{{ endereco.longitude }}" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+  
+
+        {%endif%}
         </div>
-          <!-- Fecha div data -->
-          {% endfor %}
-       
-        {% load user_tags %}
-        {%if user.is_authenticated%}
-        {% if is_cliente %}
-        <form method="post">
-          {% csrf_token %}
-          <label for="rating">Avaliação: </label>
-          <div class="rating">
-            <span class="star" data-value="5">☆</span>
-            <span class="star" data-value="4">☆</span>
-            <span class="star" data-value="3">☆</span>
-            <span class="star" data-value="2">☆</span>
-            <span class="star" data-value="1">☆</span>
-            <input type="hidden" id="ratingInput" name="rating">
-
-            
+        {%endfor%}
         </div>
-          
-          <label for="descricao">Descrição (Opcional): </label>
-          <textarea name="descricao"></textarea>
-          
-          <button type="submit">Avaliar</button>
-      </form>
-      {% else %}
-      <h3>Apenas clientes podem avaliar</h3>
-  {% endif %}
 
-      {%else%}
-      <h3> Você precisa estar logado para avaliar </h3> 
-      {%endif%}
+
+          <div class="mt-5 d-flex justify-content-center align-items-center flex-column">
+            <span class="w-100 d-flex text-center justify-content-center mb-3" style="font-size:1.2rem; font-weight:600;">Idiomas:</span>
+        {%for idioma in profissional.idiomas.all%}
+        <span class="mb-3"><i class="bi bi-translate"></i>&nbsp;{{idioma}}<br></span>
+
+        {%endfor%}
+          </div>
+    </div>
       </div>
+      <div class="tab-pane">
+          <div class=" mb-4 d-flex justify-content-center align-items-center flex-column">
+
+        <div class="d-flex flex-column mt-5 align-items-center justify-content-center">
+          <span class="w-100 d-flex text-center justify-content-center" style="font-size:1.2rem; font-weight:600;">Serviços:</span>
+        {%for servico in profissional.servicos.all%}
+        <br><span><i class="bi bi-heart-pulse-fill"></i>&nbsp;{{servico.nome}}</span>
+          {%empty%}
+          <span>Vazio</span>
+        {%endfor%}
+        </div>
+      </div>
+    </div>
+      <div class="tab-pane">
+        {% for avaliacao in avaliacoes %}
+          <div class="avaliacao">
+            <div class="estrelas">
+              {% for i in "12345"|make_list %}
+                {% if forloop.counter <= avaliacao.rating|safe %}
+                  <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span> <!-- Estrela preenchida -->
+                {% else %}
+                  <span style="font-size:1.2rem !important;" class="star1 full">&#9734;</span> <!-- Estrela vazia -->
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="profile-pic">
+              <img src="{{avaliacao.cliente.foto.url}}">
+
+            </div>
+            <div class="descricao">
+              {{ avaliacao.descricao }}
+            </div>
+            <div class="data">
+              {{ avaliacao.created_at }}
+            </div>
+          </div>
+        {% endfor %}
+      
+        {% load user_tags %}
+        {% if user.is_authenticated %}
+          {% if is_cliente %}
+            <form method="post">
+              {% csrf_token %}
+              <label for="rating">Avaliação: </label>
+              <div class="rating">
+                <span class="star" data-value="5">☆</span>
+                <span class="star" data-value="4">☆</span>
+                <span class="star" data-value="3">☆</span>
+                <span class="star" data-value="2">☆</span>
+                <span class="star" data-value="1">☆</span>
+                <input type="hidden" id="ratingInput" name="rating">
+              </div>
+              <label for="descricao">Descrição (Opcional): </label>
+              <textarea name="descricao"></textarea>
+              <button type="submit">Avaliar</button>
+            </form>
+          {% else %}
+            <span>Apenas clientes podem avaliar</span>
+          {% endif %}
+        {% else %}
+          <span> Você precisa estar logado para avaliar </span>
+        {% endif %}
+      </div>
+      
       <div class="tab-pane">Conteúdo da Tab 4
         <br>Conteúdo 4
       </div>
 
-      <div class="tab-pane">Conteúdo da Tab 5
-        <br>Conteúdo 5
+      <div class="tab-pane">
+        <span>{{profissional.descricao}}</span>
+      </div>
+
+
+
+
+    </div>
+  </div>
+ 
+</div>
+<div class="p-4"
+style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB); height:fit-content;">
+<div class='d-flex flex-column align-items-center w-100' style="gap:1rem;">
+{%if user.is_authenticated%}
+              <a href="tel:{{ profissional.telefone|slice:":1" }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                {%else%}
+                <a href="{% url 'login' %}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                {%endif%}
+</div>
+</div>
+
+
+</div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
+    agendamentoBtns.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let rawPhone = this.getAttribute('data-phone');
+            let rawNome = this.getAttribute('data-nome');
+            let formattedPhone = rawPhone.replace('+', '');
+            
+            window.location.href = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`;
+        });
+    });
+});
+
+</script>
+
+
+</div>
+<!-- Mapa Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mapModalLabel">Localização</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="map" style="height: 400px; width: 100%;"></div>
       </div>
     </div>
   </div>
 </div>
-<div class="p-4"
-style="width:35%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB);">
 
-</div>
-</div>
+<script>
+  let map;
+  let marker;
+  
+  function initMap() {
+    const initialPos = { lat: -23.550520, lng: -46.633308 }; // Coordenadas de São Paulo como exemplo
+  
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: initialPos,
+      zoom: 15,
+    });
+  }
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".showMapModal");
+  
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        let latitude = parseFloat(this.getAttribute("data-latitude").replace(",", "."));
+        let longitude = parseFloat(this.getAttribute("data-longitude").replace(",", "."));
+        showMapModal(latitude, longitude);
+      });
+    });
+  });
 
+  function showMapModal(latitude, longitude) {
+    const position = { lat: latitude, lng: longitude };
+  
+    map.setCenter(position);
+  
+    if (marker) {
+      marker.setPosition(position);
+    } else {
+      marker = new google.maps.Marker({
+        position,
+        map,
+      });
+    }
+  
+    const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+    mapModal.show();
+  }
+</script>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script>
 
-
-</div>
 
 <script>
 

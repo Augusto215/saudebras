@@ -7,11 +7,24 @@ from django.db.models import Q
 import http
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
+from django.db.models import Count, Avg
+
+def nav(request):
+    print(request.user)  # Veja qual é o usuário atual
+    is_profissional = hasattr(request.user, 'profissional')
+    print(is_profissional)
+    # Isso deve imprimir True ou False
+        
+    context = {'is_profissional': is_profissional}
+    
+    return render(request, 'core/base.html', context)
 
 
 def home_view(request):
     especialidades = Especialidade.objects.all()
-    
+    print(request.user)  # Veja qual é o usuário atual
+    is_profissional = hasattr(request.user, 'profissional')
+    print(is_profissional)  # Isso      
     context = {
         'especialidades':especialidades
     }
@@ -27,33 +40,26 @@ from django.contrib.contenttypes.models import ContentType
 
 def calcular_media(objeto, Modelo):
     media = Avaliacao.objects.filter(
-        content_type=ContentType.objects.get_for_model(Modelo), 
+        content_type=ContentType.objects.get_for_model(Modelo),
         object_id=objeto.id
     ).aggregate(Avg('rating'))
     return media['rating__avg']
 
-# Função para calcular o total de avaliações
+
 def total_avaliacoes(objeto, Modelo):
     return Avaliacao.objects.filter(
         content_type=ContentType.objects.get_for_model(Modelo),
         object_id=objeto.id
     ).count()
+
 def calculate_stars(media):
-    # Se a média for None, retornamos uma lista de estrelas vazias
     if media is None:
         return ["empty"] * 5
-    
-    # Calculamos o número de estrelas completas
     full_stars = int(media)
-    
-    # Verificamos se há necessidade de uma meia estrela
     half_star = 0 if media == full_stars else 1
-    
-    # Calculamos o número de estrelas vazias
     empty_stars = 5 - full_stars - half_star
-    
-    # Criamos e retornamos a lista final de estrelas
     return ["full"] * full_stars + ["half"] * half_star + ["empty"] * empty_stars
+
 def perfil_profissional(request, profissional_id):
     profissional = get_object_or_404(Profissional, id=profissional_id)
     
@@ -360,19 +366,33 @@ def buscar_convenios_por_tipo_profissional(request):
 
 from django.shortcuts import render
 
-def listar_profissionais(request):
-    # Inicializa a query com a condição de que os profissionais sejam ativos e verificados por email
-    q_objects = Q(is_active=True, email_verified=True)
+
+def get_avaliacao_stats(profissional):
+    media = calcular_media(profissional, Profissional)
+    total_av = total_avaliacoes(profissional, Profissional)
+    stars = calculate_stars(media)
     
-    # Obtém os parâmetros da URL
+    return {
+        'media': media,
+        'total_avaliacoes': total_av,
+        'stars': stars
+    }
+
+def listar_profissionais(request):
+    q_objects = Q(is_active=True, email_verified=True)
+
+    # Debug: Imprimindo para verificar se há alguma média geral
+    avaliacoes = Avaliacao.objects.aggregate(media=Avg('rating'))
+    print("Media Geral:", avaliacoes)
+
+    # Seus códigos de filtros aqui...
     especialidade = request.GET.get('especialidade', None)
     estado = request.GET.get('estado', None)
     tipo_profissional = request.GET.get('tipo_profissional', None)
-    bairros = request.GET.getlist('bairro', None)  # Obtém uma lista de bairros
+    bairros = request.GET.getlist('bairro', None)
     cidade = request.GET.get('cidade', None)
     convenios = request.GET.get('convenios', None)
 
-    # Adiciona filtros à query com base nos parâmetros recebidos
     if tipo_profissional:
         q_objects &= Q(tipo_profissional=tipo_profissional)
     if especialidade:
@@ -386,38 +406,35 @@ def listar_profissionais(request):
     if convenios:
         q_objects &= Q(convenios__nome__icontains=convenios)
 
-    # Filtra apenas profissionais ativos
-    queryset = Profissional.objects.filter(q_objects)
+    queryset = Profissional.objects.filter(q_objects).annotate(
+        media=Avg('avaliacoes__rating'),
+        total_avaliacoes=Count('avaliacoes')
+    ).order_by('nome')
 
-    # Paginação
-    paginator = Paginator(queryset, 10)  # Mostra 2 profissionais por página
+    paginator = Paginator(queryset, 10)
     page = request.GET.get('page')
     context = {}
 
     try:
         profissionais = paginator.page(page)
-        enderecos = []
-        
-        for profissional in profissionais:
-            enderecos.extend(list(profissional.enderecos.all().values('latitude', 'longitude')))
-        
-        context = {
-            'profissionais': profissionais,
-            'enderecos_json': json.dumps(enderecos)
-        }
 
+        context = {
+            'avaliacao': avaliacoes['media'],
+            'profissionais': profissionais
+            # ... (outros contextos necessários)
+        }
+        
     except PageNotAnInteger:
-        # Se a página não for um inteiro, entrega a primeira página
+        # Se a página não for um inteiro, entregar a primeira página.
         profissionais = paginator.page(1)
-        context['profissionais'] = profissionais
+        context = {'profissionais': profissionais, 'avaliacao': avaliacoes['media']}
 
     except EmptyPage:
-        # Se a página estiver fora do alcance, entrega a última página de resultados
+        # Se a página estiver fora do intervalo, entregar a última página de resultados.
         profissionais = paginator.page(paginator.num_pages)
-        context['profissionais'] = profissionais
+        context = {'profissionais': profissionais, 'avaliacao': avaliacoes['media']}
 
     return render(request, 'core/listar_profissionais.html', context)
-
 
 
 
@@ -466,28 +483,39 @@ def listar_clinicas(request):
     if convenios:
         q_objects &=Q(convenios__nome__icontains=convenios)
         
-    # Filtra apenas profissionais ativos
-    queryset = Clinica.objects.filter(q_objects)
-
-    # Anotações adicionais (aqui você já pode usar 'queryset' porque ele já foi inicializado)
-    has_emergency_subquery = Clinica.tipo_clinica.through.objects.filter(clinica_id=OuterRef('id'), tipoclinica__nome__icontains='Emergência')
+    # Debug: Calculando a média geral e o total de avaliações
+    avaliacoes = Clinica.objects.aggregate(media=Avg('avaliacoes__rating'), total_avaliacoes=Count('avaliacoes'))
+    print("Média Geral das Clínicas:", avaliacoes)
+    
+    # Filtra e anota o queryset
+    queryset = Clinica.objects.filter(q_objects).annotate(
+        media=Avg('avaliacoes__rating'),  # Média das avaliações para cada clínica
+        total_avaliacoes=Count('avaliacoes')  # Total de avaliações para cada clínica
+    ).order_by('nome')
+    
+    # Anotações adicionais (para o has_emergency)
+    has_emergency_subquery = Clinica.tipo_clinica.through.objects.filter(
+        clinica_id=OuterRef('id'),
+        tipoclinica__nome__icontains='Emergência'
+    )
     queryset = queryset.annotate(has_emergency=Exists(has_emergency_subquery))
     
-    paginator = Paginator(queryset, 10)  # Mostra 10 clínicas por página
-    
+    # Cria um paginador
+    paginator = Paginator(queryset, 10)
     page = request.GET.get('page')
+    
     try:
         clinicas = paginator.page(page)
     except PageNotAnInteger:
-        # Se a página não for um inteiro, entrega a primeira página
         clinicas = paginator.page(1)
     except EmptyPage:
-        # Se a página estiver fora do alcance, entrega a última página de resultados
         clinicas = paginator.page(paginator.num_pages)
-        
+    
     context = {
-            'clinicas': clinicas,
-        }
+        'clinicas': clinicas,
+        'avaliacao': avaliacoes['media'],
+        'total_avaliacoes': avaliacoes['total_avaliacoes']
+    }
     
     return render(request, 'core/listar_clinicas.html', context)
     

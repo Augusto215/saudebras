@@ -1,0 +1,603 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block 'conteudo' %}
+<!-- Editar Perfil -->
+<div class="fluid-container d-flex" style="background:#FAFAFA; flex-grow:1;">
+<div id="container" class="d-flex container mt-5" style="gap:10rem;" >
+  <div id="sidebar" class="d-flex flex-column editar_perfil" style="gap:2rem;">
+    <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
+    <button onclick="alterarConteudo('conteudo2')">Endereços</button>
+    <button onclick="alterarConteudo('conteudo3')">Conteúdo 3</button>
+    <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_profissional' profissional.id %}"><button class="w-100">Ver Perfil</button></a>
+  </div>
+
+  <div id="main-content" class=" mb-5">
+    <div id="conteudo1" class="conteudo">
+      <form method="post" action="{%url 'alterar_Profissional' %}">
+        {% csrf_token %}
+
+      <div class="d-flex mb-3 align-items-center justify-content-center w-100" style="gap:2rem; ">
+        <div class="d-flex flex-column w-100">
+          <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;"> 
+      <div  class="d-flex align-items-center mb-4 w-100" style="gap:1rem;"><span class="p-3" style="border:solid 1px #BEBEBE; border-radius:4px;"><img style="height:7rem; width:7rem; object-fit:cover;" src="{{profissional.foto.url}}"></span>
+      <span style="font-size:1.3rem; font-weight:600;">{{profissional.nome}}&nbsp;{{profissional.sobrenome}}</span> </div>    
+      <div class="d-flex w-100 justify-content-start" style="gap:3rem;">
+      <span class="d-flex flex-column justify-content-center align-items-start" style="color:#000 !important; "><label style="font-weight:600" for="nome">Nome:</label><input style="width:100%; max-width:12rem;"  id="nome" name="nome" value="{{profissional.nome}}"></span> 
+      <span  class="d-flex flex-column justify-content-center align-items-start" style="color:#000 !important; "><label style="font-weight:600" for="sobrenome">Sobrenome:</label><input  style="width:100%; max-width:12rem;" name="sobrenome" id="sobrenome" value="{{profissional.sobrenome}}"></span> 
+      </div>
+    </div>
+    <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+      <span class="d-flex flex-column justify-content-center align-items-start mb-3" style="color:#000 !important; gap:1rem;"><label style="font-weight:600" for="descricao">Descrição:</label><input style="width:100%;" name="descricao" id="descricao" value="{{profissional.descricao}}"></span>
+    </div>
+    <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+      <span class="d-flex flex-column justify-content-center align-items-start mb-3" style="color:#000 !important; gap:1rem;"><label for="descricao" style="font-weight:600">Telefone:</label><input style="width:100%;" id="telefone" name="telefone" value="{{profissional.telefone}}"></span>
+    </div>
+    
+    
+    
+  
+    
+    <div>
+      <div>
+      
+
+          <div class="p-4 convenios-perfil mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+            <span style="font-weight:600">Convênios:<br></span>
+              <!-- Outros campos aqui... -->
+          
+              <div id="conveniosContainer" class="d-flex flex-column mt-4 mb-3">
+                  <!-- Os convênios atuais seriam listados aqui -->
+              </div>
+          
+              <button type="button" id="addConvenio">Adicionar Convênio</button>
+          </div>
+
+
+        <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+          <span style="font-weight:600">Idiomas:<br></span>
+            <!-- Outros campos aqui... -->
+        
+            <div id="idiomasContainer" class="d-flex mt-4 flex-column mb-3">
+                <!-- Os idiomas atuais seriam listados aqui -->
+            </div>
+        
+            <button type="button" id="addIdioma">Adicionar Idioma</button>
+        </div>
+        <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+          <span style="font-weight:600;">Serviços:<br></span>
+            <!-- Outros campos aqui... -->
+        
+            <div id="servicosContainer" class="d-flex flex-column mt-4 mb-3">
+                <!-- Os serviços atuais seriam listados aqui -->
+            </div>
+        
+            <button type="button" id="addServico">Adicionar Serviço</button>
+        </div>
+        <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+        <div id="fotosContainer">
+        </div>
+          <input type="file" style="display:none; " id="fotoInput" multiple>
+         
+          <div id="fileInputsContainer"></div>
+          <button type="button" id="addFileInput">Adicionar nova imagem</button>
+      </div>
+      <button type="submit" name="acao" value="atualizar_profissional">Atualizar Perfil Profissional</button>
+
+    <script>
+      
+      // Preenchidas pelo template do servidor
+      const allConvenios = [
+        {% for convenio in convenios %}
+          {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
+        {% endfor %}
+      ];
+      
+      const userConvenios = [
+        {% for convenio in profissional.convenios.all %}
+          {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
+        {% endfor %}
+      ];
+      
+      let selectedConvenios = userConvenios.map(c => c.id);
+      
+      // Função para atualizar a visibilidade do botão 'Adicionar Convênio'
+      function updateAddButtonVisibility() {
+        const addButton = document.getElementById("addConvenio");
+        const availableConvenios = allConvenios.filter(c => !selectedConvenios.includes(c.id));
+      
+        if (availableConvenios.length === 0) {
+          addButton.style.display = 'none';
+        } else {
+          addButton.style.display = 'inline-block';
+        }
+      }
+      
+      // Função para criar elemento de convênio
+      function createConvenioElement(id) {
+        const convenio = allConvenios.find(c => c.id === id);
+        const span = document.createElement("span");
+        span.textContent = convenio.nome;
+      
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "X";
+        removeButton.addEventListener("click", () => removeConvenioFromList(id, span));
+      
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "convenios";
+        hiddenInput.value = id;
+      
+        span.appendChild(removeButton);
+        const container = document.getElementById("conveniosContainer");
+        container.appendChild(span);
+        container.appendChild(hiddenInput);  // Adiciona o input oculto
+      }
+      
+      
+      // Função para remover convênio da lista
+      function removeConvenioFromList(id, element) {
+        const index = selectedConvenios.indexOf(id);
+        if (index > -1) {
+          selectedConvenios.splice(index, 1);
+          element.remove();
+      
+          const container = document.getElementById("conveniosContainer");
+          const hiddenInput = container.querySelector(`input[value="${id}"]`);
+          if (hiddenInput) {
+            hiddenInput.remove();  // Remove o input oculto
+          }
+        }
+        updateAddButtonVisibility();
+      }
+      
+      
+      // Inicializa a lista de convênios que o usuário já tem
+     
+      
+      document.getElementById("addConvenio").addEventListener("click", () => {
+        const select = document.createElement("select");
+      
+        allConvenios.forEach(convenio => {
+          if (!selectedConvenios.includes(convenio.id)) {
+            const option = document.createElement("option");
+            option.value = convenio.id;
+            option.text = convenio.nome;
+            select.appendChild(option);
+          }
+        });
+      
+        const addButton = document.createElement("button");
+        addButton.textContent = "Adicionar";
+        addButton.addEventListener("click", () => {
+          selectedConvenios.push(Number(select.value));
+          createConvenioElement(Number(select.value));
+          select.remove();
+          addButton.remove();
+          updateAddButtonVisibility();
+        });
+      
+        document.getElementById("conveniosContainer").appendChild(select);
+        document.getElementById("conveniosContainer").appendChild(addButton);
+      });
+  
+  
+      
+      </script>
+      <script>
+      // O array de fotos do usuário; geralmente, isso viria do seu servidor
+      const userFotos = [
+      {% for foto in profissional.galeria.all %}
+      {id: {{ foto.id }}, url: "{{ foto.imagem.url }}"},
+      {% endfor %}
+ ];
+ 
+ // Array para guardar fotos que o usuário quer fazer upload
+ const uploadedFotos = [];
+ 
+ // Função para criar um elemento de foto
+ function createFotoElement(id, url) {
+   const container = document.createElement("div");
+   
+   const img = document.createElement("img");
+   img.src = url;
+   img.width = 100;
+   img.height = 100;
+ 
+   const removeButton = document.createElement("button");
+   removeButton.textContent = "X";
+   removeButton.addEventListener("click", () => {
+     removeFoto(id, container);
+   });
+ 
+   // Criação do input oculto
+   const hiddenInput = document.createElement("input");
+   hiddenInput.type = "hidden";
+   hiddenInput.name = "fotos";
+   hiddenInput.value = id;
+ 
+   container.appendChild(img);
+   container.appendChild(removeButton);
+   container.appendChild(hiddenInput); // Adiciona o input oculto ao contêiner
+   
+   document.getElementById("fotosContainer").appendChild(container);
+ }
+ 
+ // Função para remover foto e o input oculto associado
+ function removeFoto(id, container) {
+   const index = userFotos.findIndex(foto => foto.id === id);
+   if (index > -1) {
+     userFotos.splice(index, 1);
+     container.remove(); // Remove o contêiner inteiro, incluindo o input oculto
+   }
+ }
+ 
+      
+      // Função para adicionar novos campos de input do tipo "file"
+      function addNewFileInput() {
+        const newInput = document.createElement("input");
+        newInput.type = "file";
+        newInput.className = "fileInput";  // Classe para identificar todos os inputs desse tipo
+        newInput.accept = "image/*";  // Aceita apenas imagens
+        
+        newInput.addEventListener("change", function() {
+          const files = this.files;
+          
+          for (let i = 0; i < files.length; i++) {
+            uploadedFotos.push(files[i]);
+            // Aqui, você pode fazer algo com a foto, como criar um elemento com ela
+          }
+        });
+        
+        document.getElementById("fileInputsContainer").appendChild(newInput);
+      }
+      
+      window.addEventListener('DOMContentLoaded', (event) => {
+        // Inicializa as fotos que já estão associadas ao profissional
+        userFotos.forEach(foto => {
+          console.log('foto')
+          createFotoElement(foto.id, foto.url);
+        });
+      
+        // Listener para upload de arquivos
+        document.getElementById("fotoInput").addEventListener("change", function() {
+          const files = this.files;
+          
+          for (let i = 0; i < files.length; i++) {
+            uploadedFotos.push(files[i]);
+            // Aqui, você pode fazer algo com a foto, como criar um elemento com ela
+          }
+        });
+      
+        // Adiciona um novo input do tipo "file" quando o botão é clicado
+        document.getElementById("addFileInput").addEventListener("click", addNewFileInput);
+        
+        // Inicializa um input do tipo "file" na primeira carga
+        addNewFileInput();
+      });
+    </script>      
+        
+        <script>
+        // Preenchidas pelo template do servidor
+        const allIdiomas = [
+          {% for idioma in idiomas %}
+            {id: {{ idioma.id }}, nome: "{{ idioma.nome }}"},
+          {% endfor %}
+        ];
+        
+        const userIdiomas = [
+          {% for idioma in profissional.idiomas.all %}
+            {id: {{ idioma.id }}, nome: "{{ idioma.nome }}"},
+          {% endfor %}
+        ];
+        
+        let selectedIdiomas = userIdiomas.map(i => i.id);
+        
+        // Função para atualizar a visibilidade do botão 'Adicionar Idioma'
+        function updateAddIdiomaButtonVisibility() {
+          const addButton = document.getElementById("addIdioma");
+          const availableIdiomas = allIdiomas.filter(i => !selectedIdiomas.includes(i.id));
+        
+          if (availableIdiomas.length === 0) {
+            addButton.style.display = 'none';
+          } else {
+            addButton.style.display = 'inline-block';
+          }
+        }
+        
+        function createIdiomaElement(id) {
+          // Cria um container div para encapsular o span e o input hidden
+          const container = document.createElement("div");
+        
+          const idioma = allIdiomas.find(i => i.id === id);
+          const span = document.createElement("span");
+          span.textContent = idioma.nome;
+        
+          // Criação do input oculto
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = "idiomas";
+          hiddenInput.value = id;
+        
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "X";
+          removeButton.addEventListener("click", () => {
+            removeIdiomaFromList(id, container); // Agora passamos o container ao invés do span
+          });
+        
+          span.appendChild(removeButton);
+        
+          // Adiciona o span e o input hidden ao container
+          container.appendChild(span);
+          container.appendChild(hiddenInput);
+          
+          // Anexa o container à div principal
+          document.getElementById("idiomasContainer").appendChild(container);
+        }
+        
+        // Função para remover idioma da lista e o input oculto associado
+        function removeIdiomaFromList(id, container) {
+          const index = selectedIdiomas.indexOf(id);
+          if (index > -1) {
+            selectedIdiomas.splice(index, 1);
+            container.remove(); // Remove o contêiner inteiro, que inclui o span e o input oculto
+          }
+          updateAddIdiomaButtonVisibility();
+        }
+        
+       
+        
+        document.getElementById("addIdioma").addEventListener("click", () => {
+          const select = document.createElement("select");
+        
+          allIdiomas.forEach(idioma => {
+            if (!selectedIdiomas.includes(idioma.id)) {
+              const option = document.createElement("option");
+              option.value = idioma.id;
+              option.text = idioma.nome;
+              select.appendChild(option);
+            }
+          });
+        
+          const addButton = document.createElement("button");
+          addButton.textContent = "Adicionar";
+          addButton.addEventListener("click", () => {
+            selectedIdiomas.push(Number(select.value));
+            createIdiomaElement(Number(select.value));
+            select.remove();
+            addButton.remove();
+            updateAddIdiomaButtonVisibility();
+          });
+        
+          document.getElementById("idiomasContainer").appendChild(select);
+          document.getElementById("idiomasContainer").appendChild(addButton);
+        });
+        
+        // Preenchidas pelo template do servidor
+const allServicos = [
+{%for servico in servicos%}
+{id: {{ servico.id }}, nome: "{{ servico.nome }}"},
+{%endfor%}
+];
+
+const userServicos = [
+{% for servicoProf in profissional.servicos.all %}
+            {id: {{ servicoProf.id }}, nome: "{{ servicoProf.nome }}"},
+          {% endfor %}];
+
+let selectedServicos = userServicos.map(s => s.id);
+
+// Função para atualizar a visibilidade do botão 'Adicionar Serviço'
+function updateAddServicoButtonVisibility() {
+  const addButton = document.getElementById("addServico");
+  const availableServicos = allServicos.filter(s => !selectedServicos.includes(s.id));
+
+  if (availableServicos.length === 0) {
+    addButton.style.display = 'none';
+  } else {
+    addButton.style.display = 'inline-block';
+  }
+}
+// Função para criar elemento de serviço
+function createServicoElement(id) {
+  // Cria um container div para encapsular o span e o input hidden
+  const container = document.createElement("div");
+
+  const servico = allServicos.find(s => s.id === id);
+  const span = document.createElement("span");
+  span.textContent = servico.nome;
+
+  // Criação do input oculto
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+  hiddenInput.name = "servicos";
+  hiddenInput.value = id;
+
+  const removeButton = document.createElement("button");
+  removeButton.textContent = "X";
+  removeButton.addEventListener("click", () => {
+    removeServicoFromList(id, container); // Agora passamos o container ao invés do span
+  });
+
+  span.appendChild(removeButton);
+
+  // Adiciona o span e o input hidden ao container
+  container.appendChild(span);
+  container.appendChild(hiddenInput);
+  
+  // Anexa o container à div principal
+  document.getElementById("servicosContainer").appendChild(container);
+}
+
+// Função para remover serviço da lista e o input oculto associado
+function removeServicoFromList(id, container) {
+  const index = selectedServicos.indexOf(id);
+  if (index > -1) {
+    selectedServicos.splice(index, 1);
+    container.remove(); // Remove o contêiner inteiro, que inclui o span e o input oculto
+  }
+  updateAddServicoButtonVisibility();
+}
+
+
+// Inicializa a lista de serviços que o usuário já tem
+
+document.getElementById("addServico").addEventListener("click", () => {
+  const select = document.createElement("select");
+
+  allServicos.forEach(servico => {
+    if (!selectedServicos.includes(servico.id)) {
+      const option = document.createElement("option");
+      option.value = servico.id;
+      option.text = servico.nome;
+      select.appendChild(option);
+    }
+  });
+
+  const addButton = document.createElement("button");
+  addButton.textContent = "Adicionar";
+  addButton.addEventListener("click", () => {
+    selectedServicos.push(Number(select.value));
+    createServicoElement(Number(select.value));
+    select.remove();
+    addButton.remove();
+    updateAddServicoButtonVisibility();
+  });
+
+  document.getElementById("servicosContainer").appendChild(select);
+  document.getElementById("servicosContainer").appendChild(addButton);
+});
+        </script>
+    
+        <script>
+          // Função para inicializar tanto Convênios quanto Idiomas
+          window.addEventListener('load', function() {
+            // Inicializa convênios
+            userConvenios.forEach(c => createConvenioElement(c.id));
+            updateAddButtonVisibility();
+            
+            // Inicializa idiomas
+            userIdiomas.forEach(i => createIdiomaElement(i.id));
+            updateAddIdiomaButtonVisibility();
+          });
+          userServicos.forEach(s => createServicoElement(s.id));
+  updateAddServicoButtonVisibility();
+        </script>
+
+        
+        
+        
+        
+        
+      </div>
+
+   
+  </div>
+
+  
+
+  
+        </div>
+
+      </div>
+    </form>
+
+     </div>
+
+    <div id="conteudo2" class="conteudo">
+      <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+        <div id="enderecosContainer">
+        </div>
+        <button id="addEnderecoInput">Adicionar novo endereço</button>
+        <div id="enderecosInputsContainer"></div>
+      </div>
+    </div>
+      
+      <script>
+       // Array de endereços existentes; isso normalmente viria do seu servidor
+const userEnderecos = [
+ {% for endereco in profissional.enderecos.all %}
+ {id: {{ endereco.id }}, cep: "{{ endereco.cep }}", complemento: "{{ endereco.complemento }}"},
+ {% endfor %}
+];
+
+// Função para criar um elemento de endereço
+function createEnderecoElement(id, cep, complemento) {
+const container = document.createElement("div");
+
+const cepElement = document.createElement("span");
+cepElement.textContent = `CEP: ${cep}`;
+
+const complementoElement = document.createElement("span");
+complementoElement.textContent = `Complemento: ${complemento}`;
+
+const removeButton = document.createElement("button");
+removeButton.textContent = "X";
+removeButton.addEventListener("click", () => {
+  const index = userEnderecos.findIndex(endereco => endereco.id === id);
+  if (index > -1) {
+    userEnderecos.splice(index, 1);
+    container.remove();
+  }
+});
+
+container.appendChild(cepElement);
+container.appendChild(complementoElement);
+container.appendChild(removeButton);
+document.getElementById("enderecosContainer").appendChild(container);
+}
+
+// Função para adicionar novos campos de input para endereço
+function addNewEnderecoInput() {
+const container = document.createElement("div");
+
+const cepInput = document.createElement("input");
+cepInput.placeholder = "Insira o CEP";
+
+const complementoInput = document.createElement("input");
+complementoInput.placeholder = "Insira o Complemento";
+
+container.appendChild(cepInput);
+container.appendChild(complementoInput);
+document.getElementById("enderecosInputsContainer").appendChild(container);
+}
+
+window.addEventListener('DOMContentLoaded', (event) => {
+// Inicializa os endereços que já estão associados ao profissional
+userEnderecos.forEach(endereco => {
+  createEnderecoElement(endereco.id, endereco.cep, endereco.complemento);
+});
+
+// Adiciona um novo conjunto de inputs para endereço quando o botão é clicado
+document.getElementById("addEnderecoInput").addEventListener("click", addNewEnderecoInput);
+
+// Inicializa um conjunto de inputs para endereço na primeira carga
+addNewEnderecoInput();
+});
+
+      </script>
+</div>
+</div>
+</div>
+<script>
+  // Definindo a função que altera o conteúdo
+function alterarConteudo(conteudoId) {
+  // Ocultar todos os conteúdos
+  const todosConteudos = document.getElementsByClassName('conteudo');
+  for (let i = 0; i < todosConteudos.length; i++) {
+    todosConteudos[i].style.display = 'none';
+  }
+
+  // Exibir o conteúdo selecionado
+  const conteudoSelecionado = document.getElementById(conteudoId);
+  if (conteudoSelecionado) {
+    conteudoSelecionado.style.display = 'block';
+  }
+}
+
+// Exibindo o primeiro conteúdo por padrão
+alterarConteudo('conteudo1');
+
+</script>
+
+
+{% endblock %}

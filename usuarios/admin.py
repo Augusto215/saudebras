@@ -39,14 +39,11 @@ class ClinicaAdmin(admin.ModelAdmin):
     
     
 # Registra o modelo Especialidade para que ele apareça no painel admin
-admin.site.register(Estado)
-admin.site.register(Cidade)
-admin.site.register(Bairro)
-admin.site.register(Idioma)
-admin.site.register(Convenio)
-admin.site.register(Especialidade)
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Profissional, ProfissionalAdmin)
 admin.site.register(Clinica, ClinicaAdmin)
-admin.site.register(TipoClinica)
-admin.site.register(TipoProfissional)
+admin.site.register(Especialidade)
+admin.site.register(Convenio)
+admin.site.register(Idioma)
+admin.site.register(Servico)
+admin.site.register(Foto)

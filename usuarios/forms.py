@@ -98,10 +98,35 @@ class ClinicaForm(UserCreationForm):
                   'telefone', 'nome', 'sobrenome', 'username', 'image', 'convenios', 'idiomas','tipo_clinica', 'descricao', 'tipo_profissional', 'foto']
         
 
+from django.forms import inlineformset_factory
+from .models import Profissional, Foto
+class FotoForm(forms.ModelForm):
+    class Meta:
+        model = Foto
+        fields = ['imagem', 'descricao']
+
+
+FotoFormSet = inlineformset_factory(Profissional, Foto, form=FotoForm, extra=1, fields=['imagem', 'descricao'])
+
 class ProfissionalUpdateForm(forms.ModelForm):
     class Meta:
         model = Profissional
-        fields = ['foto', 'descricao']  # ou os campos que você deseja
+        fields = ['foto', 'descricao', 'convenios', 'servicos', 'idiomas']  # os campos foto, descricao e convenios apenas
+
+
+class ClinicaUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profissional
+        fields = ['foto', 'descricao', 'convenios', 'servicos', 'idiomas']  # os campos foto, descricao e convenios apenas
+        
+        
+                
+FotoFormSetClinica = inlineformset_factory(Clinica, Foto, form=FotoForm, extra=1, fields=['imagem', 'descricao'])
+
+class ClinicaUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Clinica
+        fields = ['foto', 'descricao', 'convenios', 'servicos', 'idiomas']  # os campos foto, descricao e convenios apenas        
 
 # forms.py
 from django import forms
@@ -127,3 +152,15 @@ class AvaliacaoForm(forms.ModelForm):
     class Meta:
         model = Avaliacao
         fields = ['rating', 'descricao']
+        
+class ProfissionalForm(forms.ModelForm):
+    class Meta:
+        model = Profissional
+        fields = ['nome', 'sobrenome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria']
+
+
+class ClinicaForm(forms.ModelForm):
+    class Meta:
+        model = Profissional
+        fields = ['nome', 'sobrenome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria']
+                

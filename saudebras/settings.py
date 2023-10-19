@@ -25,14 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%9zlaip=y$6^+4h384l^b!!t#%w2a7n!+92wn(a5eu3$kr92!e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    
+    'whitenoise.runserver_nostatic',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +57,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'saudebras.middleware.ProfissionalMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    
+
 ]
 
 ROOT_URLCONF = 'saudebras.urls'
@@ -144,6 +150,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 JAZZMIN_SETTINGS = {

@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
+from django.core.serializers import serialize
+
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.db import transaction
@@ -350,10 +352,25 @@ def user_login(request):
         
     return render(request, 'core/login.html', {'form': form})
 
+def convenios_perfil(request):
+    profissional = request.user.profissional
+    convenios = Convenio.objects.all()
+
+    # Serializar os objetos em JSON
+    convenios_json = serialize('json', convenios)
+    prof_convenios_json = serialize('json', profissional.convenios.all())
+
+    return JsonResponse({'convenios': convenios_json, 'prof_convenios': prof_convenios_json})
 
 #EDITAR PERFIL
 @login_required
 def editar_perfil(request):
+    profissional = request.user.profissional
+    convenios = Convenio.objects.all()
+    idiomas = Idioma.objects.all()
+    servicos = Servico.objects.all()
+    fotos = Foto.objects.all()
+    
     if request.method == 'POST':
         acao = request.POST.get('acao')
         profissional_form = ProfissionalUpdateForm(request.POST, instance=request.user.profissional)
@@ -400,8 +417,168 @@ def editar_perfil(request):
         endereco_form = EnderecoForm()
 
     enderecos_do_profissional = Endereco.objects.filter(profissional=request.user.profissional)
-    return render(request, 'core/editar_perfil.html', {
+    return render(request, 'core/editar_profissional.html', {
         'profissional_form': profissional_form,
         'endereco_form': endereco_form,
-        'enderecos': enderecos_do_profissional
+        'enderecos': enderecos_do_profissional,
+        'convenios':convenios,
+        'idiomas':idiomas,
+        'servicos':servicos,
+        'profissional':profissional,
+        'fotos':fotos
     })
+
+from django.contrib import messages
+
+def alterar_Profissional(request):
+    user = request.user.profissional
+    if request.method == 'POST':
+        form = ProfissionalForm(request.POST, request.FILES, instance=user)
+        print(f"Data Received: {request.POST}")  # Debug: mostrar dados recebidos
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            print(f"Cleaned Data: {cleaned_data}")  # Debug: mostrar dados limpos
+
+            # Atualiza campos comuns
+            user.nome = form.cleaned_data['nome']
+            user.sobrenome = cleaned_data.get('sobrenome', '')
+            user.descricao = cleaned_data.get('descricao', '')
+            user.telefone = cleaned_data.get('telefone', '')
+            print(f"User Before Save: {vars(user)}")  # Debug: mostrar estado do user antes de salvar
+            
+            # Salva as mudanças para que a instância esteja atualizada
+            user.save()
+            
+            # Atualiza os campos ManyToMany
+            user.convenios.set(cleaned_data.get('convenios', []))
+            user.idiomas.set(cleaned_data.get('idiomas', []))
+            user.servicos.set(cleaned_data.get('servicos', []))
+            user.galeria.set(cleaned_data.get('galeria', []))
+
+            user.save()
+
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('editar_perfil')
+        else:
+            print(f"Form Errors: {form.errors}")  # Debug: mostrar erros de validação
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Erro no campo {field}: {error}")
+    else:
+        # Logica para o GET caso necessário
+        pass
+
+    return render(request, 'core/editar_profissional.html')
+
+
+
+    
+#EDITAR PERFIL
+@login_required
+def editar_perfil_clinica(request):
+    clinica = request.user.clinica
+    convenios = Convenio.objects.all()
+    idiomas = Idioma.objects.all()
+    servicos = Servico.objects.all()
+    fotos = Foto.objects.all()
+    
+    if request.method == 'POST':
+        acao = request.POST.get('acao')
+        clinica_form = ClinicaUpdateForm(request.POST, instance=request.user.clinica)
+        endereco_form = EnderecoForm(request.POST)
+        
+        if profissional_form.is_valid():
+            profissional_form.save()
+        
+        if acao == 'criar':
+            if endereco_form.is_valid():
+                novo_endereco = endereco_form.save(commit=False)
+                novo_endereco.clinica = request.user.clinica
+                novo_endereco.save()
+                messages.success(request, 'Endereço adicionado com sucesso.')
+        elif acao == 'editar':
+            endereco_id = request.POST.get('endereco_id')
+            try:
+                endereco_instance = Endereco.objects.get(id=endereco_id, clinica=request.user.clinica)
+                endereco_form = EnderecoForm(instance=endereco_instance)
+            except Endereco.DoesNotExist:
+                messages.error(request, 'Endereço não encontrado.')
+
+        elif acao == 'atualizar':
+            endereco_id = request.POST.get('endereco_id')
+            try:
+                endereco_instance = Endereco.objects.get(id=endereco_id, profissional=request.user.clinica)
+                endereco_form = EnderecoForm(request.POST, instance=endereco_instance)
+                if endereco_form.is_valid():
+                    endereco_form.save()
+                    messages.success(request, 'Endereço atualizado com sucesso.')
+            except Endereco.DoesNotExist:
+                messages.error(request, 'Endereço não encontrado.')
+        
+        elif acao == 'excluir':
+            endereco_id = request.POST.get('endereco_id')
+            try:
+                endereco = Endereco.objects.get(id=endereco_id, profissional=request.user.clinica)
+                endereco.delete()
+                messages.success(request, 'Endereço excluído com sucesso.')
+            except Endereco.DoesNotExist:
+                messages.error(request, 'Endereço não encontrado.')
+    else:
+        profissional_form = ClinicaUpdateForm(instance=request.user.clinica)
+        endereco_form = EnderecoForm()
+
+    enderecos_do_profissional = Endereco.objects.filter(clinica=request.user.clinica)
+    return render(request, 'core/editar_clinica.html', {
+        'profissional_form': profissional_form,
+        'endereco_form': endereco_form,
+        'enderecos': enderecos_do_profissional,
+        'convenios':convenios,
+        'idiomas':idiomas,
+        'servicos':servicos,
+        'clinica':clinica,
+        'fotos':fotos
+    })
+        
+        
+
+def alterar_Clinica(request):
+    user = request.user.clinica
+    if request.method == 'POST':
+        form = ClinicaForm(request.POST, request.FILES, instance=user)
+        print(f"Data Received: {request.POST}")  # Debug: mostrar dados recebidos
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            print(f"Cleaned Data: {cleaned_data}")  # Debug: mostrar dados limpos
+
+            # Atualiza campos comuns
+            user.nome = form.cleaned_data['nome']
+            user.sobrenome = cleaned_data.get('sobrenome', '')
+            user.descricao = cleaned_data.get('descricao', '')
+            user.telefone = cleaned_data.get('telefone', '')
+            print(f"User Before Save: {vars(user)}")  # Debug: mostrar estado do user antes de salvar
+            
+            # Salva as mudanças para que a instância esteja atualizada
+            user.save()
+            
+            # Atualiza os campos ManyToMany
+            user.convenios.set(cleaned_data.get('convenios', []))
+            user.idiomas.set(cleaned_data.get('idiomas', []))
+            user.servicos.set(cleaned_data.get('servicos', []))
+            user.galeria.set(cleaned_data.get('galeria', []))
+
+            user.save()
+
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('editar_perfil')
+        else:
+            print(f"Form Errors: {form.errors}")  # Debug: mostrar erros de validação
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Erro no campo {field}: {error}")
+    else:
+        # Logica para o GET caso necessário
+        pass
+
+    return render(request, 'core/editar_clinica.html')
+
+    
