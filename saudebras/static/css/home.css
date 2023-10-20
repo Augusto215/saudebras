@@ -424,7 +424,7 @@ form
     
     padding: 4rem 4%;
 
-    
+    flex-grow: 1;
     min-height: 35rem;
     position: relative;
 }
