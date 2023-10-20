@@ -1,0 +1,1193 @@
+
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+:root {
+    --btn-color: #55ec8f;
+    --border-color: #ffffff;
+    --background-color: rgb(255, 255, 255);
+    --btn-color-gradient:  #21BFA6 ;
+  }
+
+.nav-link, .dropdown-item
+{
+    font-size:.9rem !important;
+    font-weight: 500 !important;
+    color: #6D6875 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left:0 !important;
+}
+
+
+#container {
+    display: flex;
+  }
+  
+  #sidebar {
+    flex: 1;
+  }
+  
+  #main-content {
+    flex: 4;
+  }
+  
+  .conteudo {
+    display: none;
+  }
+  
+
+.star-full
+{
+    color:#000 !important;
+}
+
+.star {
+    cursor: pointer;
+    font-size: 24px;
+    margin-right: 5px;
+    color:#000 !important;
+  }
+  
+  .star.selected {
+    color: gold;
+  }
+.accordion
+{
+    border: solid 2px rgb(0, 162, 255) !important;
+    border-radius: 7px;
+}
+
+.form-check .medico{
+
+    padding:.5rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin:0 !important;
+
+
+}
+
+.navbar-toggler:focus
+{
+    box-shadow:  none  !important;
+}
+
+#regForm .form-check  input
+
+{
+
+    width: fit-content !important;
+   
+}
+
+.accordion-body
+{
+    color: #000 !important;
+}
+
+.toggle-div {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+  }
+  
+  .toggle-div.active {
+    background-color: #eee;
+  }
+  
+
+.accordion-button
+{
+    
+    
+    color: #000 !important;
+    font-size: 1.2rem;
+}
+
+*
+{
+    font-family: 'Poppins', sans-serif !important;
+    
+}
+
+.nav-item, .contato-li-ul
+{
+    justify-content: center;
+    text-align: center;
+    display: flex;
+    align-items: center;
+
+}
+
+.typed-cursor {
+    color: rgb(0, 162, 255); /* Altere para a cor que você quiser */
+  }
+
+body
+{
+    background-color: var(--background-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+   
+}
+a
+{
+    text-decoration: none;
+  
+}
+
+.consultar p
+{
+    margin-bottom: 0 !important;
+}
+
+button
+{
+    opacity: 1 !important;
+}
+
+
+#index1
+{
+
+    width: 100%;
+    height: 40rem;
+   
+    
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: space-evenly;
+    color:#fff;
+    position: relative; 
+    text-align: center;
+ 
+
+}
+
+
+.testimonial-card .card-up {
+    height: 120px;
+    overflow: hidden;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+  }
+  .testimonial-card .avatar {
+    width: 110px;
+    margin-top: -60px;
+    overflow: hidden;
+    border: 3px solid #fff;
+    border-radius: 50%;
+  }
+
+
+.main-flex-div
+
+{
+    
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+      
+
+}
+
+#myForm
+{
+    background-color: #fff;
+    box-shadow: 0 14px 74px rgba(0,0,0,.12);
+    border-radius: 40px 40px 20px 20px;
+    max-width: 25rem;
+}
+
+#myForm1
+{
+    background-color: #fff;
+    box-shadow: 0 14px 74px rgba(0,0,0,.12);
+    border-radius: 40px 40px 20px 20px;
+    
+}
+
+.form-control:focus
+{
+    box-shadow: none !important;
+}
+
+
+.form-control
+{
+    padding: 0 !important;
+    
+    margin-bottom:1rem;
+    font-size: .9rem;
+   
+}
+
+
+.form-group
+{
+    border-bottom: solid #777777 1px !important;
+    margin-bottom: 1.5rem;
+    width:100%;
+}
+
+input
+{
+    text-align: left !important;
+    margin: .5rem 0 !important;
+   
+}
+
+
+.consultar
+
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--btn-color-gradient);
+    border-radius: 12px;
+    padding:1.5rem;
+    text-align: center;
+}
+
+
+
+.img-div img
+{
+    height: 3rem !important;
+}
+
+.flex-div
+{
+    display: flex;
+    flex-direction: column;
+    padding: .5rem;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin:auto;
+   
+
+}
+
+
+
+#index1::before
+{
+    content: '';
+    filter:grayscale(.4);
+    position: absolute;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    
+}
+
+
+.myForm
+{
+    background-color: #0888dd;
+}
+
+
+#index-main
+
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:4rem auto 2rem;
+    padding: 0 3% !important;
+}
+.main
+{
+    
+border:solid 2px var(--border-color);
+color: #000000 !important;
+padding: 3rem 1rem;
+border-radius: 12px;
+}
+
+
+.main p
+{
+    color: #000 !important;
+}
+
+.megafone
+{
+    height:10rem;
+    margin-bottom: 2.5rem;
+    filter:grayscale(.4);
+}
+.index1-txt
+
+{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    z-index: 2;
+}
+.navbar-brand
+
+{
+
+    font-size: var(--bs-nav-link-font-size) !important;
+}
+.nav-link
+
+{
+    padding-top: var(--bs-navbar-brand-padding-y) !important;
+    font-size: .8rem;
+    padding-bottom: var(--bs-navbar-brand-padding-y)!important;
+    
+}
+
+.card-img img
+{
+    height: 3rem !important ;
+}
+
+#index3 p, #index3 h2, #index4 h2,  #index4 p
+
+{
+    color:#000 !important;
+}
+
+h1
+{
+    color: #fff;
+}
+
+footer
+{
+    background: #21BFA6;
+}
+
+#index1 h1
+{
+   
+    color: #ffffff !important;
+ 
+   
+}
+
+.card-text li
+
+{
+    color: #fff !important;
+   
+}
+
+#index2 .card
+{
+   
+    border-radius: 12px;
+    border: none;
+    background-color: #2c2a2c;
+    padding: 2rem 1rem;
+
+  
+}
+.navbar-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+
+ #index-main, #index2, #index3, #index4, #index5, #index6, #index8
+
+{
+margin:4rem 0 !important;
+padding: 0 4% !important;
+}
+
+form
+{
+    margin-block-end: 0 !important;
+}
+
+#index7
+{
+    
+    padding: 4rem 4%;
+
+    
+    min-height: 35rem;
+    position: relative;
+}
+
+#index7 h1, #index7 p, #index7 li span, #index7 li{
+    color: #0f0f0f !important;
+}
+
+#index7::before
+{   
+    content: '';
+    filter: grayscale(.4);
+    position: absolute;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+
+}
+
+.container-form
+{
+   
+    display: flex;
+    justify-content: right;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.font-weight-600
+{
+    font-weight: 600 !important;
+}
+#index7  li
+{   
+    display: flex;
+    list-style: none;
+    align-items: center;
+    justify-content: left;
+}
+#index2
+
+{
+    padding: 0 3% !important;
+}
+
+section .card p
+{
+    color: #000 !important;
+}
+
+#index2 .card p
+{
+    color: #fff !important;
+}
+
+.card .btn
+{
+    box-shadow: 4px 4px 2px #2c2a2c;
+    background-color: var(--border-color);
+    color: #000;
+    font-weight: bold;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+#index2 .card .card-body
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align:left;
+}
+#index2 .card img
+{
+    height: 15rem;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+
+   
+}
+#index1 h1
+{
+    color:#fff;
+}
+
+.flex-container
+{
+    display: flex;
+}
+.custom-shape-divider-top-1690496708 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.iti__flag-box, .iti__country-name, .iti__dial-code
+{
+    color:#6D6875 !important;
+}
+
+.iti 
+{
+    width: 100% !important;
+}
+
+.dropdown-submenu {
+    position: relative;
+  }
+  
+  .dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+  }
+  
+  /* Esconde o submenu */
+  .dropdown-submenu .dropdown-menu {
+    display: none;
+  }
+  
+  /* Mostra o submenu no hover */
+  .dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+  }
+  
+
+
+.dropdown-item.active, .dropdown-item:active
+{
+    background: transparent  !important;
+}
+
+
+.card-up 
+{
+    background: var(--border-color) !important;
+}
+
+.custom-shape-divider-top-1690496708 svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 226px;
+    transform: rotateY(180deg);
+}
+
+.custom-shape-divider-top-1690496708 .shape-fill {
+    fill: #0e64e4;
+}
+
+
+.tab-buttons .tab-button {
+  cursor: pointer;
+}
+
+.tab-content .tab-pane {
+  display: none;
+}
+
+.tab-content .tab-pane.active {
+  display: flex;
+  align-items:center;
+  flex-direction: column;
+}
+
+header
+{
+    
+  
+    z-index: 5;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+ 
+    
+   
+}
+
+nav
+{
+  
+ 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    
+    
+}
+
+
+
+nav a
+{
+    color: #000000 !important;
+}
+
+.form-header
+{
+    background: var(--btn-color-gradient);
+    min-height:4.5rem;
+    width: 100%;
+    font-weight: 600;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    padding: 1.5rem;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.card-title
+
+{
+    color:var(--border-color) !important;
+}
+
+
+#index2 h2
+{
+    color:#000000 !important;
+}
+
+#index2 p
+{
+    color:#000000;
+}
+
+.owl-carousel img
+{
+    border-radius: 12px;
+}
+#index3 h1
+{
+    color: #fff;
+}
+
+.button-wpp
+{
+    background: var(--btn-color-gradient);
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    outline: none;
+    color: #fff !important;
+    border-radius: 30px;
+    border: none;
+    padding: .6rem 2rem;
+}
+
+.button-main1
+{
+    background-color: var(--btn-color);
+    font-weight: 900 !important;
+    text-transform: uppercase !important;   
+}
+
+
+
+.button-main2
+{
+    background: var(--btn-color-gradient);
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+}
+.svg-div
+{
+    position: relative;
+    
+}
+.svg-div svg
+{
+
+    position: absolute;
+   
+}
+.contato-btn
+{
+    padding:.5rem 1.5rem;
+    font-weight: 900;
+    background: var(--btn-color-gradient);
+    letter-spacing: 2px;
+    border-radius: 7px;
+    color: #fff !important;
+    
+
+    
+}
+
+#index4
+{
+    padding:0 3%;
+    margin:5rem 0 !important;
+}
+
+#index5
+{
+    padding:0 3%;
+    margin:5rem 0 !important;
+}
+.owl-item
+{
+    background-color:rgb(255, 255, 255);
+    border-radius: 20px;
+    height: 7rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+   
+    
+
+}
+
+
+
+ .owl-nav, .owl-dots
+{
+    display: none !important;
+}
+
+.item-slider
+{
+ width: 100%;
+position: relative;
+padding: .5rem;
+
+  
+}
+
+
+
+
+.item-slider img
+{
+   height: 4rem;
+   width: auto !important;
+   margin: 0 auto;
+  
+  
+}
+
+
+.consultar p
+{
+    color: #fff !important;
+    
+}
+
+
+.img-div
+{
+    display: flex;
+}
+
+
+.box-icon
+{
+    
+    box-shadow: 0 15px 30px 5px rgba(0, 0, 0, 0.089);
+    border-radius: 30px;
+    display: flex;
+    height: 12rem;
+    width: 12rem;
+    background:var(--border-color);
+    padding: .5rem;
+    margin: 1rem 0;
+    margin-right: 1rem;
+}
+
+#search-button
+{
+    background:var(--border-color);
+}
+
+.box-img
+{
+    
+    box-shadow: 2px 2px 10px #1b1b1b60;
+    border-radius: 12px;
+    display: flex;
+    padding: .7rem 2rem;
+    margin:.5rem;
+}
+
+.navbar-nav .dropdown-menu {
+    position: static;
+    width: 90%;
+    margin: 0 auto;
+}
+
+
+#index3
+{
+   
+    padding: 3rem;
+  
+}
+#index1 button, #index2 button, #index7 button, #index3 button
+{
+    border:none;
+    outline: none;
+    padding: .7rem 1.8rem;
+    border-radius: 7px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 1rem;
+    color: #fff !important;
+    text-transform: capitalize !important;
+    box-shadow: 2px 2px 5px #1b1b1b60;
+    margin:.7rem .3rem;
+}
+.svg-div lootie-player
+{
+    position: absolute;
+    
+}
+
+p
+{
+    font-size: 1.2rem !important;
+    color: #fff;
+}
+h2
+{
+    color: #fff;
+    font-weight: 500 !important;
+}
+
+.box-icon
+{
+    flex-direction: column;
+}
+
+.icon-medico
+
+{
+    position: absolute;border-radius:12px; left:-3.5rem; top:50%; transform:translateY(-50%); background:rgb(0, 162, 255);
+}
+
+.icon-medico2
+
+{
+    position: absolute;border-radius:12px; right:-3.5rem; top:50%; transform:translateY(-50%); background:rgb(0, 162, 255);
+}
+
+.icon-medico img
+{
+    height:7rem; padding:1rem;
+}
+
+.icon-medico2 img
+{
+    height:7rem; padding:1rem;
+}
+
+
+@media(max-width:1100px)
+{   
+
+    .div-parte1
+    {
+        width: 100% !important;
+        display: block !important;
+    }
+    .div-parte2
+    {
+        display: none !important;
+
+
+    }
+
+    .icones
+    {
+        flex-direction: column !important;
+    }
+    .nav-item
+    {
+        margin-right: 0 !important;
+    }
+
+    #index1
+    {
+        min-height: 40rem;
+    }
+    .grid-cards
+    {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    nav ul
+    {   margin-top: .5rem;
+
+        padding: .5rem;
+        border-radius: 12px;
+        position: relative;
+    
+    }
+
+
+
+
+    
+
+
+
+    .container-form
+    {
+        
+        display: flex;
+        flex-direction: column;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    
+
+   
+    
+    .index-btn
+    {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin: auto;
+    }
+
+    ul a
+{
+    margin-left: .7rem;
+   
+}
+    .headline
+{
+    flex-direction: column;
+}
+lottie-player
+{
+    display: none !important;
+}
+.svg-div
+{
+    display: none;
+}
+.contato-li
+{
+    display: none !important;
+}
+
+.contato-li-ul
+{
+    display: flex !important;
+    text-align: left;
+}
+
+.megafone
+{
+    display: none;
+}
+#index1 h1 
+{
+    margin: auto;
+}
+
+
+
+}
+
+@media (max-width:768px)
+{
+
+      
+    .nav-item, .contato-li-ul
+    {
+        margin-right:0 !important;
+        margin: .5rem 0; 
+    }
+
+    .grid-cards
+    {
+        grid-template-columns: 1fr !important;
+    }
+
+
+    .consultar
+    {
+        flex-direction: column;
+    }
+
+    .img-div
+    {
+        flex-direction: column;
+    }
+
+    .inverter1
+    {
+        order:2;
+    }
+
+    
+    .inverter2
+    {
+        order: 1;
+    } 
+
+    #index4 img, #index3 img
+
+    {
+        margin-bottom:1rem;
+    }
+
+    .item-slider img
+{
+   height: 2.5rem !important;
+
+  
+  
+}
+
+.dropdown-menu a
+{
+    margin:1rem 0 !important;
+
+    text-align: center;
+    font-weight: 600;
+}
+
+.item-slider
+{
+font-size: 1rem !important;
+  
+}
+
+.icon-medico
+
+{
+    top:-3.5rem; left:50%; transform:translateX(-50%);
+}
+
+.icon-medico2
+{
+    top:-3.5rem; left:50% !important; transform:translateX(-50%);
+    right:initial;
+
+}
+
+}
+
+
+
+
+
+
+#regForm {
+    background-color: #ffffff;
+    margin: 50px auto;
+    font-family: Raleway;
+    padding: 40px;
+    width: 70%;
+    min-width: 300px;
+  }
+  
+  #regForm h1 {
+    text-align: center;  
+  }
+  
+  #regForm input {
+    padding: 10px;
+    width: 100%;
+    font-size: 17px;
+    font-family: Raleway;
+    border: 1px solid #aaaaaa;
+  }
+  
+  /* Mark input boxes that gets an error on validation: */
+  #regForm input.invalid {
+    background-color: #ffdddd;
+  }
+  
+  /* Hide all steps by default: */
+  #regForm .tab {
+    display: none;
+  }
+
+  #idiomasContainer span, #conveniosContainer span, #servicosContainer span
+  {
+    margin-bottom:1.5rem !important; 
+    display: flex;
+    align-items: center;
+    gap:1rem;
+  }
+  
+  #regForm button, .editar_perfil button {
+    background-color: #04AA6D;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 17px;
+    font-family: Raleway;
+    cursor: pointer;
+  }
+
+  
+
+  #updateProfileForm button, #fotosContainer button
+  {
+    background-color: #04AA6D;
+    color: #ffffff;
+    border: none;
+    padding: .5rem 1rem;
+    font-size: 17px;
+    font-family: Raleway;
+    cursor: pointer;
+  }
+
+  #fotosContainer div button
+  {
+    background-color: #04AA6D;
+    color: #ffffff;
+    border: none;
+    padding: .5rem 1rem;
+    font-size: 17px;
+    font-family: Raleway;
+    cursor: pointer;
+  }
+
+  
+  #regForm button:hover {
+    opacity: 0.8;
+  }
+  
+  #regForm  #prevBtn {
+    background-color: #bbbbbb;
+  }
+  
+  /* Make circles that indicate the steps of the form: */
+  #regForm.step {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbbbbb;
+    border: none;  
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.5;
+  }
+  
+  #regForm .step.active {
+    opacity: 1;
+  }
+  
+  /* Mark the steps that are finished and valid: */
+  #regForm .step.finish {
+    background-color: #04AA6D;
+  }
+  
