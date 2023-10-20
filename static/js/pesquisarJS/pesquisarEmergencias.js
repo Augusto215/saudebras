@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (estado) params['estados'] = estado;
     if (cidade) params['cidades'] = cidade;
   
-    const combinedURL = generateURL('http://127.0.0.1:8000/clinicas?tipo_clinica=Emergência', params);
+    const origin = window.location.origin;
+    const combinedURL = generateURL(`${origin}/clinicas?tipo_clinica=Emergência`, params);
+
   
     if (Object.keys(params).length > 1) {
       window.location.href = combinedURL;

@@ -49,8 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
     
-    const combinedURL = generateURL('http://127.0.0.1:8000/profissionais?tipo_profissional=Dentista', params);
-  
+    const origin = window.location.origin;
+    const combinedURL = generateURL(`${origin}/profissionais?tipo_profissional=Dentista`, params);
+      
      
 if (Object.keys(params).length > 2) {
 

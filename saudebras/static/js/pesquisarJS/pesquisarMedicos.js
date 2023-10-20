@@ -48,8 +48,9 @@ function filterOptions(searchInputId, selectId) {
       if (cidade) params['cidade'] = cidade;
       
 
-      
-      const combinedURL = generateURL('http://127.0.0.1:8000/profissionais?tipo_profissional=Médico', params);
+      const origin = window.location.origin;
+      const combinedURL = generateURL(`${origin}/profissionais?tipo_profissional=Médico`, params);
+
     
        
   if (Object.keys(params).length > 2) {
