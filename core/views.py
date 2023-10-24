@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 
 import stripe
 
-stripe.api_key = "whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT"  # Substitua pela sua chave de API da Stripe
+stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"  # Substitua pela sua chave de API da Stripe
 
 def stripe_webhook(request):
     payload = request.body
