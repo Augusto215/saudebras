@@ -40,9 +40,11 @@ from usuarios.forms import AvaliacaoForm  # Certifique-se de que o caminho para 
 from django.contrib.contenttypes.models import ContentType
 
 import stripe
+from django.views.decorators.csrf import csrf_exempt
 
 stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"  # Substitua pela sua chave de API da Stripe
 
+@csrf_exempt
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', None)
@@ -54,7 +56,7 @@ def stripe_webhook(request):
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, stripe.api_key
+            payload, sig_header, "whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT"  # Substitua pela sua nova chave de assinatura
         )
     except Exception as e:
         return JsonResponse({'status': 'failure', 'error': str(e)}, status=400)
@@ -76,6 +78,11 @@ def stripe_webhook(request):
             user.save()
 
     return JsonResponse({'status': 'success'}, status=200)
+
+
+
+
+
 
 
 def calcular_media(objeto, Modelo):
