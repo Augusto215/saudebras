@@ -39,14 +39,17 @@ from usuarios.forms import AvaliacaoForm  # Certifique-se de que o caminho para 
 
 from django.contrib.contenttypes.models import ContentType
 
-
-from django.http import JsonResponse
-import json
 import stripe
+
+stripe.api_key = "whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT"  # Substitua pela sua chave de API da Stripe
 
 def stripe_webhook(request):
     payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', None)
+
+    if not sig_header:
+        return JsonResponse({'status': 'failure', 'error': 'HTTP_STRIPE_SIGNATURE not found'}, status=400)
+
     event = None
 
     try:
@@ -56,10 +59,8 @@ def stripe_webhook(request):
     except Exception as e:
         return JsonResponse({'status': 'failure', 'error': str(e)}, status=400)
 
-    # Pega o customer ID do evento
-    customer_id = event['data']['object'].get('customer', None)
-    
-    # Handle the event
+    customer_id = event['data']['object'].get('customer', None) if event.get('data', {}).get('object', {}) else None
+
     if event['type'] == 'checkout.session.completed':
         user = Profissional.objects.filter(stripe_customer_id=customer_id).first() or \
                Clinica.objects.filter(stripe_customer_id=customer_id).first()
