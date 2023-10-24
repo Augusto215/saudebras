@@ -187,14 +187,11 @@ class Avaliacao(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
 class PerguntaResposta(models.Model):
-    pergunta = models.TextField()
-    resposta = models.TextField()
+    pergunta = models.TextField(blank=True, null=True)
+    resposta = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    cliente = models.ForeignKey('Cliente', blank=True, null=True, related_name='perguntas', on_delete=models.CASCADE)
     
-    # Campos para relacionamento genérico
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')    
 
 class Endereco(models.Model):
     rua = models.CharField(max_length=255)
@@ -243,22 +240,10 @@ class Profissional(CustomUser):
     ceps = models.ManyToManyField(CEP, blank=True, related_name='profissionais')
     descricao = models. TextField(blank=True)
     avaliacoes = GenericRelation(Avaliacao)
-    perguntas_respostas = GenericRelation(PerguntaResposta)
+    perguntas = models.ManyToManyField(PerguntaResposta, blank=True, related_name='profissionais')
     galeria = models.ManyToManyField(Foto, blank=True, related_name='profissionais')
-    
-#    def save(self, *args, **kwargs):
-  #      if not self.foto:
-  #          if self.tipo_profissional == "Médico":
-  #              self.foto = "/images/medico_default.png"
-   #         elif self.tipo_profissional == "Dentista":
-   #             self.foto = "/images/dentista_default.png"
-            # adicione mais condições conforme necessário
-  #          else:
-  #              self.foto = "/images/unknown.png"
- #       super(Profissional, self).save(*args, **kwargs)
 
 class Clinica(CustomUser):
-   
     is_active = models.BooleanField(_('active'), default=False)
     estados = models.ManyToManyField('Estado', blank=True)
     cidades = models.ManyToManyField('Cidade', blank=True)
@@ -274,22 +259,9 @@ class Clinica(CustomUser):
     enderecos = models.ManyToManyField(Endereco, blank=True, related_name='clinicas')
     descricao = models. TextField(blank=True)
     avaliacoes = GenericRelation(Avaliacao)
-    perguntas_respostas = GenericRelation(PerguntaResposta)
+    perguntas = models.ManyToManyField(PerguntaResposta, blank=True, related_name='clinicas')
     galeria = models.ManyToManyField(Foto, blank=True, related_name='clinicas')
     
-    #def save(self, *args, **kwargs):
-       # if not self.foto:
-           # if "Emergência" in self.tipo_clinica.values_list('nome', flat=True):
-           #     self.foto = "/images/hospital_default.png"
-          # elif "Laboratório" in self.tipo_clinica.values_list('nome', flat=True):
-         #       self.foto = "/images/laboratorio_dental_default.png"
-            # adicione mais condições conforme necessário
-        #    else:
-      #          self.foto = "/images/unknown.png"
-     #   super(Clinica, self).save(*args, **kwargs)
-#
-
-
 
 
 

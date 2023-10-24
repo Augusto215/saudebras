@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.core.serializers import serialize
+from django.core.files.storage import default_storage
 
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -10,6 +11,7 @@ from geopy.geocoders import Nominatim
 import time
 from usuarios.forms import *
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -215,31 +217,27 @@ def registerProfissional(request):
     return render(request, 'core/registroProfissionais.html', context)
 
     
-
-
-
 def registerClinica(request):
-    especialidades = Especialidade.objects.all()
     tipo_clinica = TipoClinica.objects.all()
-    tipo_profissional = TipoProfissional.objects.all()
+    especialidades = Especialidade.objects.all()
     idiomas = Idioma.objects.all()
     convenios = Convenio.objects.all()
+    tipo_profissional = TipoProfissional.objects.all()
     form = ClinicaForm()
 
     if request.method == 'POST':
         form = ClinicaForm(request.POST, request.FILES)
         if form.is_valid():
             with transaction.atomic():  # Início da transação atômica
-                clinica = form.save(commit=False)
+                user = form.save(commit=False)
 
                 enderecos = []
                 estados = []
                 cidades = []
                 bairros = []
                 ceps_list = []
-
                 
-                clinica.save()
+                user.save()
                 ceps = request.POST.getlist('cep[]')
                 complementos = request.POST.getlist('complemento[]')
                 for i, cep in enumerate(ceps):
@@ -253,19 +251,21 @@ def registerClinica(request):
                         cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
                         endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
                         latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+                        
+                        
                         complemento_atual = complementos[i]
                         endereco, _ = Endereco.objects.get_or_create(
-
-                                rua=data['logradouro'],
-                                complemento=complemento_atual,
-                                bairro=bairro,
-                                cidade=cidade,
-                                estado=estado,
-                                cep=cep_obj,
-                                latitude=latitude,  # Adicionado
-                                longitude=longitude,
-                                clinica=clinica
-                            )
+                            rua=data['logradouro'],
+                            complemento=complemento_atual,
+                            bairro=bairro,
+                            cidade=cidade,
+                            estado=estado,
+                            cep=cep_obj,
+                            latitude=latitude,  # Adicionado
+                            longitude=longitude,
+                            clinica=user
+                            
+                        )
 
                         estados.append(estado)
                         cidades.append(cidade)
@@ -273,43 +273,38 @@ def registerClinica(request):
                         enderecos.append(endereco)
                         ceps_list.append(cep_obj)
 
-                # Agora, salve a clínica antes de adicionar relações
-                clinica.save()
+                # Salve o usuário antes de adicionar relações
+                user.save()
                     
-                clinica.set_password(form.cleaned_data['password1'])
-                clinica.email = form.cleaned_data['email']
-                clinica.telefone = form.cleaned_data['telefone']
-                clinica.nome = form.cleaned_data['nome']
-                clinica.sobrenome = form.cleaned_data['sobrenome']
-                clinica.username = form.cleaned_data['username']
-                clinica.descricao = form.cleaned_data['descricao']
-                clinica.foto = form.cleaned_data['foto']
-                selected_tipoClinica = form.cleaned_data['tipo_clinica']
-                selected_tipoProfissional = form.cleaned_data['tipo_profissional']
+                user.set_password(form.cleaned_data['password1'])
+                user.email =form.cleaned_data['email']
+                user.telefone = form.cleaned_data['telefone']
+                user.nome = form.cleaned_data['nome']
+                user.username = form.cleaned_data['username']
+                user.descricao = form.cleaned_data['descricao']
+                user.foto = form.cleaned_data['foto']
+                selected_tipo_profissional = form.cleaned_data['tipo_profissional']
+                selected_tipo_clinica = form.cleaned_data['tipo_clinica']
                 selected_especialidades = form.cleaned_data['especialidades']
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
+              
                 
-                
+                user.estados.set(estados)
+                user.cidades.set(cidades)
+                user.bairros.set(bairros)
+                user.ceps.set(ceps_list)        
+                user.tipo_clinica.set(selected_tipo_clinica)
+                user.tipo_profissional.set(selected_tipo_profissional)
+                user.especialidades.set(selected_especialidades)
+                user.convenios.set(selected_convenios)
+                user.idiomas.set(selected_idiomas)
+                user.enderecos.set(enderecos)
 
-                clinica.estados.set(estados)
-                clinica.tipo_clinica.set(selected_tipoClinica)
-                clinica.cidades.set(cidades)
-                clinica.bairros.set(bairros)
-                clinica.ceps.set(ceps_list)
-                clinica.tipo_profissional.set(selected_tipoProfissional)
-                clinica.convenios.set(selected_convenios)
-                clinica.especialidades.set(selected_especialidades)
-                clinica.idiomas.set(selected_idiomas)
-                clinica.enderecos.set(enderecos)
-                
-
-                clinica.save()
+                user.save()
 
                 return redirect('login')
 
-        
-            
         else:
             print("Formulário inválido")
             print(form.errors)
@@ -319,13 +314,13 @@ def registerClinica(request):
         'convenios': convenios,
         'idiomas': idiomas,
         'form': form,
-        'tipos_clinicas': tipo_clinica,
-        'tipos_profissionais': tipo_profissional
+        'tipos_profissionais': tipo_profissional,
+        'tipos_clinicas':tipo_clinica
     }
 
     return render(request, 'core/registroClinicas.html', context)
 
-
+    
 
 
 
@@ -365,12 +360,17 @@ def convenios_perfil(request):
 #EDITAR PERFIL
 @login_required
 def editar_perfil(request):
+   
+    logging.debug("Iniciando alterar_Profissional")
+    logging.debug(f"Data do POST: {request.POST}")
+    logging.debug(f"Data dos FILES: {request.FILES}")
     profissional = request.user.profissional
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()
     
+
     if request.method == 'POST':
         acao = request.POST.get('acao')
         profissional_form = ProfissionalUpdateForm(request.POST, instance=request.user.profissional)
@@ -425,70 +425,152 @@ def editar_perfil(request):
         'idiomas':idiomas,
         'servicos':servicos,
         'profissional':profissional,
-        'fotos':fotos
+        'fotos':fotos,
+        
     })
 
 from django.contrib import messages
-
+from django.core.files.storage import default_storage
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import ProfissionalForm
+from .models import Foto
+import logging
+logging.basicConfig(level=logging.DEBUG)
 def alterar_Profissional(request):
+    logging.debug("Iniciando alterar_Profissional")
+    logging.debug(f"Data do POST: {request.POST}")
+    logging.debug(f"Data dos FILES: {request.FILES}")
+
     user = request.user.profissional
+    convenios = Convenio.objects.all()
+    idiomas = Idioma.objects.all()
+    servicos = Servico.objects.all()
+    fotos = Foto.objects.all()
+    form = None
     if request.method == 'POST':
-        form = ProfissionalForm(request.POST, request.FILES, instance=user)
-        print(f"Data Received: {request.POST}")  # Debug: mostrar dados recebidos
-        if form.is_valid():
-            cleaned_data = form.cleaned_data
-            print(f"Cleaned Data: {cleaned_data}")  # Debug: mostrar dados limpos
+        action = request.POST.get('action')
 
-            # Atualiza campos comuns
-            user.nome = form.cleaned_data['nome']
-            user.sobrenome = cleaned_data.get('sobrenome', '')
-            user.descricao = cleaned_data.get('descricao', '')
-            user.telefone = cleaned_data.get('telefone', '')
-            print(f"User Before Save: {vars(user)}")  # Debug: mostrar estado do user antes de salvar
+        if action == 'update_profile':
+
+            form = ProfissionalForm(request.POST, request.FILES, instance=user)
+
+            if form.is_valid():
+                logging.debug("Formulário é válido.")
+                cleaned_data = form.cleaned_data
+                logging.debug(f"Dados limpos do formulário: {cleaned_data}")
+
+                user.nome = cleaned_data.get('nome', '')
+                user.sobrenome = cleaned_data.get('sobrenome', '')
+                user.descricao = cleaned_data.get('descricao', '')
+                user.telefone = cleaned_data.get('telefone', '')
+                user.save()
+
+                user.convenios.set(cleaned_data.get('convenios', []))
+                user.idiomas.set(cleaned_data.get('idiomas', []))
+                user.servicos.set(cleaned_data.get('servicos', []))
+
+                # Código novo começa aqui
+                new_galeria_ids = request.POST.getlist('galeria')  # IDs enviados do frontend
+                new_galeria_ids = list(map(int, new_galeria_ids))  # Convertendo para inteiros
+
+                current_galeria_ids = [foto.id for foto in user.galeria.all()]  # IDs atuais no DB
+
+                ids_to_remove = set(current_galeria_ids) - set(new_galeria_ids)  # IDs para remover
+                
+                for id_to_remove in ids_to_remove:
+                    Foto.objects.get(id=id_to_remove).delete()
+                # Código novo termina aqui
+
+                new_galeria_entries = []
+                if request.FILES.getlist('galeria'):
+                    for file in request.FILES.getlist('galeria'):
+                        if not file:
+                            continue
+                        file_name = default_storage.save(file.name, file)
+                        new_foto = Foto(imagem=file_name, profissional=user)
+                        new_foto.save()
+                        new_galeria_entries.append(new_foto)
+
+                with transaction.atomic():
+                    user.save()
+                    if new_galeria_entries:
+                        user.galeria.add(*new_galeria_entries)
+
+                logging.debug(f"Novas entradas na galeria: {new_galeria_entries}")
+                logging.debug(f"Fotos na galeria do usuário: {user.galeria.all()}")
+
+                messages.success(request, 'Perfil atualizado com sucesso!')
+                return redirect('editar_perfil')
             
-            # Salva as mudanças para que a instância esteja atualizada
-            user.save()
-            
-            # Atualiza os campos ManyToMany
-            user.convenios.set(cleaned_data.get('convenios', []))
-            user.idiomas.set(cleaned_data.get('idiomas', []))
-            user.servicos.set(cleaned_data.get('servicos', []))
-            user.galeria.set(cleaned_data.get('galeria', []))
+        elif action == 'update_photo':
+            logging.debug("Formulário iniciado para atualizar foto")
+            form = FotoProfForm(request.POST, request.FILES)
+            if form.is_valid():
+                logging.debug("Formulário é válido.")
+                new_foto = form.cleaned_data['foto']
+                logging.debug(f"Nova foto obtida: {new_foto}")
 
-            user.save()
+                user.foto = new_foto
+                user.save()
 
-            messages.success(request, 'Perfil atualizado com sucesso!')
-            return redirect('editar_perfil')
+                messages.success(request, 'Foto de perfil atualizada com sucesso!')
+                return redirect('editar_perfil')
+        
+        elif action == 'responder_pergunta':
+            form = RespostaForm(request.POST)
+            pergunta_id = request.POST.get('pergunta_id')  # Obtenha o ID da pergunta de alguma forma (campo oculto, por exemplo)
+            pergunta = PerguntaResposta.objects.get(id=pergunta_id)
+
+            if form.is_valid():
+                resposta = form.cleaned_data['resposta']
+                pergunta.resposta = resposta
+                pergunta.save()
+                messages.success(request, 'Pergunta respondida com sucesso!')
+                return redirect('editar_perfil')
+            else:
+                messages.error(request, 'Erro ao responder pergunta.')
+                
         else:
-            print(f"Form Errors: {form.errors}")  # Debug: mostrar erros de validação
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"Erro no campo {field}: {error}")
-    else:
-        # Logica para o GET caso necessário
-        pass
+                logging.debug(f"Formulário não é válido. Erros: {form.errors}")
+                messages.error(request, 'Erro na atualização do perfil.')
 
-    return render(request, 'core/editar_profissional.html')
+    logging.debug("Finalizando alterar_Profissional")
 
-
-
+    return render(request, 'core/editar_profissional.html', {
+        'form': form, 
+        'convenios': convenios,
+        'idiomas': idiomas,
+        'servicos': servicos,
+        'fotos': fotos,
+        'profissional': user,
+  
+    })
     
+    
+
+        
 #EDITAR PERFIL
 @login_required
 def editar_perfil_clinica(request):
+   
+    logging.debug("Iniciando alterar_Clinica")
+    logging.debug(f"Data do POST: {request.POST}")
+    logging.debug(f"Data dos FILES: {request.FILES}")
     clinica = request.user.clinica
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()
     
+
     if request.method == 'POST':
         acao = request.POST.get('acao')
         clinica_form = ClinicaUpdateForm(request.POST, instance=request.user.clinica)
         endereco_form = EnderecoForm(request.POST)
         
-        if profissional_form.is_valid():
-            profissional_form.save()
+        if clinica_form.is_valid():
+            clinica_form.save()
         
         if acao == 'criar':
             if endereco_form.is_valid():
@@ -507,7 +589,7 @@ def editar_perfil_clinica(request):
         elif acao == 'atualizar':
             endereco_id = request.POST.get('endereco_id')
             try:
-                endereco_instance = Endereco.objects.get(id=endereco_id, profissional=request.user.clinica)
+                endereco_instance = Endereco.objects.get(id=endereco_id, clinica=request.user.clinica)
                 endereco_form = EnderecoForm(request.POST, instance=endereco_instance)
                 if endereco_form.is_valid():
                     endereco_form.save()
@@ -518,67 +600,136 @@ def editar_perfil_clinica(request):
         elif acao == 'excluir':
             endereco_id = request.POST.get('endereco_id')
             try:
-                endereco = Endereco.objects.get(id=endereco_id, profissional=request.user.clinica)
+                endereco = Endereco.objects.get(id=endereco_id, clinica=request.user.clinica)
                 endereco.delete()
                 messages.success(request, 'Endereço excluído com sucesso.')
             except Endereco.DoesNotExist:
                 messages.error(request, 'Endereço não encontrado.')
     else:
-        profissional_form = ClinicaUpdateForm(instance=request.user.clinica)
+        clinica_form = ClinicaUpdateForm(instance=request.user.clinica)
         endereco_form = EnderecoForm()
 
-    enderecos_do_profissional = Endereco.objects.filter(clinica=request.user.clinica)
+    enderecos_da_clinica = Endereco.objects.filter(clinica=request.user.clinica)
     return render(request, 'core/editar_clinica.html', {
-        'profissional_form': profissional_form,
+        'clinica_form': clinica_form,
         'endereco_form': endereco_form,
-        'enderecos': enderecos_do_profissional,
+        'enderecos': enderecos_da_clinica,
         'convenios':convenios,
         'idiomas':idiomas,
         'servicos':servicos,
         'clinica':clinica,
-        'fotos':fotos
+        'fotos':fotos,
+        
     })
         
         
 
 def alterar_Clinica(request):
+    logging.debug("Iniciando alterar_Clinica")
+    logging.debug(f"Data do POST: {request.POST}")
+    logging.debug(f"Data dos FILES: {request.FILES}")
+
     user = request.user.clinica
+    convenios = Convenio.objects.all()
+    idiomas = Idioma.objects.all()
+    servicos = Servico.objects.all()
+    fotos = Foto.objects.all()
+    form = None
     if request.method == 'POST':
-        form = ClinicaForm(request.POST, request.FILES, instance=user)
-        print(f"Data Received: {request.POST}")  # Debug: mostrar dados recebidos
-        if form.is_valid():
-            cleaned_data = form.cleaned_data
-            print(f"Cleaned Data: {cleaned_data}")  # Debug: mostrar dados limpos
+        action = request.POST.get('action')
 
-            # Atualiza campos comuns
-            user.nome = form.cleaned_data['nome']
-            user.sobrenome = cleaned_data.get('sobrenome', '')
-            user.descricao = cleaned_data.get('descricao', '')
-            user.telefone = cleaned_data.get('telefone', '')
-            print(f"User Before Save: {vars(user)}")  # Debug: mostrar estado do user antes de salvar
+        if action == 'update_profile':
+
+            form = ClinicaEditarForm(request.POST, request.FILES, instance=user)
+
+            if form.is_valid():
+                logging.debug("Formulário é válido.")
+                cleaned_data = form.cleaned_data
+                logging.debug(f"Dados limpos do formulário: {cleaned_data}")
+
+                user.nome = cleaned_data.get('nome', '')
+                user.descricao = cleaned_data.get('descricao', '')
+                user.telefone = cleaned_data.get('telefone', '')
+                user.save()
+
+                user.convenios.set(cleaned_data.get('convenios', []))
+                user.idiomas.set(cleaned_data.get('idiomas', []))
+                user.servicos.set(cleaned_data.get('servicos', []))
+
+                # Código novo começa aqui
+                new_galeria_ids = request.POST.getlist('galeria')  # IDs enviados do frontend
+                new_galeria_ids = list(map(int, new_galeria_ids))  # Convertendo para inteiros
+
+                current_galeria_ids = [foto.id for foto in user.galeria.all()]  # IDs atuais no DB
+
+                ids_to_remove = set(current_galeria_ids) - set(new_galeria_ids)  # IDs para remover
+                
+                for id_to_remove in ids_to_remove:
+                    Foto.objects.get(id=id_to_remove).delete()
+                # Código novo termina aqui
+
+                new_galeria_entries = []
+                if request.FILES.getlist('galeria'):
+                    for file in request.FILES.getlist('galeria'):
+                        if not file:
+                            continue
+                        file_name = default_storage.save(file.name, file)
+                        new_foto = Foto(imagem=file_name, clinica=user)
+                        new_foto.save()
+                        new_galeria_entries.append(new_foto)
+
+                with transaction.atomic():
+                    user.save()
+                    if new_galeria_entries:
+                        user.galeria.add(*new_galeria_entries)
+
+                logging.debug(f"Novas entradas na galeria: {new_galeria_entries}")
+                logging.debug(f"Fotos na galeria do usuário: {user.galeria.all()}")
+
+                messages.success(request, 'Perfil atualizado com sucesso!')
+                return redirect('editar_clinica')
             
-            # Salva as mudanças para que a instância esteja atualizada
-            user.save()
-            
-            # Atualiza os campos ManyToMany
-            user.convenios.set(cleaned_data.get('convenios', []))
-            user.idiomas.set(cleaned_data.get('idiomas', []))
-            user.servicos.set(cleaned_data.get('servicos', []))
-            user.galeria.set(cleaned_data.get('galeria', []))
+        elif action == 'update_photo':
+            logging.debug("Formulário iniciado para atualizar foto")
+            form = FotoClinicaForm(request.POST, request.FILES)
+            if form.is_valid():
+                logging.debug("Formulário é válido.")
+                new_foto = form.cleaned_data['foto']
+                logging.debug(f"Nova foto obtida: {new_foto}")
 
-            user.save()
+                user.foto = new_foto
+                user.save()
 
-            messages.success(request, 'Perfil atualizado com sucesso!')
-            return redirect('editar_perfil')
+                messages.success(request, 'Foto de perfil atualizada com sucesso!')
+                return redirect('editar_clinica')
+        
+        elif action == 'responder_pergunta':
+            form = RespostaForm(request.POST)
+            pergunta_id = request.POST.get('pergunta_id')  # Obtenha o ID da pergunta de alguma forma (campo oculto, por exemplo)
+            pergunta = PerguntaResposta.objects.get(id=pergunta_id)
+
+            if form.is_valid():
+                resposta = form.cleaned_data['resposta']
+                pergunta.resposta = resposta
+                pergunta.save()
+                messages.success(request, 'Pergunta respondida com sucesso!')
+                return redirect('editar_clinica')
+            else:
+                messages.error(request, 'Erro ao responder pergunta.')
+                
         else:
-            print(f"Form Errors: {form.errors}")  # Debug: mostrar erros de validação
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"Erro no campo {field}: {error}")
-    else:
-        # Logica para o GET caso necessário
-        pass
+                logging.debug(f"Formulário não é válido. Erros: {form.errors}")
+                messages.error(request, 'Erro na atualização do perfil.')
 
-    return render(request, 'core/editar_clinica.html')
+    logging.debug("Finalizando alterar_Clinica")
 
+    return render(request, 'core/editar_clinica.html', {
+        'form': form, 
+        'convenios': convenios,
+        'idiomas': idiomas,
+        'servicos': servicos,
+        'fotos': fotos,
+        'clinica': user,
+  
+    })
     

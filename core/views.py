@@ -5,6 +5,7 @@ from usuarios.models import *
 from django.db.models import Exists, OuterRef
 from django.db.models import Q
 import http
+from usuarios.forms import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 from django.db.models import Count, Avg
@@ -62,84 +63,209 @@ def calculate_stars(media):
 
 def perfil_profissional(request, profissional_id):
     profissional = get_object_or_404(Profissional, id=profissional_id)
-    
-    # Já estamos calculando esses valores aqui, então não precisamos repetir isso depois
     media = calcular_media(profissional, Profissional)
     stars = calculate_stars(media)
     total_av = total_avaliacoes(profissional, Profissional)
-
-    avaliacoes = Avaliacao.objects.filter(
+    is_cliente = hasattr(request.user, 'cliente')
+    
+    avaliacoes_list = Avaliacao.objects.filter(
         content_type=ContentType.objects.get_for_model(profissional),
         object_id=profissional.id
     )
     
-    is_cliente = hasattr(request.user, 'cliente')
-    
+    paginator = Paginator(avaliacoes_list, 5)
+    page = request.GET.get('page')
+    avaliacoes = paginator.get_page(page)
+    perguntas_list = profissional.perguntas.exclude(resposta__isnull=True).exclude(resposta__exact='')
+    paginator_perguntas = Paginator(perguntas_list, 5)  # 5 perguntas por página
+    page_perguntas = request.GET.get('page_perguntas')
+    perguntas_paginated = paginator_perguntas.get_page(page_perguntas)
+    form = AvaliacaoForm()  # Inicialização aqui
+    form_perguntas = PerguntaRespostaForm()  
     if request.method == 'POST':
-        form = AvaliacaoForm(request.POST)
+        action = request.POST.get('action')
         
-        if form.is_valid():
-            avaliacao = form.save(commit=False)
-            avaliacao.cliente = request.user.cliente  # Assumindo que o cliente é o usuário logado
-            avaliacao.content_type = ContentType.objects.get_for_model(profissional)
-            avaliacao.object_id = profissional.id
-            avaliacao.save()
-            
-            # Recalcular a média após nova avaliação
-            media = calcular_media(profissional)
-            total_av += 1  # Atualizar o número total de avaliações
-        else:
-            print(form.errors)  # Debug: Imprimir os erros do formulário
+
+        if action == 'send_avaliacao':
+            if request.method == 'POST':
+                form = AvaliacaoForm(request.POST)
+                if form.is_valid():
+                    avaliacao = form.save(commit=False)
+                    avaliacao.cliente = request.user.cliente
+                    avaliacao.content_type = ContentType.objects.get_for_model(profissional)
+                    avaliacao.object_id = profissional.id
+                    avaliacao.save()
+                    media = calcular_media(profissional, Profissional)
+                    total_av += 1
+                else:
+                    print(form.errors)
+        elif action == 'send_pergunta':
+            form_perguntas = PerguntaRespostaForm(request.POST)
+            if form_perguntas.is_valid():
+                pergunta = form_perguntas.save(commit=False)
+                pergunta.cliente = request.user.cliente
+                pergunta.content_type = ContentType.objects.get_for_model(Profissional)
+                pergunta.save()  # Primeiro salve o objeto
+                profissional.perguntas.add(pergunta)
+                
     else:
         form = AvaliacaoForm()
+        form_perguntas = PerguntaRespostaForm()
+    
+
+    
+    if request.META.get('HTTP_ACCEPT') == 'application/json':
+        avaliacoes_json = [
+            {
+                'nome': a.cliente.nome,
+                'descricao': a.descricao,
+                'rating': a.rating,
+                'cliente': {
+                    'foto': {
+                        'url': a.cliente.foto.url if a.cliente.foto else None,
+                    }
+                  
+                }
+            } for a in avaliacoes
+        ]
+        
+        perguntas_json = [
+        {
+            'pergunta': p.pergunta,
+            'nome': p.cliente.nome,
+            'resposta':p.resposta,
+            # ... outros campos que você quer enviar
+        } for p in perguntas_paginated 
+    ]
+        return JsonResponse({
+        'avaliacoes': avaliacoes_json,
+        'perguntas': perguntas_json,
+        'has_next_avaliacoes': avaliacoes.has_next(),
+        'current_page': avaliacoes.number,
+        'has_next_perguntas': perguntas_paginated.has_next()
+    })
 
     context = {
         'profissional': profissional,
         'form': form,
-        'is_cliente': is_cliente,  
+        'is_cliente': is_cliente,
         'media': media,
-        'total_avaliacoes': total_av,  # Aqui usamos total_av
+        'total_avaliacoes': total_av,
         'avaliacoes': avaliacoes,
-        'stars': stars
+        'stars': stars,
+        'form_perguntas': form_perguntas,
+        'perguntas_paginated': perguntas_paginated
     }
 
     return render(request, 'core/perfil_profissional.html', context)
 
 def perfil_clinica(request, clinica_id):
+    
+    
     clinica = get_object_or_404(Clinica, id=clinica_id)
     has_emergency = clinica.tipo_clinica.filter(nome__icontains='Emergência').exists()
     is_cliente = isinstance(request.user, Cliente)
+    avaliacoes = Avaliacao.objects.filter(
+        content_type=ContentType.objects.get_for_model(clinica),
+        object_id=clinica.id
+    )
     
     # Calculando valores aqui para evitar redundância
     media = calcular_media(clinica, Clinica)
     stars = calculate_stars(media)
     total_av = total_avaliacoes(clinica, Clinica)  # Renomeado para evitar conflito com a função
     
+    is_cliente = hasattr(request.user, 'cliente')
+    
+    avaliacoes_list = Avaliacao.objects.filter(
+        content_type=ContentType.objects.get_for_model(clinica),
+        object_id=clinica.id
+    )
+    
+    paginator = Paginator(avaliacoes_list, 5)
+    page = request.GET.get('page')
+    avaliacoes = paginator.get_page(page)
+    perguntas_list = clinica.perguntas.exclude(resposta__isnull=True).exclude(resposta__exact='')
+    paginator_perguntas = Paginator(perguntas_list, 5)  # 5 perguntas por página
+    page_perguntas = request.GET.get('page_perguntas')
+    perguntas_paginated = paginator_perguntas.get_page(page_perguntas)
+    form = AvaliacaoForm()  # Inicialização aqui
+    form_perguntas = PerguntaRespostaForm()  
     if request.method == 'POST':
-        form = AvaliacaoForm(request.POST)
+        action = request.POST.get('action')
+        action = request.POST.get('action')
         
-        if form.is_valid():
+        
+        if action == 'send_avaliacao':
+            form = AvaliacaoForm(request.POST)
             avaliacao = form.save(commit=False)
-            avaliacao.cliente = request.user  # Asumindo que o cliente é o usuário logado
+            avaliacao.cliente = request.user.cliente  # Assumindo que o cliente é o usuário logado
             avaliacao.content_type = ContentType.objects.get_for_model(clinica)
             avaliacao.object_id = clinica.id
             avaliacao.save()
             
-            # Recalcular a média e total de avaliações após nova avaliação
-            media = calcular_media(clinica)
+            # Recalcular a média após nova avaliação
+            media = calcular_media(clinica, Clinica)
             total_av += 1  # Atualizar o número total de avaliações
             
-            # Aqui você pode adicionar algum redirecionamento ou mensagem de sucesso
             
+
+    
+        elif action == 'send_pergunta':
+            form_perguntas = PerguntaRespostaForm(request.POST)
+            if form_perguntas.is_valid():
+                pergunta = form_perguntas.save(commit=False)
+                pergunta.cliente = request.user.cliente
+                pergunta.content_type = ContentType.objects.get_for_model(clinica)
+                pergunta.save()
+                clinica.perguntas.add(pergunta)
+                
     else:
         form = AvaliacaoForm()
-
+        form_perguntas = PerguntaRespostaForm()
+        
+            
+            
+    if request.META.get('HTTP_ACCEPT') == 'application/json':
+        avaliacoes_json = [
+            {
+                'nome': a.cliente.nome,
+                'descricao': a.descricao,
+                'rating': a.rating,
+                'cliente': {
+                    'foto': {
+                        'url': a.cliente.foto.url if a.cliente.foto else None,
+                    }
+                
+                }
+            } for a in avaliacoes
+        ]
+        
+        perguntas_json = [
+        {
+            'pergunta': p.pergunta,
+            'nome': p.cliente.nome,
+            'resposta':p.resposta,
+            # ... outros campos que você quer enviar
+        } for p in perguntas_paginated if p.resposta
+    ]
+        return JsonResponse({
+        'avaliacoes': avaliacoes_json,
+        'perguntas': perguntas_json,
+        'has_next_avaliacoes': avaliacoes.has_next(),
+        'has_next_perguntas': perguntas_paginated.has_next()
+    })
+                
     context = {
         'clinica': clinica,
+        'is_cliente':is_cliente,
         'form': form,
         'is_cliente': is_cliente,
         'has_emergency': has_emergency,
         'media': media,
+        'form_perguntas': form_perguntas,
+        'perguntas_paginated': perguntas_paginated,
+        'avaliacoes': avaliacoes,
         'total_avaliacoes': total_av,  # Usando total_av aqui
         'stars': stars
     }
@@ -292,7 +418,9 @@ def buscar_estados(request):
         for estado in prof.estado.all():
             estados_ativos.add(estado.nome)
             
-    return JsonResponse({'estados': list(estados_ativos)})
+    estados_ordenados = sorted(estados_ativos)
+        
+    return JsonResponse({'estados': list(estados_ordenados)})
 
 
 
@@ -323,8 +451,8 @@ def get_cities(request):
                                         break
                             else:
                                 cities.add(cidade.nome)
-
-        return JsonResponse({'cities': list(cities)})
+        cidades_ordenadas = sorted(cities)    
+        return JsonResponse({'cities': list(cidades_ordenadas)})
     else:
         return JsonResponse({'cities': []})
 

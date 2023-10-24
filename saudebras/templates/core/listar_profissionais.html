@@ -28,7 +28,7 @@
           <img style="max-height:4rem;" class="mb-3" id="suaImagem" src="">
           </div>
           <form id="cidade_form"  class="mb-2 w-100 d-flex justify-content-end">
-            <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; " class="w-30 p-2" id="convenios_select">
+            <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; background:#fff; " class="w-30 p-2" id="convenios_select">
              
               <!-- Opções de cidade aqui -->
             </select>
@@ -39,7 +39,7 @@
         <div class="container mt-5 d-flex justify-content-between" style=" flex-grow:1;">
 
 
-          <div>
+          <div class="profissionalDiv">
 
           {% for profissional in profissionais %}
           <div class="mb-5">
@@ -293,7 +293,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script>
 
 {% load url_filters %}
-<div class="container mt-4 mb-4 pagination">
+<div class="container p-2 mt-4 mb-4 pagination">
 
 {% with queries=request.GET.copy %}
 <div class="pagination">

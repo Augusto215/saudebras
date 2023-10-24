@@ -1,25 +1,47 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
+<div class="modal fade" id="editarFoto" tabindex="-1" aria-labelledby="editarFotoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editarFoto">Editar Foto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editarFoto" enctype="multipart/form-data" method="post" action="{%url 'alterar_Profissional' %}">
+          {% csrf_token %}
+          <p><input type="file"  name="foto"></p>
+
+          <p><button name="action" value="update_photo" type="submit">Enviar</button></p>
+
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 <!-- Editar Perfil -->
 <div class="fluid-container d-flex" style="background:#FAFAFA; flex-grow:1;">
 <div id="container" class="d-flex container mt-5" style="gap:10rem;" >
   <div id="sidebar" class="d-flex flex-column editar_perfil" style="gap:2rem;">
     <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
     <button onclick="alterarConteudo('conteudo2')">Endereços</button>
-    <button onclick="alterarConteudo('conteudo3')">Conteúdo 3</button>
+    <button onclick="alterarConteudo('conteudo3')">Avaliações</button>
     <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_profissional' profissional.id %}"><button class="w-100">Ver Perfil</button></a>
   </div>
 
   <div id="main-content" class=" mb-5">
-    <div id="conteudo1" class="conteudo">
-      <form method="post" action="{%url 'alterar_Profissional' %}">
+    <div id="conteudo1" class="conteudo"> 
+
+      <form id="editarPerfil" enctype="multipart/form-data" method="post" action="{%url 'alterar_Profissional'%}">
         {% csrf_token %}
 
       <div class="d-flex mb-3 align-items-center justify-content-center w-100" style="gap:2rem; ">
         <div class="d-flex flex-column w-100">
           <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;"> 
-      <div  class="d-flex align-items-center mb-4 w-100" style="gap:1rem;"><span class="p-3" style="border:solid 1px #BEBEBE; border-radius:4px;"><img style="height:7rem; width:7rem; object-fit:cover;" src="{{profissional.foto.url}}"></span>
+      <div  class="d-flex align-items-center mb-4 w-100 pic-box" style="gap:1rem;"><span class="p-3" style="border:solid 1px #BEBEBE; border-radius:4px; position:relative;"><a href="#" data-bs-toggle="modal" data-bs-target="#editarFoto" class="p-2 pencil" style="position:absolute;text-decoration:none; background:#fff; display:none; top:-15px; left:-15px; border-radius:50%; border:3px solid #04AA6D;"><img style="max-height:1.5rem;" src="{%static 'img/pencil.png' %}"></a><img style="height:7rem; width:7rem; object-fit:cover;" {%if profissional.foto%}src="{{profissional.foto.url}}" {%else%} src="#" {%endif%}></span>
       <span style="font-size:1.3rem; font-weight:600;">{{profissional.nome}}&nbsp;{{profissional.sobrenome}}</span> </div>    
       <div class="d-flex w-100 justify-content-start" style="gap:3rem;">
       <span class="d-flex flex-column justify-content-center align-items-start" style="color:#000 !important; "><label style="font-weight:600" for="nome">Nome:</label><input style="width:100%; max-width:12rem;"  id="nome" name="nome" value="{{profissional.nome}}"></span> 
@@ -74,15 +96,15 @@
             <button type="button" id="addServico">Adicionar Serviço</button>
         </div>
         <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-        <div id="fotosContainer">
-        </div>
-          <input type="file" style="display:none; " id="fotoInput" multiple>
-         
-          <div id="fileInputsContainer"></div>
-          <button type="button" id="addFileInput">Adicionar nova imagem</button>
-      </div>
-      <button type="submit" name="acao" value="atualizar_profissional">Atualizar Perfil Profissional</button>
+          <div>
 
+          </div>
+          <div id="fotosContainer"></div>
+          <div id="fileInputsContainer"></div>
+          <button id="addFileInput" type="button">Adicionar mais fotos</button>
+          
+      <button type="submit" name="action" value="update_profile" value="atualizar_profissional">Atualizar Perfil Profissional</button>
+        </div>
     <script>
       
       // Preenchidas pelo template do servidor
@@ -103,6 +125,10 @@
       // Função para atualizar a visibilidade do botão 'Adicionar Convênio'
       function updateAddButtonVisibility() {
         const addButton = document.getElementById("addConvenio");
+        addButton.addEventListener('click', function()
+        {
+          this.style.display = 'none'
+        })
         const availableConvenios = allConvenios.filter(c => !selectedConvenios.includes(c.id));
       
         if (availableConvenios.length === 0) {
@@ -174,6 +200,7 @@
           select.remove();
           addButton.remove();
           updateAddButtonVisibility();
+          document.querySelector('#addConvenio').style.display = 'block';
         });
       
         document.getElementById("conveniosContainer").appendChild(select);
@@ -184,97 +211,92 @@
       
       </script>
       <script>
-      // O array de fotos do usuário; geralmente, isso viria do seu servidor
-      const userFotos = [
-      {% for foto in profissional.galeria.all %}
-      {id: {{ foto.id }}, url: "{{ foto.imagem.url }}"},
-      {% endfor %}
- ];
- 
- // Array para guardar fotos que o usuário quer fazer upload
- const uploadedFotos = [];
- 
- // Função para criar um elemento de foto
- function createFotoElement(id, url) {
-   const container = document.createElement("div");
-   
-   const img = document.createElement("img");
-   img.src = url;
-   img.width = 100;
-   img.height = 100;
- 
-   const removeButton = document.createElement("button");
-   removeButton.textContent = "X";
-   removeButton.addEventListener("click", () => {
-     removeFoto(id, container);
-   });
- 
-   // Criação do input oculto
-   const hiddenInput = document.createElement("input");
-   hiddenInput.type = "hidden";
-   hiddenInput.name = "fotos";
-   hiddenInput.value = id;
- 
-   container.appendChild(img);
-   container.appendChild(removeButton);
-   container.appendChild(hiddenInput); // Adiciona o input oculto ao contêiner
-   
-   document.getElementById("fotosContainer").appendChild(container);
- }
- 
- // Função para remover foto e o input oculto associado
- function removeFoto(id, container) {
-   const index = userFotos.findIndex(foto => foto.id === id);
-   if (index > -1) {
-     userFotos.splice(index, 1);
-     container.remove(); // Remove o contêiner inteiro, incluindo o input oculto
-   }
- }
- 
-      
-      // Função para adicionar novos campos de input do tipo "file"
-      function addNewFileInput() {
-        const newInput = document.createElement("input");
-        newInput.type = "file";
-        newInput.className = "fileInput";  // Classe para identificar todos os inputs desse tipo
-        newInput.accept = "image/*";  // Aceita apenas imagens
+        window.onload = function() {
+          // Inicializa a galeria do usuário com fotos já existentes
         
-        newInput.addEventListener("change", function() {
-          const files = this.files;
-          
-          for (let i = 0; i < files.length; i++) {
-            uploadedFotos.push(files[i]);
-            // Aqui, você pode fazer algo com a foto, como criar um elemento com ela
-          }
-        });
-        
-        document.getElementById("fileInputsContainer").appendChild(newInput);
-      }
-      
-      window.addEventListener('DOMContentLoaded', (event) => {
-        // Inicializa as fotos que já estão associadas ao profissional
-        userFotos.forEach(foto => {
-          console.log('foto')
-          createFotoElement(foto.id, foto.url);
-        });
-      
-        // Listener para upload de arquivos
-        document.getElementById("fotoInput").addEventListener("change", function() {
-          const files = this.files;
-          
-          for (let i = 0; i < files.length; i++) {
-            uploadedFotos.push(files[i]);
-            // Aqui, você pode fazer algo com a foto, como criar um elemento com ela
-          }
-        });
-      
-        // Adiciona um novo input do tipo "file" quando o botão é clicado
-        document.getElementById("addFileInput").addEventListener("click", addNewFileInput);
-        
-        // Inicializa um input do tipo "file" na primeira carga
-        addNewFileInput();
-      });
-    </script>      
+   // O array de fotos do usuário; geralmente, isso viria do seu servidor
+const userFotos = [
+{% for fotoUser in profissional.galeria.all %}
+  {id: {{ fotoUser.id }}, url: "{{ fotoUser.imagem.url }}"},
+{% endfor %}
+];
+
+
+userFotos.forEach(foto => {
+  createFotoElement(foto.id, foto.url);
+});
+
+
+function createFotoElement(id, url) {
+  const container = document.createElement("div");
+
+  // Criando a imagem
+  const img = document.createElement("img");
+  img.src = url;
+  img.width = 100;
+  img.height = 100;
+  console.log("ativo")
+
+  // Criando o botão de remover
+  const removeButton = document.createElement("button");
+  removeButton.textContent = "X";
+  removeButton.addEventListener("click", () => {
+    removeFoto(id, container);
+  });
+
+  // Criando o input hidden
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+  hiddenInput.name = "galeria";
+  hiddenInput.value = id;
+
+
+  // Adicionando elementos ao container
+  container.appendChild(img);
+  container.appendChild(removeButton);
+  container.appendChild(hiddenInput);
+
+  // Adicionando o container ao DOM
+  document.getElementById("fotosContainer").appendChild(container);
+}
+
+// Função para remover foto e o input oculto associado
+function removeFoto(id, container) {
+  const index = userFotos.findIndex(foto => foto.id === id);
+  if (index > -1) {
+    userFotos.splice(index, 1);
+    container.remove();
+  }
+}
+
+function addNewFileInput() {
+  const newInputDiv = document.createElement("div");
+  
+  const newInput = document.createElement("input");
+  newInput.type = "file";
+  newInput.name = "galeria";
+  newInput.accept = "image/*";
+  
+  const removeButton = document.createElement("button");
+  removeButton.textContent = "Excluir";
+  removeButton.type = "button";
+  removeButton.addEventListener("click", () => {
+    newInputDiv.remove();
+  });
+  
+  newInputDiv.appendChild(newInput);
+  newInputDiv.appendChild(removeButton);
+  
+  document.getElementById("fileInputsContainer").appendChild(newInputDiv);
+}
+
+document.getElementById("addFileInput").addEventListener("click", addNewFileInput);
+
+// Inicializa um input do tipo "file" na primeira carga
+addNewFileInput();
+        }
+
+      </script>
         
         <script>
         // Preenchidas pelo template do servidor
@@ -295,6 +317,10 @@
         // Função para atualizar a visibilidade do botão 'Adicionar Idioma'
         function updateAddIdiomaButtonVisibility() {
           const addButton = document.getElementById("addIdioma");
+          addButton.addEventListener('click', function() 
+          {
+            this.style.display = 'none';
+          })
           const availableIdiomas = allIdiomas.filter(i => !selectedIdiomas.includes(i.id));
         
           if (availableIdiomas.length === 0) {
@@ -389,6 +415,11 @@ let selectedServicos = userServicos.map(s => s.id);
 // Função para atualizar a visibilidade do botão 'Adicionar Serviço'
 function updateAddServicoButtonVisibility() {
   const addButton = document.getElementById("addServico");
+  addButton.addEventListener('click', function()
+  {
+    document.querySelector('#addServico').style.display = 'none'
+  })
+
   const availableServicos = allServicos.filter(s => !selectedServicos.includes(s.id));
 
   if (availableServicos.length === 0) {
@@ -461,6 +492,10 @@ document.getElementById("addServico").addEventListener("click", () => {
     select.remove();
     addButton.remove();
     updateAddServicoButtonVisibility();
+    addButton.addEventListener('click', function()
+  {
+    document.querySelector('#addServico').style.display = 'block'
+  })
   });
 
   document.getElementById("servicosContainer").appendChild(select);
@@ -483,6 +518,31 @@ document.getElementById("addServico").addEventListener("click", () => {
   updateAddServicoButtonVisibility();
         </script>
 
+        <script>
+          document.getElementById("editarPerfil").addEventListener("submit", function(event) {
+            const galeriaInputs = document.querySelectorAll('input[name="galeria"]');
+            let galeriaValues = [];
+            
+            galeriaInputs.forEach((input) => {
+              if(input.value === '') {
+                  input.remove();
+              }
+            });
+            
+            // Removendo todos os inputs de galeria
+            
+  
+          
+            // Adicionando apenas os inputs válidos
+            galeriaValues.forEach((value) => {
+              const hiddenInput = document.createElement("input");
+              hiddenInput.type = "hidden";
+              hiddenInput.name = "galeria";
+              hiddenInput.value = value;
+              this.appendChild(hiddenInput);
+            });
+          });
+        </script>
         
         
         
@@ -509,6 +569,39 @@ document.getElementById("addServico").addEventListener("click", () => {
         </div>
         <button id="addEnderecoInput">Adicionar novo endereço</button>
         <div id="enderecosInputsContainer"></div>
+      </div>
+    </div>
+
+
+    <div id="conteudo3" class="conteudo">
+      <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+        {% for pergunta in profissional.perguntas.all %}
+        {%if pergunta.resposta == blank %}
+    <div class="d-flex flex-column justify-content-center">
+        <div class="d-flex mb-3">
+          <img style="max-height:2rem;" src="{{pergunta.cliente.foto.url}}"><span>{{pergunta.cliente.nome}}</span>
+        </div>
+          <span>{{pergunta.pergunta}}</span>
+          
+          <form method="post" action="{%url 'alterar_Profissional' %}">
+            {%csrf_token%}
+            <input type="hidden" name="pergunta_id" value="{{pergunta.id}}">
+        <input name="resposta" placeholder:"Resposta...">
+        <button type="submit" name="action" value="responder_pergunta">Enviar</button>
+          </form>
+    
+  </div>
+    {%else%}
+
+    <div class="d-flex flex-column">
+        <span>{{pergunta.pergunta}}</span>
+        <span>{{pergunta.resposta}}</span>
+    </div>
+
+    {%endif%}
+{% endfor %}
+
+  
       </div>
     </div>
       

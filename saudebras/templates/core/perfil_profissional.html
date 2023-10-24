@@ -3,49 +3,126 @@
 {%load static%}
 
 {% block 'conteudo' %}
-<div class="fluid-container" style=" flex-grow:1; background:#FAFAFA;">
-<div class="container mt-5 d-flex flex-content-center" style="gap:2rem;">
-  <div class="p-4 mb-5" style="background:#fff; border-radius:12px; width:80%; filter: drop-shadow(2px 4px 6px #DBDBDB);
-">
-  <div class="d-flex flex-column align-items-start justify-content-center">
-    <div class="d-flex" style="gap:1rem;">
-      <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
-      <div class="d-flex flex-column">
-        <span class="mb-2" style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
-        <div class="d-flex mb-2">
-        
-          {% for especialidade in profissional.especialidades.all %}
-          <span style="color:#000 !important; font-size:1rem !important;">
-            {{ especialidade.nome }}
-            {% if not forloop.last %}, {% endif %}
-          </span> 
-          {% endfor %}
-        
-      </div>
-      {%load floor%}
-      <span class="mb-3" style="font-size:1rem; color:#000 !important;"><span><div class="rating-display d-flex align-items-center mb-2">
-        <div class="rating">
-          
-          {% for star in stars %}
-              {% if star == "full" %}
-                  <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
-              {% elif star1 == "half" %}
-                  <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
-              {% else %}
-                  <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
-              {% endif %}
-          {% endfor %}
-      </div>
-      &nbsp;de {{ total_avaliacoes }} avaliações</span>  </div> 
-    </span>
-      <div class="d-flex mb-3">
-      {% for convenios in profissional.convenios.all %}
 
-    <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenios.nome }}</span>
-    {% if not forloop.last %} {% endif %}
-  {% endfor %}
+
+<!-- Modal com todos os convênios -->
+<div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="conveniosModalLabel-{{ profissional.id }}">Convênios</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {%for convenio in profissional.convenios.all%}
+        <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+        {%endfor%}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal com todos os convênios -->
+<div class="modal fade" id="especialidadesModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="especialidadesModalLabel-{{ profissional.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="especialidadesModalLabel-{{ profissional.id }}">Convênios</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {%for especialidade in profissional.especialidades.all%}
+        <span style="margin-right: .5rem !important; text-decoration:underline;">{{ especialidade.nome }}</span>
+        {%endfor%}
+      </div>
+
+    </div>
+  </div>
+</div>
+  
+ 
+<div class="fluid-container" style=" flex-grow:1; background:#FAFAFA;">
+<div class="mainPerfil container mt-5 d-flex flex-content-center" style="gap:2rem;">
+  <div class="perfilDiv p-4 mb-5" style="background:#fff; border-radius:12px; width:80%; filter: drop-shadow(2px 4px 6px #DBDBDB);
+  ">
+
+
+  <!-- Modal com todos os convênios -->
+  <div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="conveniosModalLabel-{{ profissional.id }}">Convênios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {%for convenio in profissional.convenios.all%}
+          <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+          {%endfor%}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
       </div>
     </div>
+  </div>
+
+    
+   
+<div class="d-flex flex-column align-items-start justify-content-center">
+  <div class="d-flex" style="gap:1rem;">
+     <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
+     <div class="d-flex flex-column">
+        <span class="mb-2" style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+        <div class="d-flex">
+          <div class="d-flex mb-3">
+            {% for especialidade in profissional.especialidades.all %}
+            {% if forloop.counter < 3 %}
+            <span style="margin-right: .5rem !important; text-decoration:underline;">{{ especialidade.nome }}</span>
+            {% endif %}
+            {% endfor %}
+            {% if profissional.especialidades.all.count > 2 %}
+            <a href="#" data-bs-toggle="modal" data-bs-target="#especialidadesModal-{{ profissional.id }}">Ver mais</a>
+            {% endif %}
+         </div>
+         <!-- Modal com todos os convênios -->
+        
+        </div>
+        {%load floor%}
+        <span class="mb-3" style="font-size:1rem; color:#000 !important;">
+           <span>
+              <div class="rating-display d-flex align-items-center mb-2">
+                 <div class="rating">
+                    {%for avaliacao in avaliacoes %}
+                    {%endfor%}
+                    {% for star in stars %}
+                    {% if star == "full" %}
+                    <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
+                    {% elif star1 == "half" %}
+                    <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
+                    {% else %}
+                    <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+                    {% endif %}
+                    {% endfor %}
+                 </div>
+                 &nbsp;de {{ total_avaliacoes }} avaliações
+           </span>
+           </div> 
+        </span>
+        <div class="d-flex mb-3">
+           {% for convenio in profissional.convenios.all %}
+           {% if forloop.counter < 3 %}
+           <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+           {% endif %}
+           {% endfor %}
+           {% if profissional.convenios.all.count > 2 %}
+           <a href="#" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+           {% endif %}
+        </div>
+        <!-- Modal com todos os convênios -->
+       
+      </div>
   </div>
 </div>
   <div class="tab-container">
@@ -93,6 +170,12 @@
         {%endfor%}
           </div>
     </div>
+    <div class="mt-5 d-flex justify-content-center align-items-center flex-column">
+      <span class="w-100 d-flex text-center justify-content-center mb-3" style="font-size:1.2rem; font-weight:600;">Galeria de Fotos:</span>
+      {%for foto in profissional.galeria.all%}
+      <img style="max-heigth:5rem;" src="{{foto.imagem.url}}">
+      {%endfor%}
+    </div>
       </div>
       <div class="tab-pane">
           <div class=" mb-4 d-flex justify-content-center align-items-center flex-column">
@@ -108,42 +191,31 @@
       </div>
     </div>
       <div class="tab-pane">
-        {% for avaliacao in avaliacoes %}
-          <div class="avaliacao">
-            <div class="estrelas">
-              {% for i in "12345"|make_list %}
-                {% if forloop.counter <= avaliacao.rating|safe %}
-                  <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span> <!-- Estrela preenchida -->
-                {% else %}
-                  <span style="font-size:1.2rem !important;" class="star1 full">&#9734;</span> <!-- Estrela vazia -->
-                {% endif %}
-              {% endfor %}
-            </div>
-            <div class="profile-pic">
-              <img src="{{avaliacao.cliente.foto.url}}">
+        <div class="mt-5 d-flex justify-content-center align-items-center flex-column">
+          <span class="w-100 d-flex text-center justify-content-center mb-4" style="font-size:1.2rem; font-weight:600; ">Opiniões:</span>
 
-            </div>
-            <div class="descricao">
-              {{ avaliacao.descricao }}
-            </div>
-            <div class="data">
-              {{ avaliacao.created_at }}
-            </div>
-          </div>
-        {% endfor %}
+        <div class="avaliacoes  d-flex justify-content-center align-items-center flex-column">
+
+          <!-- As avaliações serão carregadas aqui via JavaScript -->
+        </div>
+      </div>
+      
       
         {% load user_tags %}
         {% if user.is_authenticated %}
           {% if is_cliente %}
             <form method="post">
+              
               {% csrf_token %}
+              <input type="hidden" name="action" value="send_avaliacao">
+
               <label for="rating">Avaliação: </label>
               <div class="rating">
-                <span class="star" data-value="5">☆</span>
-                <span class="star" data-value="4">☆</span>
-                <span class="star" data-value="3">☆</span>
-                <span class="star" data-value="2">☆</span>
                 <span class="star" data-value="1">☆</span>
+                <span class="star" data-value="2">☆</span>
+                <span class="star" data-value="3">☆</span>
+                <span class="star" data-value="4">☆</span>
+                <span class="star" data-value="5">☆</span>
                 <input type="hidden" id="ratingInput" name="rating">
               </div>
               <label for="descricao">Descrição (Opcional): </label>
@@ -158,8 +230,26 @@
         {% endif %}
       </div>
       
-      <div class="tab-pane">Conteúdo da Tab 4
-        <br>Conteúdo 4
+      <div class="tab-pane">
+        <div class="perguntas">
+          <!-- Perguntas serão inseridas aqui pelo JavaScript -->
+      </div>
+        {% if user.is_authenticated %}
+          {% if is_cliente %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="send_pergunta">
+          <input type="text" name="pergunta">
+          <button type="submit">Enviar Pergunta</button>
+      </form>
+
+      {%else%}
+      <span>Apenas clientes podem perguntar</span>
+      {%endif%}
+
+      {%else%}
+      <span> Você precisa estar logado para perguntar</span>
+      {%endif%}
       </div>
 
       <div class="tab-pane">
@@ -188,6 +278,196 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
 
 
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let currentPage = 1;
+  
+    let profissional_id = "{{ profissional.id }}";  // Supondo que você tenha essa variável disponível no template
+    let page = 1;
+    let baseUrl = window.location.origin;
+  
+    async function fetchAvaliacoes(page) {
+      const response = await fetch(`/perfil/${profissional_id}/?page=${page}`, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'fetch'
+        }
+      });
+  
+      if (!response.ok) {
+        console.error("Algo deu errado:", response.status, response.statusText);
+        return;
+      }
+  
+      const data = await response.json();
+      const avaliacoesDiv = document.querySelector(".avaliacoes");
+      avaliacoesDiv.innerHTML = "";
+      
+      data.avaliacoes.forEach(avaliacao => {
+        const avaliacaoDiv = document.createElement("div");
+        avaliacaoDiv.classList.add("avaliacao", "mb-5", "d-flex", "w-100", "flex-column", "align-items-center", "justify-content-center");
+  
+        const profileDiv = document.createElement("div");
+        profileDiv.classList.add("d-flex");
+        profileDiv.style.gap = ".5rem";
+  
+        const profilePicDiv = document.createElement("div");
+        profilePicDiv.classList.add("profile-pic");
+        const img = document.createElement("img");
+        img.style.borderRadius = "4px";
+        img.style.height = "1.5rem";
+        img.style.width = "1.5rem";
+        img.style.objectFit = "cover";
+        img.src = avaliacao.cliente.foto.url;
+        profilePicDiv.appendChild(img);
+  
+        const nameDiv = document.createElement("div");
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = avaliacao.nome;
+        nameDiv.appendChild(nameSpan);
+  
+        profileDiv.appendChild(profilePicDiv);
+        profileDiv.appendChild(nameDiv);
+  
+        const starsDiv = document.createElement("div");
+        starsDiv.classList.add("estrelas");
+        for(let i = 1; i <= 5; i++) {
+          const starSpan = document.createElement("span");
+          starSpan.style.fontSize = "1.2rem";
+          starSpan.style.color = "#2D77EA";
+  
+          if (i <= avaliacao.rating) {
+            starSpan.innerHTML = "&#9733;";
+          } else {
+            starSpan.innerHTML = "&#9734;";
+          }
+  
+          starsDiv.appendChild(starSpan);
+        }
+  
+        const descricaoDiv = document.createElement("div");
+        descricaoDiv.classList.add("descricao");
+        descricaoDiv.textContent = avaliacao.descricao;
+  
+        const dataDiv = document.createElement("div");
+        dataDiv.classList.add("data");
+        dataDiv.textContent = avaliacao.created_at;
+  
+        avaliacaoDiv.appendChild(profileDiv);
+        avaliacaoDiv.appendChild(starsDiv);
+        avaliacaoDiv.appendChild(descricaoDiv);
+        avaliacaoDiv.appendChild(dataDiv);
+  
+        avaliacoesDiv.appendChild(avaliacaoDiv);
+      });
+      const containerPage = document.createElement("div");
+      containerPage.classList.add("d-flex", "mb-5", "containerPage");
+      avaliacoesDiv.appendChild(containerPage)
+
+      
+      if (currentPage > 1) {
+        const prevButton = document.createElement("button");
+        prevButton.textContent = "<";
+        prevButton.classList.add("pageBtn", "p-2");
+        prevButton.addEventListener("click", () => {
+          fetchAvaliacoes(--currentPage);
+        });
+        containerPage.appendChild(prevButton);
+      }
+  
+      if (data.has_next_avaliacoes) {
+        const nextButton = document.createElement("button");
+        nextButton.classList.add("pageBtn", "p-2");
+        nextButton.textContent = ">";
+        nextButton.addEventListener("click", () => {
+          fetchAvaliacoes(++currentPage);
+        });
+        containerPage.appendChild(nextButton);
+      }
+    }
+    
+    
+
+    fetchAvaliacoes(currentPage);
+  });
+  
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let currentPerguntasPage = 1;
+    let profissional_id = "{{ profissional.id }}";  // Supondo que você tenha essa variável disponível no template
+    let baseUrl = window.location.origin;
+
+    async function fetchPerguntas(page) {
+      const response = await fetch(`/perfil/${profissional_id}/?page_perguntas=${page}`, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'fetch'
+        }
+      });
+
+      if (!response.ok) {
+        console.error("Algo deu errado:", response.status, response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      const perguntasDiv = document.querySelector(".perguntas");
+      perguntasDiv.innerHTML = "";
+
+      data.perguntas.forEach(pergunta => {
+      
+        const perguntaDiv = document.createElement("div");
+        perguntaDiv.classList.add("pergunta", "mb-5", "d-flex", "w-100", "flex-column", "align-items-center", "justify-content-center");
+
+        const textoDiv = document.createElement("div");
+        const textoSpan = document.createElement("span");
+        const nomeSpan = document.createElement("span");
+        const respostaSpan = document.createElement("span")
+  
+    
+        textoSpan.textContent = pergunta.pergunta;
+        respostaSpan.textContent = pergunta.resposta;
+        nomeSpan.textContent = pergunta.nome;
+        textoDiv.appendChild(textoSpan);
+        textoDiv.appendChild(nomeSpan);
+        textoDiv.appendChild(respostaSpan);
+        perguntaDiv.appendChild(textoDiv);
+
+        perguntasDiv.appendChild(perguntaDiv);
+        perguntasDiv.appendChild(perguntaDiv);
+      });
+    
+
+      const containerPage = document.createElement("div");
+      containerPage.classList.add("d-flex", "mb-5", "containerPage");
+      perguntasDiv.appendChild(containerPage);
+
+      if (currentPerguntasPage > 1) {
+        const prevButton = document.createElement("button");
+        prevButton.textContent = "<";
+        prevButton.classList.add("pageBtn", "p-2");
+        prevButton.addEventListener("click", () => {
+          fetchPerguntas(--currentPerguntasPage);
+        });
+        containerPage.appendChild(prevButton);
+      }
+
+      if (data.has_next_perguntas) {
+        const nextButton = document.createElement("button");
+        nextButton.textContent = ">";
+        nextButton.classList.add("pageBtn", "p-2");
+        nextButton.addEventListener("click", () => {
+          fetchPerguntas(++currentPerguntasPage);
+        });
+        containerPage.appendChild(nextButton);
+      }
+    }
+
+    fetchPerguntas(currentPerguntasPage);
+  });
+</script>
 
 
 <script>

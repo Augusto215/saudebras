@@ -32,6 +32,16 @@ class ProfissionalRegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(ProfissionalRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['especialidades'].choices = [(x.id, x.nome) for x in Especialidade.objects.all()]
+        
+class ClinicaForm(UserCreationForm):
+    
+    image = forms.ImageField(required=False)
+    
+    class Meta:
+        model = Clinica
+        fields =  ['email', 'password1', 'password2', 
+                  'tipo_profissional', 'ceps', 'especialidades', 
+                  'telefone', 'nome',  'username', 'foto', 'convenios', 'descricao',  'idiomas', 'tipo_clinica']        
 
         
         
@@ -46,56 +56,7 @@ class ClienteRegistrationForm(UserCreationForm):
         
         
         
-class ClinicaForm(UserCreationForm):
-    
-    image = forms.ImageField(required=False)
-    
-    tipo_clinica = forms.ModelMultipleChoiceField(
-        queryset=TipoClinica.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    
-    tipo_profissional = forms.ModelMultipleChoiceField(
-        queryset=TipoProfissional.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    
-    
-    especialidades = forms.ModelMultipleChoiceField(
-        queryset=Especialidade.objects.all(), 
-        widget=forms.CheckboxSelectMultiple, 
-        required=False)
-    
-    estados = forms.ModelMultipleChoiceField(
-        queryset=Estado.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    
-    cidades = forms.ModelMultipleChoiceField(
-        queryset=Cidade.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    
-    bairros = forms.ModelMultipleChoiceField(
-        queryset=Bairro.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    
-    convenio = forms.ModelMultipleChoiceField(
-        queryset=Convenio.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    
-    class Meta:
-        model = Clinica
-        fields = ['email', 'password1', 'password2', 'especialidades', 
-                  'telefone', 'nome', 'sobrenome', 'username', 'image', 'convenios', 'idiomas','tipo_clinica', 'descricao', 'tipo_profissional', 'foto']
+
         
 
 from django.forms import inlineformset_factory
@@ -153,14 +114,110 @@ class AvaliacaoForm(forms.ModelForm):
         model = Avaliacao
         fields = ['rating', 'descricao']
         
+class PerguntaRespostaForm(forms.ModelForm):
+    class Meta:
+        model = PerguntaResposta
+        fields = ['pergunta']  # Você pode adicionar mais campos se necessário
+    
+    # Caso você queira adicionar alguma validação específica ou outros métodos
+    def clean_pergunta(self):
+        pergunta = self.cleaned_data.get('pergunta')
+        if not pergunta:
+            raise forms.ValidationError("Este campo não pode ser deixado em branco.")
+        return pergunta
+
+
+class RespostaForm(forms.ModelForm):
+    class Meta:
+        model = PerguntaResposta  # supondo que 'Pergunta' é o seu modelo que possui o campo 'resposta'
+        fields = ['resposta']
+    
+    
 class ProfissionalForm(forms.ModelForm):
+    def clean_galeria(self):
+        data = self.cleaned_data.get('galeria', None)
+        if data is None or data == '':
+            return None  # Ou qualquer valor padrão
+        return data
+
     class Meta:
         model = Profissional
         fields = ['nome', 'sobrenome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria']
+        
+        
+class ClinicaEditarForm(forms.ModelForm):
+    def clean_galeria(self):
+        data = self.cleaned_data.get('galeria', None)
+        if data is None or data == '':
+            return None  # Ou qualquer valor padrão
+        return data
 
+    class Meta:
+        model = Clinica
+        fields = ['nome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria']
+        
+        
+class FotoProfForm(forms.ModelForm):
 
-class ClinicaForm(forms.ModelForm):
     class Meta:
         model = Profissional
-        fields = ['nome', 'sobrenome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria']
-                
+        fields = ['foto']        
+
+
+class FotoClinicaForm(forms.ModelForm):
+
+    class Meta:
+        model = Clinica
+        fields = ['foto']        
+
+
+class ClinicaForm(UserCreationForm):
+    
+    image = forms.ImageField(required=False)
+    
+    tipo_clinica = forms.ModelMultipleChoiceField(
+        queryset=TipoClinica.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
+    tipo_profissional = forms.ModelMultipleChoiceField(
+        queryset=TipoProfissional.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
+    
+    especialidades = forms.ModelMultipleChoiceField(
+        queryset=Especialidade.objects.all(), 
+        widget=forms.CheckboxSelectMultiple, 
+        required=False)
+    
+    estados = forms.ModelMultipleChoiceField(
+        queryset=Estado.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
+    cidades = forms.ModelMultipleChoiceField(
+        queryset=Cidade.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
+    bairros = forms.ModelMultipleChoiceField(
+        queryset=Bairro.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
+    convenio = forms.ModelMultipleChoiceField(
+        queryset=Convenio.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
+    class Meta:
+        model = Clinica
+        fields = ['email', 'password1', 'password2', 'especialidades', 
+                  'telefone', 'nome', 'sobrenome', 'username', 'image', 'convenios', 'idiomas','tipo_clinica', 'descricao', 'tipo_profissional', 'foto']

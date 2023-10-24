@@ -37,16 +37,16 @@
   }
   
 
-.star-full
+.star-full, .star1-full
 {
-    color:#000 !important;
+    color:#2D77EA !important;
 }
 
-.star {
+.star, .star1 {
     cursor: pointer;
     font-size: 24px;
     margin-right: 5px;
-    color:#000 !important;
+    color:#2D77EA !important;
   }
   
   .star.selected {
@@ -226,8 +226,45 @@ button
     margin-bottom:1rem;
     font-size: .9rem;
    
+}   
+
+
+
+
+.modal-backdrop {
+    z-index: 1040 !important;
+  }
+  
+  .modal-dialog {
+    z-index: 1050 !important;
+  }
+  
+.pageBtn
+{
+    text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;
+    outline: none;
+    border: none;
+    
 }
 
+.containerPage
+{
+    gap:.5rem !important;
+}
+
+.pencil
+{
+    transition: .3s ease-out;
+}
+
+.pic-box:hover .pencil
+{
+    display: block !important;   
+}
+.star:hover
+{
+color: #2D77EA;
+}
 
 .form-group
 {
@@ -432,6 +469,7 @@ form
 #index7 h1, #index7 p, #index7 li span, #index7 li{
     color: #0f0f0f !important;
 }
+
 
 #index7::before
 {   
@@ -908,7 +946,57 @@ h2
 
 
     }
+    #index7 li, #index7 li a, #index7 li a span
+{
+    width: 100%;
+}
+    #index7 li 
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 22rem;
+    }
 
+    #mapStatic
+    {
+        display: none !important;
+    }
+
+    .perfilDiv
+    {
+        width: 100% !important;
+    }
+
+    .mainPerfil
+    {
+        flex-direction: column;
+    }
+
+    #elementTxt
+    {
+        font-size: 1rem !important;
+    }
+    .main-text
+    {
+        font-size: 1.2rem !important;
+    }
+
+    .profissionalDiv, .clinicaDiv
+    {
+        width: 100% !important;
+    }
+    #index7 li a span
+    {
+        height: fit-content !important;
+        gap:.5rem;
+        border-radius: 12px !important;
+        flex-direction: row !important;
+    }
+    .box-icon img
+    {
+        max-height: 4rem !important;
+    }
     .icones
     {
         flex-direction: column !important;

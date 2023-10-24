@@ -3,7 +3,7 @@
 {%block 'conteudo'%}
 <div class="container d-flex" style="flex-grow:1;">
     <div class="div-parte1 d-flex align-items-center w-50">
-<form id="regForm"  method="post" action="{% url 'registerClinica'  %}">
+<form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'registerClinica'  %}">
    {% csrf_token %}
    <h3 class="mb-4 text-center w-100" style="color:#6D6875 !important;">Registrar Clínica:</h3>
    <!-- One "tab" for each step in the form: -->
