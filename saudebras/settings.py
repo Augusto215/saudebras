@@ -16,8 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-STRIPE_SECRET_KEY = os.getenv('whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT')
-STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.getenv('sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs')
+STRIPE_PUBLISHABLE_KEY = os.getenv('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5')
 
 from pathlib import Path
 
