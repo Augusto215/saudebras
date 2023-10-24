@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+STRIPE_SECRET_KEY = os.getenv('whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

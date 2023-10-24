@@ -39,6 +39,44 @@ from usuarios.forms import AvaliacaoForm  # Certifique-se de que o caminho para 
 
 from django.contrib.contenttypes.models import ContentType
 
+
+from django.http import JsonResponse
+import json
+import stripe
+
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, stripe.api_key
+        )
+    except Exception as e:
+        return JsonResponse({'status': 'failure', 'error': str(e)}, status=400)
+
+    # Pega o customer ID do evento
+    customer_id = event['data']['object'].get('customer', None)
+    
+    # Handle the event
+    if event['type'] == 'checkout.session.completed':
+        user = Profissional.objects.filter(stripe_customer_id=customer_id).first() or \
+               Clinica.objects.filter(stripe_customer_id=customer_id).first()
+        if user:
+            user.is_active = True
+            user.save()
+
+    elif event['type'] == 'customer.subscription.deleted':
+        user = Profissional.objects.filter(stripe_customer_id=customer_id).first() or \
+               Clinica.objects.filter(stripe_customer_id=customer_id).first()
+        if user:
+            user.is_active = False
+            user.save()
+
+    return JsonResponse({'status': 'success'}, status=200)
+
+
 def calcular_media(objeto, Modelo):
     media = Avaliacao.objects.filter(
         content_type=ContentType.objects.get_for_model(Modelo),

@@ -69,6 +69,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('staff status'), default=False)
     email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
     email_verified = models.BooleanField(default=False)
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
 
     
     objects = CustomUserManager()
