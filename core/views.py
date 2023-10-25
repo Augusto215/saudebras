@@ -53,12 +53,12 @@ logging.basicConfig(level=logging.INFO)
 stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"
 
 def create_subscription(request):
-    YOUR_DOMAIN = "https://your-domain.com"
+    YOUR_DOMAIN = "https://saudebras.onrender.com/"
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[
             {
-                'price': 'your-price-id',
+                'price': 'price_1O4ZsHDVCQ3YDKzSRnhIFsCi',
                 'quantity': 1,
             },
         ],
