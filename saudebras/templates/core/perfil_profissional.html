@@ -76,7 +76,7 @@
      <div class="d-flex flex-column">
         <span class="mb-2" style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
         <div class="d-flex">
-          <div class="d-flex mb-3">
+          <div class="d-flex mb-2">
             {% for especialidade in profissional.especialidades.all %}
             {% if forloop.counter < 3 %}
             <span style="margin-right: .5rem !important; text-decoration:underline;">{{ especialidade.nome }}</span>

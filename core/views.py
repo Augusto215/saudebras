@@ -1,9 +1,14 @@
 import requests
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.http import HttpResponse
 from usuarios.models import *
 from django.db.models import Exists, OuterRef
 from django.db.models import Q
+from django.views.decorators.http import require_POST
+
+import logging
+
 import http
 from usuarios.forms import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -42,45 +47,71 @@ from django.contrib.contenttypes.models import ContentType
 import stripe
 from django.views.decorators.csrf import csrf_exempt
 
-stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"  # Substitua pela sua chave de API da Stripe
+
+logging.basicConfig(level=logging.INFO)
+
+stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"
+
+def create_subscription(request):
+    YOUR_DOMAIN = "https://your-domain.com"
+    checkout_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price': 'your-price-id',
+                'quantity': 1,
+            },
+        ],
+        mode='subscription',
+        success_url=YOUR_DOMAIN + '/success/',
+        cancel_url=YOUR_DOMAIN + '/cancel/',
+    )
+    return redirect(checkout_session.url)
 
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', None)
-
-    if not sig_header:
-        return JsonResponse({'status': 'failure', 'error': 'HTTP_STRIPE_SIGNATURE not found'}, status=400)
-
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, "whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT"  # Substitua pela sua nova chave de assinatura
+            payload, sig_header, 'whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT'
         )
-    except Exception as e:
-        return JsonResponse({'status': 'failure', 'error': str(e)}, status=400)
+    except ValueError as e:
+        # Invalid payload
+        print("Invalid payload")
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        print("Invalid signature")
+        raise e
 
-    customer_id = event['data']['object'].get('customer', None) if event.get('data', {}).get('object', {}) else None
-
-    if event['type'] == 'checkout.session.completed':
-        user = Profissional.objects.filter(stripe_customer_id=customer_id).first() or \
-               Clinica.objects.filter(stripe_customer_id=customer_id).first()
-        if user:
-            user.is_active = True
-            user.save()
-
+    # Handle subscription events
+    if event['type'] == 'customer.subscription.created':
+        handle_subscription_created(event)
     elif event['type'] == 'customer.subscription.deleted':
-        user = Profissional.objects.filter(stripe_customer_id=customer_id).first() or \
-               Clinica.objects.filter(stripe_customer_id=customer_id).first()
-        if user:
-            user.is_active = False
-            user.save()
+        handle_subscription_deleted(event)
 
-    return JsonResponse({'status': 'success'}, status=200)
+    return HttpResponse(status=200)
 
+def handle_subscription_created(event):
+    subscription_id = event['data']['object']['id']
+    subscription = Subscription.objects.get(stripe_subscription_id=subscription_id)
+    subscription.active = True
+    subscription.save()
 
+def handle_subscription_deleted(event):
+    subscription_id = event['data']['object']['id']
+    subscription = Subscription.objects.get(stripe_subscription_id=subscription_id)
+    subscription.active = False
+    subscription.save()
 
+def success_view(request):
+    return render(request, 'core/success.html')
+
+def cancel_view(request):
+    return render(request, 'core/cancel.html')
 
 
 

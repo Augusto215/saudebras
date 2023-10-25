@@ -225,6 +225,15 @@ class Cliente(CustomUser):
     foto = models.ImageField(upload_to='images/', blank=True, null=True, default="/images/unknown.png")
     cep = models.CharField(max_length=50, blank=True, null=True)
 
+
+
+class Subscription(models.Model):
+    profissional = models.OneToOneField('Profissional', null=True, blank=True, on_delete=models.SET_NULL)
+    clinica = models.OneToOneField('Clinica', null=True, blank=True, on_delete=models.SET_NULL)
+    stripe_subscription_id = models.CharField(max_length=50)
+    active = models.BooleanField(default=True)
+
+
 class Profissional(CustomUser):
     is_active = models.BooleanField(_('active'), default=False)
     estado = models.ManyToManyField('Estado', blank=True)
