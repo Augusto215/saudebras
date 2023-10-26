@@ -54,8 +54,8 @@ convenios.forEach(convenio => {
    document.getElementById("tipoClinicaSpan").innerHTML = "Urgências e Emergências 24h";
    imageSrc = document.getElementById("emergenciaImg").innerText;
  } else if (tipoClinica === 'Laboratório') {
-   document.getElementById("tipoClinicaSpan").innerHTML = "Consultas Odontológicas";
-   imageSrc = document.getElementById("dentistaImg").innerText;
+   document.getElementById("tipoClinicaSpan").innerHTML = "Exames e Laboratórios";
+   imageSrc = document.getElementById("laboratorioImg").innerText;
 
 
  } else {

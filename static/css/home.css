@@ -19,10 +19,6 @@
     margin-left:0 !important;
 }
 
-.lb-caption, .lb-number
-{
-    display: none !important;
-}
 
 #container {
     display: flex;
@@ -51,11 +47,6 @@
     font-size: 24px;
     margin-right: 5px;
     color:#2D77EA !important;
-  }
-
-  .lightbox .lb-image
-  {
-    height:10rem !important;
   }
   
   .star.selected {
@@ -259,6 +250,23 @@ button
 .containerPage
 {
     gap:.5rem !important;
+}
+
+#conveniosContainer span button, 
+#servicosContainer div span button,
+#idiomasContainer div span button,
+#fotosContainer div button,
+#addConvenio,
+#addIdioma,
+#addServico,
+#addFileInput,
+#fileInputsContainer div button 
+
+{
+    border: none;
+    background:#04AA6D !important;
+    color:#fff !important;
+    font-size:17px;
 }
 
 .pencil
@@ -1033,11 +1041,7 @@ h2
     }
 
 
-
-
-    
-
-
+ 
 
     .container-form
     {
@@ -1103,7 +1107,53 @@ lottie-player
 @media (max-width:768px)
 {
 
-      
+    .profImg
+    {
+        width:6rem !important;
+        height: 6rem !important;
+    }
+
+    .especialidadeFlex, .convenioFlex
+    {
+        flex-direction: column !important;
+        align-items: start !important;
+    }
+
+    .especialidadeFlex a, .convenioFlex a
+    {
+        margin-left: 0 !important;
+    }
+    .totalAV
+    {
+        display: none !important;
+    }
+
+    .verProf
+    {
+        display: none !important;
+    }
+
+    .verProfMob
+    {
+        display: block !important;
+    }
+
+ 
+
+    .listarHeader
+    {
+        flex-direction: column !important;
+    }
+
+    .listarHeader div
+    {
+        order:2;
+    }
+
+    .listarHeader img
+    {
+        order:1;
+    }  
     .nav-item, .contato-li-ul
     {
         margin-right:0 !important;
@@ -1236,7 +1286,7 @@ font-size: 1rem !important;
 
   
 
-  #updateProfileForm button, #fotosContainer button
+  #updateProfileForm button
   {
     background-color: #04AA6D;
     color: #ffffff;
@@ -1247,16 +1297,8 @@ font-size: 1rem !important;
     cursor: pointer;
   }
 
-  #fotosContainer div button
-  {
-    background-color: #04AA6D;
-    color: #ffffff;
-    border: none;
-    padding: .5rem 1rem;
-    font-size: 17px;
-    font-family: Raleway;
-    cursor: pointer;
-  }
+ 
+ 
 
   
   #regForm button:hover {
