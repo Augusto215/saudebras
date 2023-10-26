@@ -87,13 +87,57 @@
 </div>
 
 
+<div style="display:none;">
+<button id="checkout-button">Checkout</button>
+
+<script type="text/javascript">
+    document.getElementById('checkout-button').addEventListener('click', () => {
+      fetch('https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app/create-subscription/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => {
+      if (!response.ok) {
+          return Promise.reject('Failed to create subscription');
+      }
+      return response.json();
+  })
+  .then((session) => {
+      window.location.href = session.url;
+  })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 
 
+            function getCookie(name) {
+              let cookieValue = null;
+              if (document.cookie && document.cookie !== '') {
+                  const cookies = document.cookie.split(';');
+                  for (let i = 0; i < cookies.length; i++) {
+                      const cookie = cookies[i].trim();
+                      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                          break;
+                      }
+                  }
+              }
+              return cookieValue;
+          }
+    });
+</script>
 
+<form method="post" action="{% url 'cancel-subscription' %}">
+  {% csrf_token %}
+  <button type="submit">Cancelar Assinatura</button>
+</form>
 
        
 
-        
+</div>
 
         <div style="display:none;" id="index-main">
 

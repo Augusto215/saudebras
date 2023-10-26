@@ -7,7 +7,7 @@
 
  <div class="fluid-container w-100" style="background-color:#EDF5F2;">
           <div class="mt-4 container d-flex flex-column align-items-center justify-content-center">
-            <div class="d-flex w-100 justify-content-between">
+            <div class="listarHeader d-flex w-100 justify-content-between">
 
               
               <div class="d-flex  justify-content-center flex-column align-items-start">
@@ -45,10 +45,10 @@
           <div class="mb-5">
             <div class="d-flex flex-column align-items-start justify-content-center">
             <div class="d-flex" style="gap:1rem;">
-              <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
+              <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
               <div class="d-flex flex-column">
-                <span style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
-                <div class="d-flex mb-2">
+                <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+                <div class="d-flex mb-2 align-items-center">
                 
                   {% for especialidade in profissional.especialidades.all %}
                   {% if forloop.first %}
@@ -59,9 +59,11 @@
                   {%endif%}
                   {% endfor %}
                 
-                <a class="d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
               </div>
-           
+              <div style="display:none;" class="mb-2 verProfMob">
+                <a style="text-decoration: underline !important; font-size:.9rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+              </div>
               {% load floor %}
 
               <span style="font-size:1rem; color:#000 !important;">
@@ -85,7 +87,7 @@
                               {% endfor %}
                           {% endif %}
                       </div>
-                      &nbsp;{% if profissional.total_avaliacoes %} de {{ profissional.total_avaliacoes }} avaliações {% else %} Sem avaliações {% endif %}
+                      &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV">de {{ profissional.total_avaliacoes }} avaliações</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
                   </div>
               </span>
             </span> 
@@ -94,13 +96,13 @@
 
             <div class="d-flex mb-3">
               {% for convenio in profissional.convenios.all %}
-                {% if forloop.counter < 3 %}
+                {% if forloop.counter < 2 %}
                   <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
                 {% endif %}
               {% endfor %}
           
-              {% if profissional.convenios.all.count > 2 %}
-                <a href="#" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+              {% if profissional.convenios.all.count > 1 %}
+                <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
               {% endif %}
             </div>
           

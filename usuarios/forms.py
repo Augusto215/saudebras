@@ -43,7 +43,11 @@ class ClinicaForm(UserCreationForm):
                   'tipo_profissional', 'ceps', 'especialidades', 
                   'telefone', 'nome',  'username', 'foto', 'convenios', 'descricao',  'idiomas', 'tipo_clinica']        
 
-        
+class AddressUpdateForm(forms.Form):
+    # Seus campos de endereço vêm aqui. Como você está lidando com múltiplos
+    # endereços e os dados são processados manualmente em sua view,
+    # você pode não precisar de campos específicos aqui.
+    pass  # Placeholder, remova esta linha quando adicionar campos        
         
 class ClienteRegistrationForm(UserCreationForm):
     cep = forms.CharField(max_length=9, required=True)

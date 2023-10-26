@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 
 from django.utils import timezone
+from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django import forms
@@ -68,7 +69,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     is_staff = models.BooleanField(_('staff status'), default=False)
     email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
-    email_verified = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=True)
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
 
     
@@ -228,9 +229,10 @@ class Cliente(CustomUser):
 
 
 class Subscription(models.Model):
-    profissional = models.OneToOneField('Profissional', null=True, blank=True, on_delete=models.SET_NULL)
-    clinica = models.OneToOneField('Clinica', null=True, blank=True, on_delete=models.SET_NULL)
+    profissional = models.OneToOneField('Profissional', null=True, blank=True, on_delete=models.CASCADE)
+    clinica = models.OneToOneField('Clinica', null=True, blank=True, on_delete=models.CASCADE)
     stripe_subscription_id = models.CharField(max_length=50)
+    last_payment_date = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
 
 
@@ -274,8 +276,34 @@ class Clinica(CustomUser):
     
 
 
+from django.db.models.signals import post_save
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
+# ...
+
+@property
+def is_within_active_period(self):
+        if self.last_payment_date:
+            return timezone.now() <= self.last_payment_date + timedelta(days=30)
+        return True  # Ainda ativo se nunca houve pagamento
 
 
+@receiver(post_save, sender=Subscription)
+def update_user_status(sender, instance, created, **kwargs):
+    if created:
+        user = instance.profissional or instance.clinica
+        if user:
+            user.is_active = True
+            user.save()
+
+
+@receiver(post_delete, sender=Subscription)
+def deactivate_user(sender, instance, **kwargs):
+    user = instance.profissional or instance.clinica
+    if user:
+        user.is_active = False
+        user.save()
 
 def get_lat_lng_from_cep(cep):
     response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')

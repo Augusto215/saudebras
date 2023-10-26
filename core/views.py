@@ -4,8 +4,13 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from usuarios.models import *
 from django.db.models import Exists, OuterRef
+from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.views.decorators.http import require_POST
+from django.views import View
+from django.contrib import messages
+
+
 
 import logging
 
@@ -49,25 +54,40 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 logging.basicConfig(level=logging.INFO)
-
 stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"
 
+YOUR_DOMAIN = "https://saubrebras.com.br/"
+
+@csrf_exempt
 def create_subscription(request):
-    YOUR_DOMAIN = "https://saudebras.onrender.com/"
+    user = request.user
+    user_type = 'Profissional' if hasattr(user, 'profissional') else 'Clinica' if hasattr(user, 'clinica') else None
+
+    if user_type is None:
+        return JsonResponse({'error': 'User type is not valid'})
+
+    metadata = {
+        'user_id': user.id,
+        'user_type': user_type,
+    }
+
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
-        line_items=[
-            {
-                'price': 'price_1O4ZsHDVCQ3YDKzSRnhIFsCi',
-                'quantity': 1,
-            },
-        ],
+        line_items=[{
+            'price': 'price_1O4ZsHDVCQ3YDKzSRnhIFsCi',
+            'quantity': 1,
+        }],
         mode='subscription',
-        success_url=YOUR_DOMAIN + '/success/',
-        cancel_url=YOUR_DOMAIN + '/cancel/',
+        success_url=YOUR_DOMAIN + 'success/',
+        cancel_url=YOUR_DOMAIN + 'cancel/',
+        metadata=metadata
     )
-    return redirect(checkout_session.url)
 
+    return JsonResponse({'url': checkout_session.url})
+
+
+
+    
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
@@ -76,7 +96,7 @@ def stripe_webhook(request):
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, 'whsec_w0jz4yyortYV9uZlpkSjr66lEJs68RLT'
+            payload, sig_header, 'whsec_k1rQ6ChffZcHxQFse7tAQQSWsFTsxP5g'
         )
     except ValueError as e:
         # Invalid payload
@@ -87,32 +107,162 @@ def stripe_webhook(request):
         print("Invalid signature")
         raise e
 
-    # Handle subscription events
-    if event['type'] == 'customer.subscription.created':
+    # Assumindo que handle_subscription_created está definido em algum lugar neste arquivo
+    if event['type'] == 'checkout.session.completed':
+        handle_checkout_session_completed(event)
+    elif event['type'] == 'customer.subscription.created':
         handle_subscription_created(event)
     elif event['type'] == 'customer.subscription.deleted':
         handle_subscription_deleted(event)
 
     return HttpResponse(status=200)
 
-def handle_subscription_created(event):
-    subscription_id = event['data']['object']['id']
-    subscription = Subscription.objects.get(stripe_subscription_id=subscription_id)
-    subscription.active = True
-    subscription.save()
+    
 
+class StripeWebhookView(View):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        payload = request.body
+        event = None
+
+        try:
+            event = stripe.Event.construct_from(
+                json.loads(payload), stripe.api_key
+            )
+        except ValueError as e:
+            logging.exception("Invalid payload")
+            return JsonResponse({'status': 400}, status=400)
+
+        # Handle the event
+        event_type = event['type']
+        if event_type == 'customer.subscription.created':
+            self.handle_subscription_created(event)  # Agora com 'self.'
+        else:
+            logging.info(f'Unhandled event type {event_type}')
+
+        return JsonResponse({'status': 200}, status=200)
+
+def handle_subscription_created(event):
+    try:
+        data = event['data']
+        obj = data['object']
+        user_id = obj['metadata'].get('user_id')
+        user_type = obj['metadata'].get('user_type')
+        stripe_subscription_id = obj['id']
+
+        user = None
+        if user_type == 'Profissional':
+            user = Profissional.objects.get(id=user_id)
+        elif user_type == 'Clinica':
+            user = Clinica.objects.get(id=user_id)
+
+        subscription = Subscription.objects.create(
+            stripe_subscription_id=stripe_subscription_id,
+            profissional=user if user_type == 'Profissional' else None,
+            clinica=user if user_type == 'Clinica' else None,
+        )
+
+    except Exception as e:
+        logging.exception(f"An error occurred: {e}\nEvent: {event}")
+            
+
+
+
+
+
+
+def handle_checkout_session_completed(event):
+    # Obtém o ID da sessão do evento
+    session_id = event['data']['object']['id']
+    logging.debug(f"Handling checkout session completed: {session_id}")
+    
+    try:
+        # Obtém os metadados da sessão
+        metadata = event['data']['object']['metadata']
+        user_id = metadata.get('user_id')
+        user_type = metadata.get('user_type')
+
+        # Obtém o usuário com base no user_type e user_id
+        user = None
+        if user_type == 'Profissional':
+            user = Profissional.objects.get(id=user_id)
+        elif user_type == 'Clinica':
+            user = Clinica.objects.get(id=user_id)
+
+        # Obtém o ID real da assinatura
+        stripe_subscription_id = event['data']['object']['subscription']
+
+        # Cria uma nova assinatura no banco de dados e a associa ao usuário
+        subscription = Subscription.objects.create(
+            stripe_subscription_id=stripe_subscription_id,
+            profissional=user if user_type == 'Profissional' else None,
+            clinica=user if user_type == 'Clinica' else None,
+        )
+        
+        # Ativa a assinatura
+        subscription.active = True
+        
+        # Salva as alterações
+        subscription.save()
+        
+        # Ativa o usuário associado
+        user = subscription.profissional or subscription.clinica
+        if user:
+            user.is_active = True
+            user.save()
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {str(e)}")
+
+    except Subscription.DoesNotExist:
+        print(f"Subscription with session ID {session_id} does not exist.")
+        logging.error(f"Subscription with session ID {session_id} does not exist.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {str(e)}")
+
+        
+@csrf_exempt
+def cancel_subscription_view(request):
+    if request.method == 'POST':
+        user = request.user
+        subscription = get_object_or_404(Subscription, profissional=user.profissional)  # ou clinica=user.clinica, dependendo do tipo de usuário
+        cancel_subscription(subscription)  # Chama a função de cancelamento que você definiu
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+def cancel_subscription(subscription):
+    try:
+        # Cancela a assinatura na Stripe
+        stripe.Subscription.delete(subscription.stripe_subscription_id)
+        # Registra a data do último pagamento
+        subscription.last_payment_date = timezone.now()  # Ajuste conforme necessário para obter a data real do último pagamento
+        subscription.active = False
+        subscription.save()
+    except stripe.error.StripeError as e:
+        print(f"Stripe error: {str(e)}")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        
 def handle_subscription_deleted(event):
     subscription_id = event['data']['object']['id']
-    subscription = Subscription.objects.get(stripe_subscription_id=subscription_id)
-    subscription.active = False
-    subscription.save()
+    try:
+        subscription = Subscription.objects.get(stripe_subscription_id=subscription_id)
+        cancel_subscription(subscription)
+    except Subscription.DoesNotExist:
+        print(f"No subscription found for id {subscription_id}")
 
 def success_view(request):
     return render(request, 'core/success.html')
 
 def cancel_view(request):
     return render(request, 'core/cancel.html')
-
 
 
 
@@ -167,13 +317,24 @@ def perfil_profissional(request, profissional_id):
             if request.method == 'POST':
                 form = AvaliacaoForm(request.POST)
                 if form.is_valid():
-                    avaliacao = form.save(commit=False)
-                    avaliacao.cliente = request.user.cliente
-                    avaliacao.content_type = ContentType.objects.get_for_model(profissional)
-                    avaliacao.object_id = profissional.id
-                    avaliacao.save()
-                    media = calcular_media(profissional, Profissional)
-                    total_av += 1
+                    already_reviewed = Avaliacao.objects.filter(
+                        cliente=request.user.cliente,
+                        content_type=ContentType.objects.get_for_model(profissional),
+                        object_id=profissional.id
+                    ).exists()
+                    if not already_reviewed:
+                        avaliacao = form.save(commit=False)
+                        avaliacao.cliente = request.user.cliente
+                        avaliacao.content_type = ContentType.objects.get_for_model(profissional)
+                        avaliacao.object_id = profissional.id
+                        avaliacao.save()
+                        media = calcular_media(profissional, Profissional)
+                        total_av += 1
+                        messages.success(request, 'Avaliação submetida com sucesso!')
+                        return redirect('perfil_profissional', profissional_id=profissional_id)
+                        
+                    else:
+                        messages.error(request, 'Você já avaliou esse profissional.')
                 else:
                     print(form.errors)
         elif action == 'send_pergunta':
@@ -184,6 +345,8 @@ def perfil_profissional(request, profissional_id):
                 pergunta.content_type = ContentType.objects.get_for_model(Profissional)
                 pergunta.save()  # Primeiro salve o objeto
                 profissional.perguntas.add(pergunta)
+                messages.success(request, 'Pergunta submetida com sucesso!')
+                return redirect('perfil_profissional', profissional_id=profissional_id)
                 
     else:
         form = AvaliacaoForm()
@@ -211,6 +374,8 @@ def perfil_profissional(request, profissional_id):
             'pergunta': p.pergunta,
             'nome': p.cliente.nome,
             'resposta':p.resposta,
+            'profissional_nome': profissional.nome,  # nome do profissional
+            'profissional_foto': profissional.foto.url if profissional.foto else None,  # url da foto do profissional
             # ... outros campos que você quer enviar
         } for p in perguntas_paginated 
     ]
@@ -275,16 +440,32 @@ def perfil_clinica(request, clinica_id):
         
         if action == 'send_avaliacao':
             form = AvaliacaoForm(request.POST)
-            avaliacao = form.save(commit=False)
-            avaliacao.cliente = request.user.cliente  # Assumindo que o cliente é o usuário logado
-            avaliacao.content_type = ContentType.objects.get_for_model(clinica)
-            avaliacao.object_id = clinica.id
-            avaliacao.save()
-            
-            # Recalcular a média após nova avaliação
-            media = calcular_media(clinica, Clinica)
-            total_av += 1  # Atualizar o número total de avaliações
-            
+            if form.is_valid():
+                # Verifique se o cliente já avaliou esta clínica
+                avaliacao_existente = Avaliacao.objects.filter(
+                    cliente=request.user.cliente,
+                    content_type=ContentType.objects.get_for_model(clinica),
+                    object_id=clinica.id
+                ).first()
+                
+                if avaliacao_existente is None:
+                    # Se não existir uma avaliação, crie uma nova
+                    avaliacao = form.save(commit=False)
+                    avaliacao.cliente = request.user.cliente  # Assumindo que o cliente é o usuário logado
+                    avaliacao.content_type = ContentType.objects.get_for_model(clinica)
+                    avaliacao.object_id = clinica.id
+                    avaliacao.save()
+                    # Recalcular a média após nova avaliação
+                    media = calcular_media(clinica, Clinica)
+                    total_av += 1  # Atualizar o número total de avaliações
+                    messages.success(request, 'Avaliação submetida com sucesso!')
+                else:
+                    # Se já existir uma avaliação, envie uma mensagem de erro
+                    messages.error(request, 'Você já avaliou esta clínica.')
+                
+                return redirect('perfil_clinica', clinica_id=clinica_id)  # Redirecione para a página da clínica novamente
+            else:
+                messages.error(request, form.errors)
             
 
     

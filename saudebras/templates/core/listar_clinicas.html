@@ -5,7 +5,7 @@
 
  <div class="fluid-container w-100" style="background-color:#EDF5F2;">
           <div class="mt-4 container d-flex flex-column align-items-center justify-content-center">
-            <div class="d-flex w-100 justify-content-between">
+            <div class="listarHeader d-flex w-100 justify-content-between">
 
               
               <div class="d-flex  justify-content-center flex-column align-items-start">
@@ -43,15 +43,18 @@
           <div class="mb-5">
             <div class="d-flex flex-column align-items-start justify-content-center">
             <div class="d-flex" style="gap:1rem;">
-              <img style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
+              <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
               <div class="d-flex flex-column">
-                <span style="color:#000 !important; font-size:1.3rem !important; font-weight:600;">{% if not clinica.has_emergency %}Laboratório{% else %}Hospital{% endif %}
+                <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{% if not clinica.has_emergency %}Laboratório{% else %}Hospital{% endif %}
 
                  {{ clinica.nome }}</span>
-                <div class="d-flex mb-3">
+                <div class="d-flex mb-2">
                 
                   {% if not clinica.has_emergency %}Exames{% else %}Ponto de Atendimento 24h{% endif %}
-                <a class="d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
+                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
+              </div>
+              <div style="display:none;" class="mb-2 verProfMob">
+                <a style="text-decoration: underline !important; font-size:.9rem; font-weight:600;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
               </div>
               {% load floor %}
 
@@ -76,20 +79,20 @@
                 {% endfor %}
             {% endif %}
         </div>
-        &nbsp;{% if clinica.total_avaliacoes %} de {{ clinica.total_avaliacoes }} avaliações {% else %} Sem avaliações {% endif %}
+        &nbsp;{% if clinica.total_avaliacoes %} <span class="totalAV"> de {{ clinica.total_avaliacoes }} avaliações</span> {% else %}<span class="totalAV">Sem avaliações</span> {% endif %}
     </div>
 </span>
 
               
             <div class="d-flex mb-3">
               {% for convenio in clinica.convenios.all %}
-                {% if forloop.counter < 3 %}
+                {% if forloop.counter < 2 %}
                   <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
                 {% endif %}
               {% endfor %}
           
-              {% if clinica.convenios.all.count > 2 %}
-                <a href="#" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Ver mais</a>
+              {% if clinica.convenios.all.count > 1 %}
+                <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Ver mais</a>
               {% endif %}
             </div>
           
@@ -303,7 +306,7 @@
 {% endwith %}
 
 </div>
-<span id="dentistaImg" style="display:none;">{% static 'img\cuidado-dental.svg' %}</span>
+<span id="laboratorioImg" style="display:none;">{% static 'img\diagnostico.svg' %}</span>
 <span id="emergenciaImg" style="display:none">{% static 'img\ambulancia.svg' %}</span>
 
 <span id="medicoImg" style="display:none;">{% static 'img\estetoscopio-instrumento-medico-1.svg' %}</span>

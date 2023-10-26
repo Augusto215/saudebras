@@ -19,6 +19,10 @@
     margin-left:0 !important;
 }
 
+.lb-caption, .lb-number
+{
+    display: none !important;
+}
 
 #container {
     display: flex;
@@ -47,6 +51,11 @@
     font-size: 24px;
     margin-right: 5px;
     color:#2D77EA !important;
+  }
+
+  .lightbox .lb-image
+  {
+    height:10rem !important;
   }
   
   .star.selected {

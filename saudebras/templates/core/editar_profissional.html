@@ -29,6 +29,58 @@
     <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
     <button onclick="alterarConteudo('conteudo2')">Endereços</button>
     <button onclick="alterarConteudo('conteudo3')">Avaliações</button>
+    {%if profissional.is_active == False%}
+    
+
+<button id="checkout-button">Assinar</button>
+
+<script type="text/javascript">
+    document.getElementById('checkout-button').addEventListener('click', () => {
+      fetch('https://saudebras.com.br/create-subscription/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => {
+      if (!response.ok) {
+          return Promise.reject('Failed to create subscription');
+      }
+      return response.json();
+  })
+  .then((session) => {
+      window.location.href = session.url;
+  })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+
+
+            function getCookie(name) {
+              let cookieValue = null;
+              if (document.cookie && document.cookie !== '') {
+                  const cookies = document.cookie.split(';');
+                  for (let i = 0; i < cookies.length; i++) {
+                      const cookie = cookies[i].trim();
+                      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                          break;
+                      }
+                  }
+              }
+              return cookieValue;
+          }
+    });
+</script>
+
+    {%endif%}
+    {% if has_active_subscription %}
+    <form method="post" action="{% url 'cancel-subscription' %}">
+        {% csrf_token %}
+        <button type="submit">Cancelar Assinatura</button>
+    </form>
+{% endif %}
     <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_profissional' profissional.id %}"><button class="w-100">Ver Perfil</button></a>
   </div>
 
@@ -565,12 +617,54 @@ document.getElementById("addServico").addEventListener("click", () => {
 
     <div id="conteudo2" class="conteudo">
       <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+        <form method="POST" action="{% url 'alterar_Profissional' %}" enctype="multipart/form-data">
+          {% csrf_token %}
         <div id="enderecosContainer">
-        </div>
-        <button id="addEnderecoInput">Adicionar novo endereço</button>
-        <div id="enderecosInputsContainer"></div>
+        
       </div>
+      
+      <button type="button" id="addEndereco">Adicionar Endereço</button>
+      <button  type="submit" name="action" value="update_address"> Enviar</button>
+    </form>
     </div>
+
+  </div>
+      <script>  
+        document.getElementById('addEndereco').addEventListener('click', () => {
+          const enderecoContainer = document.createElement('div');
+          enderecoContainer.classList.add('endereco-item');
+      
+          const cepInput = document.createElement('input');
+          cepInput.type = 'text';
+          cepInput.name = 'cep[]';
+          cepInput.placeholder = 'CEP';
+      
+          const complementoInput = document.createElement('input');
+          complementoInput.type = 'text';
+          complementoInput.name = 'complemento[]';
+          complementoInput.placeholder = 'Complemento';
+      
+          const removeButton = document.createElement('button');
+          removeButton.textContent = 'Remover';
+          removeButton.addEventListener('click', () => {
+              enderecoContainer.remove();
+          });
+      
+          enderecoContainer.appendChild(cepInput);
+          enderecoContainer.appendChild(complementoInput);
+          enderecoContainer.appendChild(removeButton);
+      
+          document.getElementById('enderecosContainer').appendChild(enderecoContainer);
+      });
+      
+      document.querySelectorAll('.remove-endereco').forEach(button => {
+          button.addEventListener('click', (event) => {
+              const enderecoContainer = event.target.closest('.endereco-item');
+              enderecoContainer.remove();
+          });
+      });
+      
+      </script>
 
 
     <div id="conteudo3" class="conteudo">
@@ -593,9 +687,10 @@ document.getElementById("addServico").addEventListener("click", () => {
   </div>
     {%else%}
 
-    <div class="d-flex flex-column">
-        <span>{{pergunta.pergunta}}</span>
-        <span>{{pergunta.resposta}}</span>
+    <div class="d-flex flex-column mb-3">
+        <span>Pergunta: {{pergunta.pergunta}}</span>
+        <span>Resposta: {{pergunta.resposta}}</span>
+
     </div>
 
     {%endif%}
@@ -605,69 +700,83 @@ document.getElementById("addServico").addEventListener("click", () => {
       </div>
     </div>
       
-      <script>
-       // Array de endereços existentes; isso normalmente viria do seu servidor
-const userEnderecos = [
- {% for endereco in profissional.enderecos.all %}
- {id: {{ endereco.id }}, cep: "{{ endereco.cep }}", complemento: "{{ endereco.complemento }}"},
- {% endfor %}
-];
-
-// Função para criar um elemento de endereço
-function createEnderecoElement(id, cep, complemento) {
-const container = document.createElement("div");
-
-const cepElement = document.createElement("span");
-cepElement.textContent = `CEP: ${cep}`;
-
-const complementoElement = document.createElement("span");
-complementoElement.textContent = `Complemento: ${complemento}`;
-
-const removeButton = document.createElement("button");
-removeButton.textContent = "X";
-removeButton.addEventListener("click", () => {
-  const index = userEnderecos.findIndex(endereco => endereco.id === id);
-  if (index > -1) {
-    userEnderecos.splice(index, 1);
-    container.remove();
-  }
-});
-
-container.appendChild(cepElement);
-container.appendChild(complementoElement);
-container.appendChild(removeButton);
-document.getElementById("enderecosContainer").appendChild(container);
-}
-
-// Função para adicionar novos campos de input para endereço
-function addNewEnderecoInput() {
-const container = document.createElement("div");
-
-const cepInput = document.createElement("input");
-cepInput.placeholder = "Insira o CEP";
-
-const complementoInput = document.createElement("input");
-complementoInput.placeholder = "Insira o Complemento";
-
-container.appendChild(cepInput);
-container.appendChild(complementoInput);
-document.getElementById("enderecosInputsContainer").appendChild(container);
-}
-
-window.addEventListener('DOMContentLoaded', (event) => {
-// Inicializa os endereços que já estão associados ao profissional
-userEnderecos.forEach(endereco => {
-  createEnderecoElement(endereco.id, endereco.cep, endereco.complemento);
-});
-
-// Adiciona um novo conjunto de inputs para endereço quando o botão é clicado
-document.getElementById("addEnderecoInput").addEventListener("click", addNewEnderecoInput);
-
-// Inicializa um conjunto de inputs para endereço na primeira carga
-addNewEnderecoInput();
-});
-
-      </script>
+    <script>
+      // Array de endereços existentes; isso normalmente viria do seu servidor
+      const userEnderecos = [
+          {% for endereco in profissional.enderecos.all %}
+          {id: {{ endereco.id }}, cep: "{{ endereco.cep }}", complemento: "{{ endereco.complemento }}"},
+          {% endfor %}
+      ];
+  
+      // Função para criar um elemento de endereço
+      function createEnderecoElement(id, cep, complemento) {
+          const container = document.createElement("div");
+  
+          const cepElement = document.createElement("span");
+          cepElement.textContent = `CEP: ${cep}`;
+  
+          const complementoElement = document.createElement("span");
+          complementoElement.textContent = `Complemento: ${complemento}`;
+  
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "X";
+          removeButton.addEventListener("click", () => {
+              const index = userEnderecos.findIndex(endereco => endereco.id === id);
+              if (index > -1) {
+                  userEnderecos.splice(index, 1);
+                  container.remove();
+              }
+          });
+  
+          // Campos ocultos para enviar dados com o formulário
+          const cepInputHidden = document.createElement("input");
+          cepInputHidden.type = "hidden";
+          cepInputHidden.name = "cep[]";
+          cepInputHidden.value = cep;
+  
+          const complementoInputHidden = document.createElement("input");
+          complementoInputHidden.type = "hidden";
+          complementoInputHidden.name = "complemento[]";
+          complementoInputHidden.value = complemento;
+  
+          container.appendChild(cepElement);
+          container.appendChild(complementoElement);
+          container.appendChild(cepInputHidden);
+          container.appendChild(complementoInputHidden);
+          container.appendChild(removeButton);
+          document.getElementById("enderecosContainer").appendChild(container);
+      }
+  
+      // Função para adicionar novos campos de input para endereço
+      function addNewEnderecoInput() {
+          const container = document.createElement("div");
+  
+          const cepInput = document.createElement("input");
+          cepInput.placeholder = "Insira o CEP";
+          cepInput.name = "cep[]";  // Adicionado atributo name
+  
+          const complementoInput = document.createElement("input");
+          complementoInput.placeholder = "Insira o Complemento";
+          complementoInput.name = "complemento[]";  // Adicionado atributo name
+  
+          container.appendChild(cepInput);
+          container.appendChild(complementoInput);
+          document.getElementById("enderecosInputsContainer").appendChild(container);
+      }
+  
+      window.addEventListener('DOMContentLoaded', (event) => {
+          // Inicializa os endereços que já estão associados ao profissional
+          userEnderecos.forEach(endereco => {
+              createEnderecoElement(endereco.id, endereco.cep, endereco.complemento);
+          });
+  
+          // Adiciona um novo conjunto de inputs para endereço quando o botão é clicado
+          document.getElementById("addEnderecoInput").addEventListener("click", addNewEnderecoInput);
+  
+          // Inicializa um conjunto de inputs para endereço na primeira carga
+          addNewEnderecoInput();
+      });
+  </script>
 </div>
 </div>
 </div>

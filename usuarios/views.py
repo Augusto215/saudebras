@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.core.serializers import serialize
 from django.core.files.storage import default_storage
-
+from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.db import transaction
@@ -199,12 +200,14 @@ def registerProfissional(request):
                 user.enderecos.set(enderecos)
 
                 user.save()
-
+                
+                messages.success(request, 'Cadastro Realizado com sucesso!')
                 return redirect('login')
+                
 
         else:
             print("Formulário inválido")
-            print(form.errors)
+            messages.error(request, form.errors)
 
     context = {
         'especialidades': especialidades,
@@ -302,10 +305,11 @@ def registerClinica(request):
                 user.enderecos.set(enderecos)
 
                 user.save()
-
+                messages.success(request, 'Clínica criada com sucesso!')
                 return redirect('login')
 
         else:
+            messages.error(request, form.errors)
             print("Formulário inválido")
             print(form.errors)
 
@@ -329,6 +333,7 @@ from django.contrib.auth import login as auth_login
 from .forms import LoginForm
 from django.contrib.auth import authenticate
 
+@csrf_exempt
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
@@ -338,10 +343,10 @@ def user_login(request):
         
         if user is not None:
             auth_login(request, user)
-            messages.success(request, "Login successfully!")
+            messages.success(request, "Usuário logado com sucesso!")
             return redirect('home')
         else:
-            messages.error(request, "Invalid email or password.")
+            messages.error(request, "Email ou senha inválidos.")
     else:
         form = LoginForm()
         
@@ -360,11 +365,15 @@ def convenios_perfil(request):
 #EDITAR PERFIL
 @login_required
 def editar_perfil(request):
-   
+    
+    
+    
     logging.debug("Iniciando alterar_Profissional")
     logging.debug(f"Data do POST: {request.POST}")
     logging.debug(f"Data dos FILES: {request.FILES}")
     profissional = request.user.profissional
+    has_active_subscription = Subscription.objects.filter(Q(profissional=profissional),
+        active=True).exists()
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
@@ -425,6 +434,7 @@ def editar_perfil(request):
         'idiomas':idiomas,
         'servicos':servicos,
         'profissional':profissional,
+        'has_active_subscription': has_active_subscription,
         'fotos':fotos,
         
     })
@@ -443,6 +453,9 @@ def alterar_Profissional(request):
     logging.debug(f"Data dos FILES: {request.FILES}")
 
     user = request.user.profissional
+    has_active_subscription = Subscription.objects.filter(
+        Q(profissional=user) & Q(active=True)
+    ).exists()
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
@@ -531,9 +544,76 @@ def alterar_Profissional(request):
             else:
                 messages.error(request, 'Erro ao responder pergunta.')
                 
-        else:
-                logging.debug(f"Formulário não é válido. Erros: {form.errors}")
-                messages.error(request, 'Erro na atualização do perfil.')
+                
+        elif action == 'update_address':
+            form = AddressUpdateForm(request.POST)  # ou outro formulário adequado
+            if form.is_valid():
+                # Inicia a transação atômica
+                with transaction.atomic():
+                    # Obtenha as listas de CEPs e Complementos
+                    ceps = request.POST.getlist('cep[]')
+                    complementos = request.POST.getlist('complemento[]')
+
+                    # Lista para armazenar os objetos criados/obtidos
+                    enderecos = []
+                    estados = []
+                    cidades = []
+                    bairros = []
+                    ceps_list = []
+
+                    # Itere sobre as listas
+                    for i, cep in enumerate(ceps):
+                        complemento = complementos[i]
+
+                        # Consulta a API ViaCEP para obter as informações do endereço
+                        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                        data = response.json()
+
+                        if response.status_code == 200 and not data.get('erro'):
+                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                            cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+
+                            # Obtenha as coordenadas
+                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+
+                            # Cria o objeto Endereco
+                            endereco, _ = Endereco.objects.get_or_create(
+                                rua=data['logradouro'],
+                                complemento=complemento,
+                                bairro=bairro,
+                                cidade=cidade,
+                                estado=estado,
+                                cep=cep_obj,
+                                latitude=latitude,
+                                longitude=longitude,
+                                profissional=user  # Supondo que o usuário é um profissional
+                            )
+
+                            # Adiciona os objetos às listas
+                            estados.append(estado)
+                            cidades.append(cidade)
+                            bairros.append(bairro)
+                            enderecos.append(endereco)
+                            ceps_list.append(cep_obj)
+
+                    # Associa os objetos ao profissional
+                    user.estado.set(estados)
+                    user.cidade.set(cidades)
+                    user.bairro.set(bairros)
+                    user.ceps.set(ceps_list)
+                    user.enderecos.set(enderecos)
+
+                    # Salva o profissional
+                    user.save()
+
+                    messages.success(request, 'Endereço atualizado com sucesso!')
+                    return redirect('editar_perfil')
+    else:
+        logging.debug(f"Formulário não é válido. Erros: {form.errors}")
+        messages.error(request, 'Erro na atualização do endereço.')
 
     logging.debug("Finalizando alterar_Profissional")
 
@@ -544,6 +624,7 @@ def alterar_Profissional(request):
         'servicos': servicos,
         'fotos': fotos,
         'profissional': user,
+        'has_active_subscription': has_active_subscription
   
     })
     
@@ -558,6 +639,8 @@ def editar_perfil_clinica(request):
     logging.debug(f"Data do POST: {request.POST}")
     logging.debug(f"Data dos FILES: {request.FILES}")
     clinica = request.user.clinica
+    has_active_subscription = Subscription.objects.filter(Q(clinica=clinica),
+        active=True).exists()
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
@@ -619,6 +702,7 @@ def editar_perfil_clinica(request):
         'servicos':servicos,
         'clinica':clinica,
         'fotos':fotos,
+        'has_active_subscription': has_active_subscription
         
     })
         
@@ -630,6 +714,9 @@ def alterar_Clinica(request):
     logging.debug(f"Data dos FILES: {request.FILES}")
 
     user = request.user.clinica
+    has_active_subscription = Subscription.objects.filter(
+        clinica=user, active=True
+    ).exists()
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
@@ -716,7 +803,72 @@ def alterar_Clinica(request):
                 return redirect('editar_clinica')
             else:
                 messages.error(request, 'Erro ao responder pergunta.')
-                
+        elif action == 'update_address':
+            form = AddressUpdateForm(request.POST)  # ou outro formulário adequado
+            if form.is_valid():
+                # Inicia a transação atômica
+                with transaction.atomic():
+                    # Obtenha as listas de CEPs e Complementos
+                    ceps = request.POST.getlist('cep[]')
+                    complementos = request.POST.getlist('complemento[]')
+
+                    # Lista para armazenar os objetos criados/obtidos
+                    enderecos = []
+                    estados = []
+                    cidades = []
+                    bairros = []
+                    ceps_list = []
+
+                    # Itere sobre as listas
+                    for i, cep in enumerate(ceps):
+                        complemento = complementos[i]
+
+                        # Consulta a API ViaCEP para obter as informações do endereço
+                        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                        data = response.json()
+
+                        if response.status_code == 200 and not data.get('erro'):
+                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                            cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+
+                            # Obtenha as coordenadas
+                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+
+                            # Cria o objeto Endereco
+                            endereco, _ = Endereco.objects.get_or_create(
+                                rua=data['logradouro'],
+                                complemento=complemento,
+                                bairro=bairro,
+                                cidade=cidade,
+                                estado=estado,
+                                cep=cep_obj,
+                                latitude=latitude,
+                                longitude=longitude,
+                                clinica=user  # Supondo que o usuário é um profissional
+                            )
+
+                            # Adiciona os objetos às listas
+                            estados.append(estado)
+                            cidades.append(cidade)
+                            bairros.append(bairro)
+                            enderecos.append(endereco)
+                            ceps_list.append(cep_obj)
+
+                    # Associa os objetos ao profissional
+                    user.estados.set(estados)
+                    user.cidades.set(cidades)
+                    user.bairros.set(bairros)
+                    user.ceps.set(ceps_list)
+                    user.enderecos.set(enderecos)
+
+                    # Salva o profissional
+                    user.save()
+
+                    messages.success(request, 'Endereço atualizado com sucesso!')
+                    return redirect('editar_clinica')            
         else:
                 logging.debug(f"Formulário não é válido. Erros: {form.errors}")
                 messages.error(request, 'Erro na atualização do perfil.')
@@ -730,6 +882,7 @@ def alterar_Clinica(request):
         'servicos': servicos,
         'fotos': fotos,
         'clinica': user,
+        'has_active_subscription': has_active_subscription
   
     })
     

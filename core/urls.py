@@ -30,6 +30,7 @@ urlpatterns = [
     path('get_enderecos/', get_enderecos, name='get_enderecos'),
     path('get_enderecos_clinica/', get_enderecos_clinica, name='get_enderecos_clinica'),
     path('create-subscription/', create_subscription, name='create_subscription'),
+    path('cancel-subscription', cancel_subscription_view, name='cancel-subscription'),
     path('success/', success_view, name='success'),
     path('cancel/', cancel_view, name='cancel'),
     path('stripe-webhook/', stripe_webhook, name='stripe_webhook'),
