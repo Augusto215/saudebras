@@ -29,6 +29,8 @@
     <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
     <button onclick="alterarConteudo('conteudo2')">Endereços</button>
     <button onclick="alterarConteudo('conteudo3')">Avaliações</button>
+    
+    {%if profissional.is_active == False%}
     {%if clinica.is_active == False%}
     
 
@@ -75,14 +77,17 @@
     </script>
     
         {%endif%}
-        {% if has_active_subscription %}
-        <form method="post" action="{% url 'cancel-subscription' %}">
-            {% csrf_token %}
-            <button type="submit">Cancelar Assinatura</button>
-        </form>
-    {% endif %}
+        {% if has_active_subscription and days_remaining is None %}
+    <form method="post" action="{% url 'cancel-subscription' %}">
+        {% csrf_token %}
+        <button type="submit">Cancelar Assinatura</button>
+    </form>
+{% endif %}
     <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_clinica' clinica.id %}"><button class="w-100">Ver Perfil</button></a>
-    
+    {% if days_remaining is not None %}
+        <p class="trial-text" style="color:#000 !important;">Dias restantes no período de teste: {{ days_remaining }}</p>
+
+    {% endif %}
   </div>
 
   <div id="main-content" class=" mb-5">
@@ -155,7 +160,7 @@
           <div id="fileInputsContainer"></div>
           <button id="addFileInput" type="button">Adicionar mais fotos</button>
           
-      <button type="submit" name="action" value="update_profile" value="atualizar_clinica">Atualizar Perfil clinica</button>
+      <button type="submit" name="action" value="update_profile" class="attButton" value="atualizar_clinica">Atualizar Perfil clinica</button>
         </div>
     <script>
       
@@ -280,6 +285,9 @@ function createFotoElement(id, url) {
   // Criando a imagem
   const img = document.createElement("img");
   img.src = url;
+  img.style.objectFit = 'cover';
+  img.style.margin = '.5rem';
+  img.style.borderRadius = '4px';
   img.width = 100;
   img.height = 100;
   console.log("ativo")

@@ -23,12 +23,13 @@
   </div>
 </div>
 <!-- Editar Perfil -->
-<div class="fluid-container d-flex" style="background:#FAFAFA; flex-grow:1;">
-<div id="container" class="d-flex container mt-5" style="gap:10rem;" >
+<div class="w-100 d-flex" style="background:#FAFAFA; flex-grow:1;">
+<div id="container"  class="editarContainer d-flex container mt-5" style="gap:5rem;" >
   <div id="sidebar" class="d-flex flex-column editar_perfil" style="gap:2rem;">
     <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
     <button onclick="alterarConteudo('conteudo2')">Endereços</button>
     <button onclick="alterarConteudo('conteudo3')">Avaliações</button>
+    
     {%if profissional.is_active == False%}
     
 
@@ -75,13 +76,19 @@
 </script>
 
     {%endif%}
-    {% if has_active_subscription %}
+    {% if has_active_subscription and days_remaining is None %}
     <form method="post" action="{% url 'cancel-subscription' %}">
         {% csrf_token %}
         <button type="submit">Cancelar Assinatura</button>
     </form>
 {% endif %}
     <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_profissional' profissional.id %}"><button class="w-100">Ver Perfil</button></a>
+     {% if days_remaining is not None %}
+        <p class="trial-text" style="color:#000 !important;">Dias restantes no período de teste: {{ days_remaining }}</p>
+
+    {% endif %}
+
+   
   </div>
 
   <div id="main-content" class=" mb-5">
@@ -153,9 +160,11 @@
           </div>
           <div id="fotosContainer"></div>
           <div id="fileInputsContainer"></div>
-          <button id="addFileInput" type="button">Adicionar mais fotos</button>
+          <div class="d-flex mt-2" style="gap:.5rem;">
+          <button id="addFileInput" style="width:100%:" type="button">Adicionar mais fotos</button>
           
-      <button type="submit" name="action" value="update_profile" value="atualizar_profissional">Atualizar Perfil Profissional</button>
+      <button type="submit" name="action" value="update_profile" class="attButton" value="atualizar_profissional">Atualizar Perfil Profissional</button>
+          </div>
         </div>
     <script>
       
@@ -190,6 +199,7 @@
         }
       }
       
+      
       // Função para criar elemento de convênio
       function createConvenioElement(id) {
         const convenio = allConvenios.find(c => c.id === id);
@@ -208,7 +218,10 @@
         span.appendChild(removeButton);
         const container = document.getElementById("conveniosContainer");
         container.appendChild(span);
-        container.appendChild(hiddenInput);  // Adiciona o input oculto
+        container.appendChild(hiddenInput); 
+        
+        // Adiciona o input oculto
+
       }
       
       
@@ -234,7 +247,7 @@
       
       document.getElementById("addConvenio").addEventListener("click", () => {
         const select = document.createElement("select");
-      
+        select.style.width = 'fit-content';
         allConvenios.forEach(convenio => {
           if (!selectedConvenios.includes(convenio.id)) {
             const option = document.createElement("option");
@@ -246,6 +259,13 @@
       
         const addButton = document.createElement("button");
         addButton.textContent = "Adicionar";
+        addButton.style.background = '#04AA6D';
+        addButton.style.color = '#fff';
+        addButton.style.border = 'none';
+        addButton.style.marginTop = '.5rem';
+        addButton.style.width = 'fit-content';
+        
+
         addButton.addEventListener("click", () => {
           selectedConvenios.push(Number(select.value));
           createConvenioElement(Number(select.value));
@@ -253,6 +273,7 @@
           addButton.remove();
           updateAddButtonVisibility();
           document.querySelector('#addConvenio').style.display = 'block';
+          updateAddButtonVisibility();
         });
       
         document.getElementById("conveniosContainer").appendChild(select);
@@ -285,6 +306,9 @@ function createFotoElement(id, url) {
   // Criando a imagem
   const img = document.createElement("img");
   img.src = url;
+  img.style.objectFit = 'cover';
+  img.style.margin = '.5rem';
+  img.style.borderRadius = '4px';
   img.width = 100;
   img.height = 100;
   console.log("ativo")
@@ -369,6 +393,7 @@ addNewFileInput();
         // Função para atualizar a visibilidade do botão 'Adicionar Idioma'
         function updateAddIdiomaButtonVisibility() {
           const addButton = document.getElementById("addIdioma");
+          
           addButton.addEventListener('click', function() 
           {
             this.style.display = 'none';
@@ -426,6 +451,7 @@ addNewFileInput();
         
         document.getElementById("addIdioma").addEventListener("click", () => {
           const select = document.createElement("select");
+          select.style.width = 'fit-content';
         
           allIdiomas.forEach(idioma => {
             if (!selectedIdiomas.includes(idioma.id)) {
@@ -438,6 +464,11 @@ addNewFileInput();
         
           const addButton = document.createElement("button");
           addButton.textContent = "Adicionar";
+          addButton.style.background = '#04AA6D';
+          addButton.style.color = '#fff';
+          addButton.style.border = 'none';
+          addButton.style.marginTop = '.5rem';
+          addButton.style.width = 'fit-content'
           addButton.addEventListener("click", () => {
             selectedIdiomas.push(Number(select.value));
             createIdiomaElement(Number(select.value));
@@ -526,6 +557,7 @@ function removeServicoFromList(id, container) {
 
 document.getElementById("addServico").addEventListener("click", () => {
   const select = document.createElement("select");
+  select.style.width = 'fit-content'
 
   allServicos.forEach(servico => {
     if (!selectedServicos.includes(servico.id)) {
@@ -538,6 +570,11 @@ document.getElementById("addServico").addEventListener("click", () => {
 
   const addButton = document.createElement("button");
   addButton.textContent = "Adicionar";
+  addButton.style.background = '#04AA6D';
+  addButton.style.color = '#fff';
+  addButton.style.border = 'none';
+  addButton.style.marginTop = '.5rem';
+  addButton.style.width = 'fit-content'
   addButton.addEventListener("click", () => {
     selectedServicos.push(Number(select.value));
     createServicoElement(Number(select.value));
@@ -617,9 +654,9 @@ document.getElementById("addServico").addEventListener("click", () => {
 
     <div id="conteudo2" class="conteudo">
       <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-        <form method="POST" action="{% url 'alterar_Profissional' %}" enctype="multipart/form-data">
+        <form class="enderecoForm" method="POST" action="{% url 'alterar_Profissional' %}" enctype="multipart/form-data">
           {% csrf_token %}
-        <div id="enderecosContainer">
+        <div id="enderecosContainer" class="d-flex flex-column">
         
       </div>
       
@@ -633,7 +670,7 @@ document.getElementById("addServico").addEventListener("click", () => {
         document.getElementById('addEndereco').addEventListener('click', () => {
           const enderecoContainer = document.createElement('div');
           enderecoContainer.classList.add('endereco-item');
-      
+          const dadosDiv = document.createElement('div');
           const cepInput = document.createElement('input');
           cepInput.type = 'text';
           cepInput.name = 'cep[]';
@@ -711,10 +748,12 @@ document.getElementById("addServico").addEventListener("click", () => {
       // Função para criar um elemento de endereço
       function createEnderecoElement(id, cep, complemento) {
           const container = document.createElement("div");
-  
+          container.classList.add('d-flex', 'mb-2')
+          container.style.gap = '.5rem'
+          const dadosContainer = document.createElement("div");
+          dadosContainer.classList.add("d-flex", "flex-column")
           const cepElement = document.createElement("span");
           cepElement.textContent = `CEP: ${cep}`;
-  
           const complementoElement = document.createElement("span");
           complementoElement.textContent = `Complemento: ${complemento}`;
   
@@ -738,9 +777,10 @@ document.getElementById("addServico").addEventListener("click", () => {
           complementoInputHidden.type = "hidden";
           complementoInputHidden.name = "complemento[]";
           complementoInputHidden.value = complemento;
-  
-          container.appendChild(cepElement);
-          container.appendChild(complementoElement);
+          
+          dadosContainer.appendChild(cepElement);
+          dadosContainer.appendChild(complementoElement);
+          container.appendChild(dadosContainer);
           container.appendChild(cepInputHidden);
           container.appendChild(complementoInputHidden);
           container.appendChild(removeButton);
@@ -750,7 +790,7 @@ document.getElementById("addServico").addEventListener("click", () => {
       // Função para adicionar novos campos de input para endereço
       function addNewEnderecoInput() {
           const container = document.createElement("div");
-  
+          container.style.gap = '.5rem';
           const cepInput = document.createElement("input");
           cepInput.placeholder = "Insira o CEP";
           cepInput.name = "cep[]";  // Adicionado atributo name

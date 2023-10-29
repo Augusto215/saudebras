@@ -129,9 +129,7 @@
     <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center " style="gap:1.5rem; overflow-x:auto; element::-webkit-scrollbar {
       display: none; -ms-overflow-style: none; scrollbar-width: none; ">
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button active" onclick="showTab(0)">Consultórios</a>
-      {%if profissional.servicos.all.exists%}
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(1)">Serviços</a>
-      {%endif%}
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(2)">Opiniões</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(3)">Dúvidas</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(4)">Experiência</a>
@@ -261,7 +259,7 @@
       </div>
       
       <div class="tab-pane">
-        {%if profissional.perguntas.all.exists%}
+        {% if tem_respostas %}
         <div class="perguntas d-flex justify-content-center flex-column align-items-center">
           <!-- Perguntas serão inseridas aqui pelo JavaScript -->
       </div>

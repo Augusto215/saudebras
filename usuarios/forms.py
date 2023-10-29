@@ -33,6 +33,12 @@ class ProfissionalRegistrationForm(UserCreationForm):
         super(ProfissionalRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['especialidades'].choices = [(x.id, x.nome) for x in Especialidade.objects.all()]
         
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if Profissional.objects.filter(username=username).exists():
+            raise forms.ValidationError('Este nome de usuário já foi tomado.')
+        return username
+        
 class ClinicaForm(UserCreationForm):
     
     image = forms.ImageField(required=False)

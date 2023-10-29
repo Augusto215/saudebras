@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.db import transaction
+import stripe
 import requests
 from geopy.geocoders import Nominatim
 import time
@@ -136,14 +137,14 @@ def registerProfissional(request):
                 cidades = []
                 bairros = []
                 ceps_list = []
-                
+
                 user.save()
                 ceps = request.POST.getlist('cep[]')
                 complementos = request.POST.getlist('complemento[]')
                 for i, cep in enumerate(ceps):
                     response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
                     data = response.json()
-                    
+
                     if response.status_code == 200 and not data.get('erro'):
                         estado, _ = Estado.objects.get_or_create(nome=data['uf'])
                         cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
@@ -151,8 +152,7 @@ def registerProfissional(request):
                         cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
                         endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
                         latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
-                        
-                        
+
                         complemento_atual = complementos[i]
                         endereco, _ = Endereco.objects.get_or_create(
                             rua=data['logradouro'],
@@ -164,7 +164,7 @@ def registerProfissional(request):
                             latitude=latitude,  # Adicionado
                             longitude=longitude,
                             profissional=user
-                            
+
                         )
 
                         estados.append(estado)
@@ -175,10 +175,10 @@ def registerProfissional(request):
 
                 # Salve o usuário antes de adicionar relações
                 user.save()
-                    
+
                 user.set_password(form.cleaned_data['password1'])
                 user.tipo_profissional = form.cleaned_data['tipo_profissional']
-                user.email =form.cleaned_data['email']
+                user.email = form.cleaned_data['email']
                 user.telefone = form.cleaned_data['telefone']
                 user.nome = form.cleaned_data['nome']
                 user.username = form.cleaned_data['username']
@@ -189,7 +189,7 @@ def registerProfissional(request):
                 selected_especialidades = form.cleaned_data['especialidades']
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
-                
+
                 user.estado.set(estados)
                 user.cidade.set(cidades)
                 user.bairro.set(bairros)
@@ -199,11 +199,38 @@ def registerProfissional(request):
                 user.idiomas.set(selected_idiomas)
                 user.enderecos.set(enderecos)
 
-                user.save()
-                
+                # Configurando o Stripe
+                stripe.api_key = 'sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs'
+
+                token = request.POST.get('stripeToken')
+                try:
+                    customer = stripe.Customer.create(
+                        source=token,
+                        email=request.POST.get('email'),  # substitua por seu campo de email
+                    )
+                    subscription = stripe.Subscription.create(
+                    customer=customer.id,
+                    items=[{'plan': 'price_1O6bAWDVCQ3YDKzSh5AaoKKY'}],
+                                        )
+                except stripe.error.StripeError as e:
+                    # Trate os erros do Stripe aqui
+                    print(e)
+                    return redirect('erro_stripe')  # Redirecione para uma página de erro ou algo assim
+                except Exception as e:
+                    # Trate outros erros aqui
+                    print(e)
+                    return redirect('erro_generico')  # Redirecione para uma página de erro ou algo assim
+
+                # Agora crie uma Subscription no seu banco de dados
+                profissional_subscription = Subscription(
+                    profissional=user,  # Supondo que 'user' seja o seu objeto Profissional
+                    stripe_subscription_id=subscription.id,
+                )
+                profissional_subscription.save()
+
+
                 messages.success(request, 'Cadastro Realizado com sucesso!')
                 return redirect('login')
-                
 
         else:
             print("Formulário inválido")
@@ -221,6 +248,8 @@ def registerProfissional(request):
 
     
 def registerClinica(request):
+    stripe.api_key = 'sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs'  # Configuração do Stripe
+
     tipo_clinica = TipoClinica.objects.all()
     especialidades = Especialidade.objects.all()
     idiomas = Idioma.objects.all()
@@ -278,9 +307,9 @@ def registerClinica(request):
 
                 # Salve o usuário antes de adicionar relações
                 user.save()
-                    
+
                 user.set_password(form.cleaned_data['password1'])
-                user.email =form.cleaned_data['email']
+                user.email = form.cleaned_data['email']
                 user.telefone = form.cleaned_data['telefone']
                 user.nome = form.cleaned_data['nome']
                 user.username = form.cleaned_data['username']
@@ -303,6 +332,34 @@ def registerClinica(request):
                 user.convenios.set(selected_convenios)
                 user.idiomas.set(selected_idiomas)
                 user.enderecos.set(enderecos)
+
+                token = request.POST.get('stripeToken')  # Obtenção do Token do Stripe
+
+                try:
+                    customer = stripe.Customer.create(
+                        source=token,
+                        email=request.POST.get('email'),  # substitua por seu campo de email
+                    )
+                    subscription = stripe.Subscription.create(
+                        customer=customer.id,
+                        items=[{'plan': 'price_1O4ZsHDVCQ3YDKzSRnhIFsCi'}],
+                        trial_period_days=30,
+                    )
+                except stripe.error.StripeError as e:
+                    # Trate os erros do Stripe aqui
+                    print(e)
+                    return redirect('erro_stripe')  # Redirecione para uma página de erro ou algo assim
+                except Exception as e:
+                    # Trate outros erros aqui
+                    print(e)
+                    return redirect('erro_generico')  # Redirecione para uma página de erro ou algo assim
+                
+                # Agora crie uma Subscription no seu banco de dados
+                clinica_subscription = Subscription(
+                    clinica=user,  # Supondo que 'user' seja o seu objeto Clinica
+                    stripe_subscription_id=subscription.id,
+                )
+                clinica_subscription.save()
 
                 user.save()
                 messages.success(request, 'Clínica criada com sucesso!')
@@ -377,7 +434,8 @@ def editar_perfil(request):
     convenios = Convenio.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
-    fotos = Foto.objects.all()
+    fotos = Foto.objects.all()        
+    days_remaining = profissional.get_trial_days_remaining()
     
 
     if request.method == 'POST':
@@ -436,6 +494,7 @@ def editar_perfil(request):
         'profissional':profissional,
         'has_active_subscription': has_active_subscription,
         'fotos':fotos,
+        'days_remaining': days_remaining
         
     })
 
@@ -460,6 +519,7 @@ def alterar_Profissional(request):
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()
+    days_remaining = user.profissional.get_trial_days_remaining()
     form = None
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -624,7 +684,8 @@ def alterar_Profissional(request):
         'servicos': servicos,
         'fotos': fotos,
         'profissional': user,
-        'has_active_subscription': has_active_subscription
+        'has_active_subscription': has_active_subscription,
+        'days_remaining': days_remaining
   
     })
     
@@ -645,7 +706,7 @@ def editar_perfil_clinica(request):
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()
-    
+    days_remaining = clinica.get_trial_days_remaining()
 
     if request.method == 'POST':
         acao = request.POST.get('acao')
@@ -702,7 +763,8 @@ def editar_perfil_clinica(request):
         'servicos':servicos,
         'clinica':clinica,
         'fotos':fotos,
-        'has_active_subscription': has_active_subscription
+        'has_active_subscription': has_active_subscription,
+        'days_remaining': days_remaining
         
     })
         
@@ -721,6 +783,7 @@ def alterar_Clinica(request):
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()
+    days_remaining = user.clinica.get_trial_days_remaining()
     form = None
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -882,7 +945,8 @@ def alterar_Clinica(request):
         'servicos': servicos,
         'fotos': fotos,
         'clinica': user,
-        'has_active_subscription': has_active_subscription
+        'has_active_subscription': has_active_subscription,
+        'days_remaining': days_remaining
   
     })
     

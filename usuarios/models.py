@@ -1,8 +1,11 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
+from datetime import datetime
+import logging
 
 from django.utils import timezone
+import stripe
 from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -64,7 +67,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     nome = models.CharField(_('nome'), max_length=30, blank=True)
     sobrenome = models.CharField(_('sobrenome'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), unique=True)
-    username = models.CharField(_('cpf'), max_length=30, unique=True)
+    username = models.CharField(_('cpf'), max_length=30)
     telefone = models.CharField(_('telefone'), max_length=20, blank=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     is_staff = models.BooleanField(_('staff status'), default=False)
@@ -227,6 +230,12 @@ class Cliente(CustomUser):
     cep = models.CharField(max_length=50, blank=True, null=True)
 
 
+class Depoimento(models.Model):
+   profissional = models.ForeignKey("Profissional", related_name='profissionais_fk', on_delete=models.CASCADE, null=True, blank=True)
+   descricao = models.TextField()
+   RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+   rating = models.IntegerField(choices=RATING_CHOICES)
+    
 
 class Subscription(models.Model):
     profissional = models.OneToOneField('Profissional', null=True, blank=True, on_delete=models.CASCADE)
@@ -234,6 +243,14 @@ class Subscription(models.Model):
     stripe_subscription_id = models.CharField(max_length=50)
     last_payment_date = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        if self.profissional:
+            return self.profissional.email
+        elif  self.clinica:
+            return self.clinica.email
+        else:
+            return None
 
 
 class Profissional(CustomUser):
@@ -254,6 +271,23 @@ class Profissional(CustomUser):
     avaliacoes = GenericRelation(Avaliacao)
     perguntas = models.ManyToManyField(PerguntaResposta, blank=True, related_name='profissionais')
     galeria = models.ManyToManyField(Foto, blank=True, related_name='profissionais')
+    
+    def get_trial_days_remaining(self):
+        subscription = self.subscription
+        if subscription and subscription.stripe_subscription_id:
+            try:
+                stripe_subscription = stripe.Subscription.retrieve(
+                    subscription.stripe_subscription_id)
+                trial_end_timestamp = stripe_subscription.get('trial_end')
+                if trial_end_timestamp is not None:
+                    trial_end_date = datetime.utcfromtimestamp(trial_end_timestamp)
+                    today = datetime.utcnow().date()
+                    days_remaining = (trial_end_date.date() - today).days
+                    return days_remaining
+            except stripe.error.InvalidRequestError as e:
+                # Logar o erro para revisão posterior
+                return None  # ou 0, dependendo de como você quer lidar com isso
+
 
 class Clinica(CustomUser):
     is_active = models.BooleanField(_('active'), default=False)
@@ -273,6 +307,19 @@ class Clinica(CustomUser):
     avaliacoes = GenericRelation(Avaliacao)
     perguntas = models.ManyToManyField(PerguntaResposta, blank=True, related_name='clinicas')
     galeria = models.ManyToManyField(Foto, blank=True, related_name='clinicas')
+    
+    def get_trial_days_remaining(self):
+        subscription = self.subscription
+        if subscription:
+            stripe_subscription = stripe.Subscription.retrieve(
+                subscription.stripe_subscription_id)
+            trial_end_timestamp = stripe_subscription.get('trial_end')
+            if trial_end_timestamp is not None:
+                trial_end_date = datetime.utcfromtimestamp(trial_end_timestamp)
+                today = datetime.utcnow().date()
+                days_remaining = (trial_end_date.date() - today).days
+                return days_remaining
+        return None  # ou 0, dependendo de como você quer lidar com isso
     
 
 

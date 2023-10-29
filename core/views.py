@@ -33,11 +33,14 @@ def nav(request):
 
 def home_view(request):
     especialidades = Especialidade.objects.all()
+    profissionais_ativos_aleatorios = Profissional.objects.filter(is_active=True).order_by('?')[:5]
+    
     print(request.user)  # Veja qual é o usuário atual
     is_profissional = hasattr(request.user, 'profissional')
     print(is_profissional)  # Isso      
     context = {
-        'especialidades':especialidades
+        'especialidades':especialidades,
+        'profissionais_ativos_aleatorios': profissionais_ativos_aleatorios
     }
     
     return render(request, 'core/index.html', context)
@@ -56,7 +59,7 @@ from django.views.decorators.csrf import csrf_exempt
 logging.basicConfig(level=logging.INFO)
 stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"
 
-YOUR_DOMAIN = "https://saubrebras.com.br/"
+YOUR_DOMAIN = "https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app"
 
 @csrf_exempt
 def create_subscription(request):
@@ -226,16 +229,35 @@ def handle_checkout_session_completed(event):
         print(f"An error occurred: {e}")
         logging.error(f"An error occurred: {str(e)}")
 
-        
+from django.core.exceptions import ObjectDoesNotExist
+
 @csrf_exempt
 def cancel_subscription_view(request):
     if request.method == 'POST':
         user = request.user
-        subscription = get_object_or_404(Subscription, profissional=user.profissional)  # ou clinica=user.clinica, dependendo do tipo de usuário
-        cancel_subscription(subscription)  # Chama a função de cancelamento que você definiu
-        return JsonResponse({'success': True})
-    return JsonResponse({'success': False})
+        try:
+            subscription = get_subscription(user)
+            cancel_subscription(subscription)  # Chama a função de cancelamento que você definiu
+            return JsonResponse({'success': True})
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False, 'error': 'No subscription found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
+def get_subscription(user):
+    # Tenta obter a assinatura do profissional
+    try:
+        return Subscription.objects.get(profissional=user.profissional)
+    except ObjectDoesNotExist:
+        pass
+    
+    # Tenta obter a assinatura da clínica
+    try:
+        return Subscription.objects.get(clinica=user.clinica)
+    except ObjectDoesNotExist:
+        pass
+    
+    # Se nenhuma assinatura foi encontrada, levanta uma exceção
+    raise ObjectDoesNotExist('No subscription found')
 
 def cancel_subscription(subscription):
     try:
@@ -290,6 +312,7 @@ def calculate_stars(media):
 
 def perfil_profissional(request, profissional_id):
     profissional = get_object_or_404(Profissional, id=profissional_id)
+    tem_respostas = profissional.perguntas.filter(resposta__isnull=False).exists()
     media = calcular_media(profissional, Profissional)
     stars = calculate_stars(media)
     total_av = total_avaliacoes(profissional, Profissional)
@@ -396,7 +419,8 @@ def perfil_profissional(request, profissional_id):
         'avaliacoes': avaliacoes,
         'stars': stars,
         'form_perguntas': form_perguntas,
-        'perguntas_paginated': perguntas_paginated
+        'perguntas_paginated': perguntas_paginated,
+        'tem_respostas': tem_respostas
     }
 
     return render(request, 'core/perfil_profissional.html', context)
@@ -405,6 +429,7 @@ def perfil_clinica(request, clinica_id):
     
     
     clinica = get_object_or_404(Clinica, id=clinica_id)
+    tem_respostas = clinica.perguntas.filter(resposta__isnull=False).exists()
     has_emergency = clinica.tipo_clinica.filter(nome__icontains='Emergência').exists()
     is_cliente = isinstance(request.user, Cliente)
     avaliacoes = Avaliacao.objects.filter(
@@ -525,7 +550,8 @@ def perfil_clinica(request, clinica_id):
         'perguntas_paginated': perguntas_paginated,
         'avaliacoes': avaliacoes,
         'total_avaliacoes': total_av,  # Usando total_av aqui
-        'stars': stars
+        'stars': stars,
+        'tem_respostas': tem_respostas
     }
 
     return render(request, 'core/perfil_clinica.html', context)
