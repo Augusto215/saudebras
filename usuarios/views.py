@@ -3,6 +3,8 @@ from django.contrib.auth import login, authenticate
 from django.core.serializers import serialize
 from django.core.files.storage import default_storage
 from django.db.models import Q
+from django.db import IntegrityError, transaction
+from django.db import OperationalError
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -79,6 +81,7 @@ def registerCliente(request):
                
                
                     
+                messages.success(request, 'Cadastro Realizado com sucesso!')
                 return redirect('login')
             else:
                 print("CEP inválido ou não encontrado")
@@ -117,9 +120,20 @@ def obter_coordenadas(endereco_completo, google_maps_api_key):
     
     return None, None
 
+def save_with_retry(model_instance, retries=5, delay=1):
+    for attempt in range(retries):
+        try:
+            model_instance.save()
+            return  # Sai da função se o save foi bem-sucedido
+        except OperationalError:
+            if attempt < retries - 1:  # Não é a última tentativa
+                time.sleep(delay)  # Espere antes de tentar novamente
+            else:
+                raise  # Re-lança a exceção na última tentativa
 
 
 def registerProfissional(request):
+    banners = Banner.objects.all()
     especialidades = Especialidade.objects.all()
     idiomas = Idioma.objects.all()
     convenios = Convenio.objects.all()
@@ -242,14 +256,16 @@ def registerProfissional(request):
         'idiomas': idiomas,
         'form': form,
         'tipo_profissionais': tipo_profissional,
+        'banners':banners
     }
 
     return render(request, 'core/registroProfissionais.html', context)
 
-    
+
+
 def registerClinica(request):
     stripe.api_key = 'sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs'  # Configuração do Stripe
-
+    banners = Banner.objects.all()
     tipo_clinica = TipoClinica.objects.all()
     especialidades = Especialidade.objects.all()
     idiomas = Idioma.objects.all()
@@ -376,7 +392,8 @@ def registerClinica(request):
         'idiomas': idiomas,
         'form': form,
         'tipos_profissionais': tipo_profissional,
-        'tipos_clinicas':tipo_clinica
+        'tipos_clinicas':tipo_clinica,
+        'banners':banners
     }
 
     return render(request, 'core/registroClinicas.html', context)
@@ -392,6 +409,11 @@ from django.contrib.auth import authenticate
 
 @csrf_exempt
 def user_login(request):
+    banners = Banner.objects.all()
+    context = {
+        'banners': banners,
+    }
+
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         email = request.POST['username']
@@ -407,7 +429,10 @@ def user_login(request):
     else:
         form = LoginForm()
         
-    return render(request, 'core/login.html', {'form': form})
+    context['form'] = form  # Agora, o form é adicionado ao contexto aqui.
+        
+    return render(request, 'core/login.html', context)
+
 
 def convenios_perfil(request):
     profissional = request.user.profissional
@@ -417,6 +442,7 @@ def convenios_perfil(request):
     convenios_json = serialize('json', convenios)
     prof_convenios_json = serialize('json', profissional.convenios.all())
 
+    
     return JsonResponse({'convenios': convenios_json, 'prof_convenios': prof_convenios_json})
 
 #EDITAR PERFIL

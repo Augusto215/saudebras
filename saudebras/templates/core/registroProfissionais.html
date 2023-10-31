@@ -354,6 +354,33 @@ document.getElementById('add-cep').addEventListener('click', function() {
     <img style="max-height:20rem;" src=" {%static 'img/Doctors-bro.png' %}">
 </div>
 </div>
+<div class="container d-none justify-content-center mt-4 mb-4">
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+        {% for banner in banners %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
+        </div>
+        {% endfor %}
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+</div>
+<script>
+
+    const carouselInner = document.querySelector('.carousel-inner');
+    images.forEach((image, index) => {
+        const isActive = index === 0 ? 'active' : '';
+    
+    });
+                </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script>
     var currentTab = 0;  // A aba atual é a primeira aba (0)

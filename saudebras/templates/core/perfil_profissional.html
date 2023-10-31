@@ -70,7 +70,7 @@
 
     
    
-<div class="d-flex flex-column align-items-start justify-content-center">
+<div class="perfil-container d-flex flex-column justify-content-center">
   <div class="d-flex" style="gap:1rem;">
      <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
      <div class="d-flex flex-column">
@@ -86,9 +86,11 @@
             <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#especialidadesModal-{{ profissional.id }}">Ver mais</a>
             {% endif %}
          </div>
-         <!-- Modal com todos os convênios -->
-        
+         
+
+
         </div>
+        
         {%load floor%}
         <span class="mb-3" style="font-size:1rem; color:#000 !important;">
            <span>
@@ -119,21 +121,37 @@
            {% if profissional.convenios.all.count > 1 %}
            <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
            {% endif %}
+           
         </div>
         <!-- Modal com todos os convênios -->
        
       </div>
+    
+  </div>
+  <div class="contato-div2" 
+  style=" border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB); height:fit-content; display:none;">
+  <div class='d-flex flex-column align-items-center w-100' style="gap:1rem;">
+  {%if user.is_authenticated%}
+                <a href="tel:{{ profissional.telefone|slice:":1" }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                  <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                  {%else%}
+                  <a href="{% url 'login' %}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696;  max-width:100%; width:10rem; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D; max-width:100%; width:10rem; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                  {%endif%}
+  </div>
   </div>
 </div>
   <div class="tab-container">
-    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center " style="gap:1.5rem; overflow-x:auto; element::-webkit-scrollbar {
-      display: none; -ms-overflow-style: none; scrollbar-width: none; ">
+    <div class="wrapper" style="overflow-x: auto;">
+
+    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center" style="gap:1.5rem;padding:0 1.5rem;">
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button active" onclick="showTab(0)">Consultórios</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(1)">Serviços</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(2)">Opiniões</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(3)">Dúvidas</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(4)">Experiência</a>
     </div>
+  </div>
     <div class="tab-content">
       <div class="tab-pane active">
         <div class=" mb-4 d-flex justify-content-center align-items-center flex-column">
@@ -232,23 +250,29 @@
         {% load user_tags %}
         {% if user.is_authenticated %}
           {% if is_cliente %}
-            <form method="post">
+            <form class="d-flex flex-column align-items-center justify-content-center" style="gap:.5rem;" method="post">
               
               {% csrf_token %}
               <input type="hidden" name="action" value="send_avaliacao">
 
               <label for="rating">Avaliação: </label>
-              <div class="rating">
-                <span class="star" data-value="1">☆</span>
-                <span class="star" data-value="2">☆</span>
-                <span class="star" data-value="3">☆</span>
-                <span class="star" data-value="4">☆</span>
-                <span class="star" data-value="5">☆</span>
+              <div class="rating" id="stars">
+                <span class="star2" data-value="1">☆</span>
+                <span class="star2" data-value="2">☆</span>
+                <span class="star2" data-value="3">☆</span>
+                <span class="star2" data-value="4">☆</span>
+                <span class="star2" data-value="5">☆</span>
                 <input type="hidden" id="ratingInput" name="rating">
               </div>
               <label for="descricao">Descrição (Opcional): </label>
               <textarea name="descricao"></textarea>
-              <button type="submit">Avaliar</button>
+              <button style="
+              background: #18B696;
+              color: #fff;
+              border:none;
+              outline:none;
+              border-radius: 4px;
+              font-weight: 600; width:100%;" type="submit">Avaliar</button>
             </form>
           {% else %}
             <span class="mt-3 mb-4">Apenas clientes podem avaliar</span>
@@ -266,11 +290,17 @@
       {%endif%}
         {% if user.is_authenticated %}
           {% if is_cliente %}
-        <form method="post">
-          {% csrf_token %}
+          <form class="d-flex flex-column align-items-center justify-content-center" style="gap:.5rem;" method="post">
+            {% csrf_token %}
           <input type="hidden" name="action" value="send_pergunta">
           <input type="text" name="pergunta">
-          <button type="submit">Enviar Pergunta</button>
+          <button style="
+          background: #18B696;
+          color: #fff;
+          border:none;
+          outline:none;
+          border-radius: 4px;
+          font-weight: 600; width:100%;" type="submit">Enviar Pergunta</button>
       </form>
 
       {%else%}
@@ -293,7 +323,7 @@
   </div>
  
 </div>
-<div class="p-4"
+<div class="p-4 contato1"
 style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB); height:fit-content;">
 <div class='d-flex flex-column align-items-center w-100' style="gap:1rem;">
 {%if user.is_authenticated%}
@@ -623,26 +653,53 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
 </script>
 
 <script>
-  const stars = document.querySelectorAll('.star');
-  const ratingInput = document.getElementById('ratingInput');
-  
-  stars.forEach((star) => {
-      star.addEventListener('click', function () {
-          const value = this.getAttribute('data-value');
-  
-          // Atualiza a aparência das estrelas
-          stars.forEach((s, index) => {
-              if (index < value) {
-                  s.classList.add('selected');
-              } else {
-                  s.classList.remove('selected');
-              }
-          });
-  
-          // Atualiza o valor do input oculto
-          ratingInput.value = value;
-      });
-  });
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const stars = document.querySelectorAll('.star2');
+    const ratingInput = document.getElementById('ratingInput');
+    let selectedRating = 0;
+    
+    // Define o valor inicial para string vazia ou 0
+    ratingInput.value = '';
+
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', function() {
+            highlightStars(index);
+        });
+    });
+
+    document.getElementById('stars').addEventListener('mouseout', function() {
+        highlightStars(selectedRating - 1);
+    });
+
+    stars.forEach((star) => {
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            selectedRating = value;
+
+            // Atualiza a aparência das estrelas
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.classList.add('selected');
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
+
+            // Atualiza o valor do input oculto
+            ratingInput.value = value;
+        });
+    });
+
+    function highlightStars(index) {
+        for (let i = 0; i <= index; i++) {
+            stars[i].style.color = '#2D77EA';
+        }
+        for (let i = index + 1; i < stars.length; i++) {
+            stars[i].style.color = stars[i].classList.contains('selected') ? '#2D77EA' : 'black';
+        }
+    }
+});
+
 </script>
   <!-- E assim por diante, para todos os campos que você quer mostrar -->
 

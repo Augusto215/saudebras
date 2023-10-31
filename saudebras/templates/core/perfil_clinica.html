@@ -4,6 +4,7 @@
 
 {% block 'conteudo' %}
 
+
 <!-- Modal com todos os convênios -->
 <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
   <div class="modal-dialog">
@@ -27,7 +28,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="especialidadesModalLabel-{{ clinica.id }}">Especialidades</h5>
+        <h5 class="modal-title" id="especialidadesModalLabel-{{ clinica.id }}">Convênios</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -39,80 +40,129 @@
     </div>
   </div>
 </div>
+  
+ 
 <div class="fluid-container" style=" flex-grow:1; background:#FAFAFA;">
 <div class="mainPerfil container mt-5 d-flex flex-content-center" style="gap:2rem;">
-  <div class="p-4 mb-5 perfilDiv" style="background:#fff; border-radius:12px; width:80%; filter: drop-shadow(2px 4px 6px #DBDBDB);
-">
-  <div class="d-flex flex-column align-items-start justify-content-center">
-    <div class="d-flex" style="gap:1rem;">
-      <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
-      <div class="d-flex flex-column">
-        <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{% if not has_emergency %}
-          Laboratório
-      {% else %}
-          Hospital
-      {% endif %} {{ clinica.nome }}</span>
-      <div class="especialidadeFlex d-flex  align-items-center mb-2">
-        {% for especialidade in clinica.especialidades.all %}
-        {% if forloop.counter < 2 %}
-        <span style="margin-right: .5rem !important; text-decoration:underline;">{{ especialidade.nome }}</span>
-        {% endif %}
-        {% endfor %}
-        {% if clinica.especialidades.all.count > 1 %}
-        <a href="#" data-bs-toggle="modal" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-target="#especialidadesModal-{{ clinica.id }}">Ver mais</a>
-        {% endif %}
-  
-    </div>
-      {%load floor%}
-      <span class="mb-2" style="font-size:1rem; color:#000 !important;"><span><div class="rating-display d-flex align-items-center mb-2">
-        <div class="rating">
-          
-          {% for star in stars %}
-              {% if star == "full" %}
-                  <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
-              {% elif star1 == "half" %}
-                  <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
-              {% else %}
-                  <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
-              {% endif %}
-          {% endfor %}
+  <div class="perfilDiv p-4 mb-5" style="background:#fff; border-radius:12px; width:80%; filter: drop-shadow(2px 4px 6px #DBDBDB);
+  ">
+
+
+  <!-- Modal com todos os convênios -->
+  <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">Convênios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {%for convenio in clinica.convenios.all%}
+          <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+          {%endfor%}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
       </div>
-      <span class="totalAV">&nbsp;de {{ total_avaliacoes }} avaliações</span>  </div> 
-    </span>
-    <div class="d-flex mb-2 align-items-center convenioFlex">
-      {% for convenio in clinica.convenios.all %}
-      {% if forloop.counter < 2 %}
-      <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-      {% endif %}
-      {% endfor %}
-      {% if clinica.convenios.all.count > 1 %}
-      <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Ver mais</a>
-      {% endif %}
-   </div>
     </div>
+  </div>
+
+    
+   
+<div class="perfil-container d-flex flex-column justify-content-center">
+  <div class="d-flex" style="gap:1rem;">
+     <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
+     <div class="d-flex flex-column">
+      <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{% if not has_emergency %} Laboratório {% else %} Hospital {% endif %} {{ clinica.nome }}</span>        <div class="d-flex">
+          <div class="d-flex especialidadeFlex mb-2">
+            {% for especialidade in clinica.especialidades.all %}
+            {% if forloop.counter < 2 %}
+            <span style="margin-right: .5rem !important; text-decoration:underline;">{{ especialidade.nome }}</span>
+            {% endif %}
+            {% endfor %}
+            {% if clinica.especialidades.all.count > 1 %}
+            <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#especialidadesModal-{{ clinica.id }}">Ver mais</a>
+            {% endif %}
+         </div>
+         
+
+
+        </div>
+        
+        {%load floor%}
+        <span class="mb-3" style="font-size:1rem; color:#000 !important;">
+           <span>
+              <div class="rating-display d-flex align-items-center mb-2">
+                 <div class="rating">
+                    {%for avaliacao in avaliacoes %}
+                    {%endfor%}
+                    {% for star in stars %}
+                    {% if star == "full" %}
+                    <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
+                    {% elif star1 == "half" %}
+                    <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
+                    {% else %}
+                    <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+                    {% endif %}
+                    {% endfor %}
+                 </div>
+                 &nbsp;<span class="totalAV">de {{ total_avaliacoes }} avaliações</span>
+           </span>
+           </div> 
+        </span>
+        <div class="d-flex mb-2 convenioFlex">
+           {% for convenio in clinica.convenios.all %}
+           {% if forloop.counter < 2 %}
+           <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+           {% endif %}
+           {% endfor %}
+           {% if clinica.convenios.all.count > 1 %}
+           <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Ver mais</a>
+           {% endif %}
+           
+        </div>
+        <!-- Modal com todos os convênios -->
+       
+      </div>
+    
+  </div>
+  <div class="contato-div2" 
+  style=" border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB); height:fit-content; display:none;">
+  <div class='d-flex flex-column align-items-center w-100' style="gap:1rem;">
+  {%if user.is_authenticated%}
+                <a href="tel:{{ clinica.telefone|slice:":1" }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                  <a class="agendamento-btn p-2 text-center" data-phone="{{ clinica.telefone }}" data-nome="{{clinica.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{clinica.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                  {%else%}
+                  <a href="{% url 'login' %}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696;  max-width:100%; width:10rem; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
+                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D; max-width:100%; width:10rem; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                  {%endif%}
+  </div>
   </div>
 </div>
   <div class="tab-container">
-    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center " style="gap:1.5rem; overflow-x:auto; element::-webkit-scrollbar {
-      display: none; -ms-overflow-style: none; scrollbar-width: none; ">
+    <div class="wrapper" style="overflow-x: auto;">
+
+    <div class="tab-buttons mb-4 mt-4 d-flex justify-content-center" style="gap:1.5rem;padding:0 1.5rem;">
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button active" onclick="showTab(0)">Consultórios</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(1)">Serviços</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(2)">Opiniões</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(3)">Dúvidas</a>
       <a style="background:none; border:none; text-decoration:none; color:#000;" class="tab-button" onclick="showTab(4)">Experiência</a>
     </div>
+  </div>
     <div class="tab-content">
       <div class="tab-pane active">
         <div class=" mb-4 d-flex justify-content-center align-items-center flex-column">
 
-          <div class="d-flex flex-column align-items-center justify-content-center mt-5">
-          <span class="w-100 d-flex text-center justify-content-center" style="font-size:1.2rem; font-weight:600;">Endereços:</span>
+          <div class="d-flex flex-column align-items-center justify-content-center mt-3">
+          <span class="w-100 d-flex text-center justify-content-center mb-3" style="font-size:1.2rem; font-weight:600;">Endereços:</span>
        
         {%for endereco in clinica.enderecos.all%}
 
        
-        <br>
-        <div class="mb-3"><span ><i class="bi bi-geo-alt-fill"></i>&nbsp;{{endereco.rua}},{%if endereco.complemento %}&nbsp;{{endereco.complemento}},{%endif%}&nbsp;{{endereco.bairro.nome}},
+        <div style="max-width:25rem !important;" class="mb-3 text-center">
+          <span  ><i class="bi bi-geo-alt-fill"></i>&nbsp;{{endereco.rua}},{%if endereco.complemento %}&nbsp;{{endereco.complemento}},{%endif%}&nbsp;{{endereco.bairro.nome}},
         &nbsp;{{endereco.cidade.nome}}&nbsp;-&nbsp;{{endereco.estado.nome}}</span>
        
         
@@ -129,92 +179,140 @@
         </div>
 
 
-          <div class="mt-5 d-flex justify-content-center align-items-center flex-column">
+          <div class="mt-3 d-flex justify-content-center align-items-center flex-column">
             <span class="w-100 d-flex text-center justify-content-center mb-3" style="font-size:1.2rem; font-weight:600;">Idiomas:</span>
         {%for idioma in clinica.idiomas.all%}
-        <span class="mb-3"><i class="bi bi-translate"></i>&nbsp;{{idioma}}<br></span>
+        <span class="mb-3"><i class="bi bi-translate"></i>&nbsp;{{idioma}}</span>
 
         {%endfor%}
           </div>
     </div>
+    {%if clinica.galeria.all.exists%}
+
+    <div class="mt-3 d-flex justify-content-center align-items-center flex-column">
+      
+      <span class="w-100 d-flex text-center justify-content-center mb-3" style="font-size:1.2rem; font-weight:600;">Galeria de Fotos:</span>
+   
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+      {%for foto in clinica.galeria.all%}
+    
+      
+      <!-- Exemplo de HTML -->
+      <a data-fancybox="gallery" href="{{foto.imagem.url}}">
+        <img src="{{foto.imagem.url}}" style="width:8rem; height:8rem; object-fit:cover;" />
+      </a>
+      {%endfor%}
+    </div>
+          
+
+
+      <script type="text/javascript">
+        $(document).ready(function() {
+          $('[data-fancybox="gallery"]').fancybox({
+            afterLoad: function(instance, slide) {
+              slide.$image.css({
+                'object-fit': 'cover',
+                'width': '100%',
+                'height': '100%'
+              });
+            }
+          });
+        });
+      </script>
+      
+    </div>
+    {%endif%}
       </div>
-      <div class="tab-pane">
+      <div class="tab-pane ">
           <div class=" mb-4 d-flex justify-content-center align-items-center flex-column">
 
-        <div class="d-flex flex-column mt-5 align-items-center justify-content-center">
-          <span class="w-100 d-flex text-center justify-content-center" style="font-size:1.2rem; font-weight:600;">Serviços:</span>
+        <div class="d-flex flex-column mt-3 align-items-center justify-content-center">
         {%for servico in clinica.servicos.all%}
-        <br><span><i class="bi bi-heart-pulse-fill"></i>&nbsp;{{servico.nome}}</span>
+      <span><i class="bi bi-heart-pulse-fill"></i>&nbsp;{{servico.nome}}</span>
           {%empty%}
           <span>Vazio</span>
         {%endfor%}
         </div>
       </div>
     </div>
-      <div class="tab-pane">
-        <div class="mt-5 d-flex justify-content-center align-items-center flex-column">
-          <span class="w-100 d-flex text-center justify-content-center mb-4" style="font-size:1.2rem; font-weight:600; ">Opiniões:</span>
+      <div class="tab-pane ">
+        {%if avaliacoes%}
+        <div class="d-flex justify-content-center align-items-center flex-column">
 
         <div class="avaliacoes  d-flex justify-content-center align-items-center flex-column">
 
           <!-- As avaliações serão carregadas aqui via JavaScript -->
         </div>
       </div>
-      
+      {%endif%}
       
         {% load user_tags %}
         {% if user.is_authenticated %}
           {% if is_cliente %}
-            <form method="post">
+            <form class="d-flex flex-column align-items-center justify-content-center" style="gap:.5rem;" method="post">
               
               {% csrf_token %}
               <input type="hidden" name="action" value="send_avaliacao">
 
               <label for="rating">Avaliação: </label>
-              <div class="rating">
-                <span class="star" data-value="1">☆</span>
-                <span class="star" data-value="2">☆</span>
-                <span class="star" data-value="3">☆</span>
-                <span class="star" data-value="4">☆</span>
-                <span class="star" data-value="5">☆</span>
+              <div class="rating" id="stars">
+                <span class="star2" data-value="1">☆</span>
+                <span class="star2" data-value="2">☆</span>
+                <span class="star2" data-value="3">☆</span>
+                <span class="star2" data-value="4">☆</span>
+                <span class="star2" data-value="5">☆</span>
                 <input type="hidden" id="ratingInput" name="rating">
               </div>
               <label for="descricao">Descrição (Opcional): </label>
               <textarea name="descricao"></textarea>
-              <button type="submit">Avaliar</button>
+              <button style="
+              background: #18B696;
+              color: #fff;
+              border:none;
+              outline:none;
+              border-radius: 4px;
+              font-weight: 600; width:100%;" type="submit">Avaliar</button>
             </form>
           {% else %}
-            <span>Apenas clientes podem avaliar</span>
+            <span class="mt-3 mb-4">Apenas clientes podem avaliar</span>
           {% endif %}
         {% else %}
-          <span> Você precisa estar logado para avaliar </span>
+          <span class="mt-3 mb-4"> Você precisa estar logado para avaliar </span>
         {% endif %}
       </div>
       
       <div class="tab-pane">
-        <div class="perguntas">
+        {% if tem_respostas %}
+        <div class="perguntas d-flex justify-content-center flex-column align-items-center">
           <!-- Perguntas serão inseridas aqui pelo JavaScript -->
       </div>
+      {%endif%}
         {% if user.is_authenticated %}
           {% if is_cliente %}
-        <form method="post">
-          {% csrf_token %}
+          <form class="d-flex flex-column align-items-center justify-content-center" style="gap:.5rem;" method="post">
+            {% csrf_token %}
           <input type="hidden" name="action" value="send_pergunta">
           <input type="text" name="pergunta">
-          <button type="submit">Enviar Pergunta</button>
+          <button style="
+          background: #18B696;
+          color: #fff;
+          border:none;
+          outline:none;
+          border-radius: 4px;
+          font-weight: 600; width:100%;" type="submit">Enviar Pergunta</button>
       </form>
 
       {%else%}
-      <span>Apenas clientes podem perguntar</span>
+      <span class="mt-3 mb-4">Apenas clientes podem perguntar</span>
       {%endif%}
 
       {%else%}
-      <span> Você precisa estar logado para perguntar</span>
+      <span class="mt-3 mb-4"> Você precisa estar logado para perguntar</span>
       {%endif%}
       </div>
 
-      <div class="tab-pane">
-        <span>{{clinica.descricao}}</span>
+      <div class="tab-pane ">
+        <span class="mb-4 mt-3 text-center" style="color:#000 !important;">{{clinica.descricao}}</span>
       </div>
 
 
@@ -224,7 +322,7 @@
   </div>
  
 </div>
-<div class="p-4"
+<div class="p-4 contato1"
 style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB); height:fit-content;">
 <div class='d-flex flex-column align-items-center w-100' style="gap:1rem;">
 {%if user.is_authenticated%}
@@ -240,17 +338,16 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
 
 </div>
 
-
-
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     let currentPage = 1;
+  
     let clinica_id = "{{ clinica.id }}";  // Supondo que você tenha essa variável disponível no template
     let page = 1;
     let baseUrl = window.location.origin;
   
     async function fetchAvaliacoes(page) {
-      const response = await fetch(`/perfilClinica/${clinica_id}/?page=${page}`, {
+      const response = await fetch(`/perfil/${clinica_id}/?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'fetch'
@@ -268,7 +365,7 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
       
       data.avaliacoes.forEach(avaliacao => {
         const avaliacaoDiv = document.createElement("div");
-        avaliacaoDiv.classList.add("avaliacao", "mb-5", "d-flex", "w-100", "flex-column", "align-items-center", "justify-content-center");
+        avaliacaoDiv.classList.add("avaliacao", "mb-3", "d-flex", "flex-column", "align-items-center", "justify-content-center");
   
         const profileDiv = document.createElement("div");
         profileDiv.classList.add("d-flex");
@@ -286,6 +383,7 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
   
         const nameDiv = document.createElement("div");
         const nameSpan = document.createElement("span");
+        nameSpan.style.fontWeight = '600';
         nameSpan.textContent = avaliacao.nome;
         nameDiv.appendChild(nameSpan);
   
@@ -310,6 +408,9 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
   
         const descricaoDiv = document.createElement("div");
         descricaoDiv.classList.add("descricao");
+        descricaoDiv.classList.add("text-center");
+        descricaoDiv.style.wordBreak = 'break-word';
+        descricaoDiv.style.maxWidth = '25rem';
         descricaoDiv.textContent = avaliacao.descricao;
   
         const dataDiv = document.createElement("div");
@@ -324,7 +425,7 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
         avaliacoesDiv.appendChild(avaliacaoDiv);
       });
       const containerPage = document.createElement("div");
-      containerPage.classList.add("d-flex", "mb-5", "containerPage");
+      containerPage.classList.add("d-flex", "mb-3", "containerPage");
       avaliacoesDiv.appendChild(containerPage)
 
       
@@ -338,7 +439,7 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
         containerPage.appendChild(prevButton);
       }
   
-      if (data.has_next) {
+      if (data.has_next_avaliacoes) {
         const nextButton = document.createElement("button");
         nextButton.classList.add("pageBtn", "p-2");
         nextButton.textContent = ">";
@@ -362,19 +463,17 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
     let baseUrl = window.location.origin;
 
     async function fetchPerguntas(page) {
-      const response = await fetch(`/perfilClinica/${clinica_id}/?page_perguntas=${page}`, {
+      const response = await fetch(`/perfil/${clinica_id}/?page_perguntas=${page}`, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'fetch'
         }
       });
-      
-      if (!response.ok || !response.headers.get('content-type').includes('application/json')) {
-        const text = await response.text();
-        console.error(`O servidor retornou uma resposta não-JSON: ${text}`);
+
+      if (!response.ok) {
+        console.error("Algo deu errado:", response.status, response.statusText);
         return;
       }
-      
 
       const data = await response.json();
       const perguntasDiv = document.querySelector(".perguntas");
@@ -385,21 +484,39 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
         const perguntaDiv = document.createElement("div");
         perguntaDiv.classList.add("pergunta", "mb-5", "d-flex", "w-100", "flex-column", "align-items-center", "justify-content-center");
 
+
+        const flexDiv = document.createElement("div");
+        const flexDivProf = document.createElement("div");
+        const respostaDiv = document.createElement("div");
+        const profNome = document.createElement("span")
+        const clienteImg = document.createElement("img");
         const textoDiv = document.createElement("div");
         const textoSpan = document.createElement("span");
         const nomeSpan = document.createElement("span");
         const respostaSpan = document.createElement("span")
-  
-    
+        
+        flexDiv.classList.add("d-flex", "align-items-center", "justify-content-center");
+        flexDiv.style.gap = "1rem";
+        flexDivProf.classList.add("d-flex", "align-items-center", "justify-content-center");
+        flexDivProf.style.gap = "1rem";
+        textoDiv.classList.add("d-flex", "flex-column", "align-items-center", "justify-content-center");
+        textoDiv.style.gap = "1rem";
         textoSpan.textContent = pergunta.pergunta;
         respostaSpan.textContent = pergunta.resposta;
         nomeSpan.textContent = pergunta.nome;
+        profNome.textContent = pergunta.clinica_nome;
         textoDiv.appendChild(textoSpan);
-        textoDiv.appendChild(nomeSpan);
-        textoDiv.appendChild(respostaSpan);
+        flexDiv.appendChild(nomeSpan);
+        flexDivProf.appendChild(profNome);
+        flexDiv.appendChild(clienteImg);
+        respostaDiv.appendChild(respostaSpan);
+        perguntaDiv.appendChild(flexDiv);
         perguntaDiv.appendChild(textoDiv);
+        perguntaDiv.appendChild(flexDivProf);
+        perguntaDiv.appendChild(respostaDiv);
+        
+        
 
-        perguntasDiv.appendChild(perguntaDiv);
         perguntasDiv.appendChild(perguntaDiv);
       });
     
@@ -535,26 +652,53 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
 </script>
 
 <script>
-  const stars = document.querySelectorAll('.star');
-  const ratingInput = document.getElementById('ratingInput');
-  
-  stars.forEach((star) => {
-      star.addEventListener('click', function () {
-          const value = this.getAttribute('data-value');
-  
-          // Atualiza a aparência das estrelas
-          stars.forEach((s, index) => {
-              if (index < value) {
-                  s.classList.add('selected');
-              } else {
-                  s.classList.remove('selected');
-              }
-          });
-  
-          // Atualiza o valor do input oculto
-          ratingInput.value = value;
-      });
-  });
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const stars = document.querySelectorAll('.star2');
+    const ratingInput = document.getElementById('ratingInput');
+    let selectedRating = 0;
+    
+    // Define o valor inicial para string vazia ou 0
+    ratingInput.value = '';
+
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', function() {
+            highlightStars(index);
+        });
+    });
+
+    document.getElementById('stars').addEventListener('mouseout', function() {
+        highlightStars(selectedRating - 1);
+    });
+
+    stars.forEach((star) => {
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            selectedRating = value;
+
+            // Atualiza a aparência das estrelas
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.classList.add('selected');
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
+
+            // Atualiza o valor do input oculto
+            ratingInput.value = value;
+        });
+    });
+
+    function highlightStars(index) {
+        for (let i = 0; i <= index; i++) {
+            stars[i].style.color = '#2D77EA';
+        }
+        for (let i = index + 1; i < stars.length; i++) {
+            stars[i].style.color = stars[i].classList.contains('selected') ? '#2D77EA' : 'black';
+        }
+    }
+});
+
 </script>
   <!-- E assim por diante, para todos os campos que você quer mostrar -->
 

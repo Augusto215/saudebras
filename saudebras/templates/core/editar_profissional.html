@@ -28,7 +28,7 @@
   <div id="sidebar" class="d-flex flex-column editar_perfil" style="gap:2rem;">
     <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
     <button onclick="alterarConteudo('conteudo2')">Endereços</button>
-    <button onclick="alterarConteudo('conteudo3')">Avaliações</button>
+    <button onclick="alterarConteudo('conteudo3')">Perguntas</button>
     
     {%if profissional.is_active == False%}
     
@@ -77,9 +77,9 @@
 
     {%endif%}
     {% if has_active_subscription and days_remaining is None %}
-    <form method="post" action="{% url 'cancel-subscription' %}">
+    <form class="w-100" method="post" action="{% url 'cancel-subscription' %}">
         {% csrf_token %}
-        <button type="submit">Cancelar Assinatura</button>
+        <button class="w-100" type="submit">Cancelar</button>
     </form>
 {% endif %}
     <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_profissional' profissional.id %}"><button class="w-100">Ver Perfil</button></a>
@@ -706,6 +706,9 @@ document.getElementById("addServico").addEventListener("click", () => {
 
     <div id="conteudo3" class="conteudo">
       <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
+        <div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
+<div>
+  <span class="mb-3"> Perguntas a responder: </span>
         {% for pergunta in profissional.perguntas.all %}
         {%if pergunta.resposta == blank %}
     <div class="d-flex flex-column justify-content-center">
@@ -718,21 +721,36 @@ document.getElementById("addServico").addEventListener("click", () => {
             {%csrf_token%}
             <input type="hidden" name="pergunta_id" value="{{pergunta.id}}">
         <input name="resposta" placeholder:"Resposta...">
-        <button type="submit" name="action" value="responder_pergunta">Enviar</button>
+        <button style="
+        background: #18B696;
+        color: #fff;
+        border:none;
+        outline:none;
+        border-radius: 4px;
+        font-weight: 600; width:100%;" type="submit" name="action" value="responder_pergunta">Enviar</button>
           </form>
     
   </div>
-    {%else%}
-
-    <div class="d-flex flex-column mb-3">
-        <span>Pergunta: {{pergunta.pergunta}}</span>
-        <span>Resposta: {{pergunta.resposta}}</span>
-
-    </div>
 
     {%endif%}
 {% endfor %}
+</div>
+<div>
+  
+<span class="mb-3"> Perguntas Respondidas: </span>
+{%for pergunta in profissional.perguntas.all%}
+{%if pergunta.resposta != blank%}
 
+<div class="d-flex flex-column mb-3" style="max-height:20rem; overflow-y:scroll;">
+    <span>Pergunta: {{pergunta.pergunta}}</span>
+    <span>Resposta: {{pergunta.resposta}}</span>
+
+</div>
+
+{%endif%}
+{%endfor%}
+</div>
+</div>
   
       </div>
     </div>

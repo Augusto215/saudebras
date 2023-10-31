@@ -373,97 +373,67 @@ document.getElementById('add-cep').addEventListener('click', function() {
     <img style="max-height:20rem;" src=" {%static 'img/Hospital building-bro.png' %}">
 </div>
 </div>
+
+
+<div class="container d-none justify-content-center mt-4 mb-4">
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for banner in banners %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
+            </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    </div>
+    <script>
+    
+        const carouselInner = document.querySelector('.carousel-inner');
+        images.forEach((image, index) => {
+            const isActive = index === 0 ? 'active' : '';
+        
+        });
+                    </script>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
 <script>
-    var currentTab = 0; // Current tab is set to be the first tab (0)
-    showTab(currentTab); // Display the current tab
-    
+    var currentTab = 0;  // A aba atual é a primeira aba (0)
+    showTab(currentTab);  // Exibir a aba atual
+
     function showTab(n) {
-    // This function will display the specified tab of the form...
-    var x = document.getElementsByClassName("tab");
-    x[n].style.display = "block";
-    //... and fix the Previous/Next buttons:
-    if (n == 0) {
-    document.getElementById("prevBtn").style.display = "none";
-    } else {
-    document.getElementById("prevBtn").style.display = "inline";
+        var x = document.getElementsByClassName("tab");
+        x[n].style.display = "block";  // Exibir a aba n
+        if (n == 0) {
+            document.getElementById("prevBtn").style.display = "none";  // Esconder o botão "Anterior" na primeira aba
+        } else {
+            document.getElementById("prevBtn").style.display = "inline";  // Exibir o botão "Anterior" nas outras abas
+        }
+        if (n == (x.length - 1)) {
+            document.getElementById("nextBtn").style.display = 'none';  // Esconder o botão "Próximo" na última aba
+            document.getElementById("submitBtn").style.display = 'inline';  // Exibir o botão "Enviar" na última aba
+        } else {
+            document.getElementById("nextBtn").style.display = 'inline';  // Exibir o botão "Próximo" nas outras abas
+            document.getElementById("submitBtn").style.display = 'none';  // Esconder o botão "Enviar" nas outras abas
+        }
     }
-    if (n == (x.length - 1)) {
-    document.getElementById("nextBtn").style.display = 'none';
-    document.getElementById("submitBtn").style.display = 'inline';
-    
-    } else {
-    document.getElementById("nextBtn").innerHTML = "Próximo";
-    }
-    //... and run a function that will display the correct step indicator:
-    fixStepIndicator(n)
-    }
-    
+
     function nextPrev(n) {
-    // This function will figure out which tab to display
-    var x = document.getElementsByClassName("tab");
-    // Exit the function if any field in the current tab is invalid:
-    if (n == 1 && !validateForm()) return false;
-    // Hide the current tab:
-    x[currentTab].style.display = "none";
-    // Increase or decrease the current tab by 1:
-    currentTab = currentTab + n;
-    // if you have reached the end of the form...
-    if (currentTab >= x.length) {
-    // ... the form gets submitted:
-    document.getElementById("regForm").submit();
-    return false;
+        var x = document.getElementsByClassName("tab");
+        x[currentTab].style.display = "none";  // Esconder a aba atual
+        currentTab = currentTab + n;  // Atualizar a aba atual
+        showTab(currentTab);  // Exibir a nova aba
     }
-    // Otherwise, display the correct tab:
-    showTab(currentTab);
-    }
-    
-    function validateForm() {
-    // This function deals with validation of the form fields
-    var x, y, i, valid = true;
-    x = document.getElementsByClassName("tab");
-    y = x[currentTab].getElementsByTagName("input");
-    // A loop that checks every input field in the current tab:
-    for (i = 0; i < y.length; i++) {
-    // If a field is empty...
-    if (y[i].value == "") {
-      // add an "invalid" class to the field:
-      y[i].className += " invalid";
-      // and set the current valid status to false
-      valid = false;
-    }
-    }
-    // If the valid status is true, mark the step as finished and valid:
-    if (valid) {
-    document.getElementsByClassName("step")[currentTab].className += " finish";
-    }
-    return valid; // return the valid status
-    }
-    
-    function fixStepIndicator(n) {
-    // This function removes the "active" class of all steps...
-    var i, x = document.getElementsByClassName("step");
-    for (i = 0; i < x.length; i++) {
-    x[i].className = x[i].className.replace(" active", "");
-    }
-    //... and adds the "active" class on the current step:
-    x[n].className += " active";
-    }
- 
-    //document.addEventListener("DOMContentLoaded", function() {
-    // var checkboxes = document.querySelectorAll("input[type='checkbox'][name='especialidades[]']");
-   //  checkboxes.forEach(function(checkbox) {
-   //      checkbox.addEventListener("click", function() {
-             // Forçar que a caixa de seleção permaneça marcada ou desmarcada como desejado
-        //     this.checked = !this.checked ? false : true;
-     //    });
-   //  });
- // });
- 
- 
- 
- </script>
+</script>
+
 
 <script type="text/javascript">
     console.log('Script started');
@@ -534,6 +504,8 @@ function stripeTokenHandler(token) {
 }
     
 </script>
+
+
 
 
 

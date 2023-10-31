@@ -32,18 +32,52 @@ def nav(request):
 
 
 def home_view(request):
+    depoimentos = Depoimento.objects.all()
     especialidades = Especialidade.objects.all()
-    profissionais_ativos_aleatorios = Profissional.objects.filter(is_active=True).order_by('?')[:5]
-    
+    profissionais_ativos_aleatorios = Profissional.objects.filter(is_active=True).order_by('?')[:4]
+    banners = Banner.objects.all()
     print(request.user)  # Veja qual é o usuário atual
     is_profissional = hasattr(request.user, 'profissional')
     print(is_profissional)  # Isso      
     context = {
         'especialidades':especialidades,
-        'profissionais_ativos_aleatorios': profissionais_ativos_aleatorios
+        'depoimentos':depoimentos,
+        'profissionais_ativos_aleatorios': profissionais_ativos_aleatorios,
+        'banners':banners
     }
     
     return render(request, 'core/index.html', context)
+
+
+
+
+def pesquisarMedicos(request):
+    banners = Banner.objects.all()
+    context = {
+        'banners':banners
+    }
+    
+    return render(request, 'core/pesquisarMedicos.html', context)
+
+
+
+def pesquisarDentistas(request):
+    banners = Banner.objects.all()
+    context = {
+        'banners':banners
+    }
+    
+    return render(request, 'core/pesquisarDentistas.html', context)
+
+def pesquisarLab(request):
+    banners = Banner.objects.all()
+    context = {
+        'banners':banners
+    }
+    
+    return render(request, 'core/pesquisarExames.html', context)
+
+
 
 from django.http import JsonResponse
 from usuarios.models import Profissional  
@@ -950,33 +984,34 @@ def buscar_tipos_clinicas(request):
 
 
 def pesquisarProfissionais(request, tipo_profissional=None):
-    if tipo_profissional == 'Medico':
-        return render(request, 'core/pesquisar/pesquisarMedicos.html')
-    elif tipo_profissional == 'Dentista':
-        return render(request, 'core/pesquisar/pesquisarDentistas.html')
-    else:
-        return render(request, 'core/listar_profissionais')
+    banners = Banner.objects.all()
+    context = {
+        'banners': banners,
+    }
     
+    if tipo_profissional:
+        if tipo_profissional == 'Médico':
+            return render(request, 'core/pesquisar/pesquisarMedicos.html', context)
+        elif tipo_profissional == 'Dentista':
+            return render(request, 'core/pesquisar/pesquisarDentistas.html', context)
     
-    
-def pesquisarProfissionais(request, tipo_profissional=None):
-    if tipo_profissional == 'Médico':
-        return render(request, 'core/pesquisar/pesquisarMedicos.html')
-    elif tipo_profissional == 'Dentista':
-        return render(request, 'core/pesquisar/pesquisarDentistas.html')
-    else:
-        return render(request, 'core/listar_profissionais')
+    # Agora incluindo 'context' no render
+    return render(request, 'core/index.html', context)  # Certifique-se de que o template tem a extensão .html
     
 
 def pesquisarClinicas(request, tipo_clinica=None):
-    if tipo_clinica == 'Emergência':
-        return render(request, 'core/pesquisar/pesquisarEmergencias.html')
-    elif tipo_clinica == 'Clínica':
-        return render(request, 'core/pesquisar/pesquisarExames.html')
-    else:
-        return render(request, 'core/listar_profissionais')
+    banners = Banner.objects.all()
+    context = {
+        'banners': banners,
+    }
+
+    if tipo_clinica:
+        if tipo_clinica == 'Emergência':
+            return render(request, 'core/pesquisar/pesquisarEmergencias.html', context)
+        elif tipo_clinica == 'Clínica':
+            return render(request, 'core/pesquisar/pesquisarExames.html', context)
     
-    
+    return render(request, 'core/index.html', context)  # Adicionando a extensão .html e passando o contexto
     
 
 def get_especialidades(request):

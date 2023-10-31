@@ -269,6 +269,7 @@ button
     font-size:17px;
 }
 
+
 .pencil
 {
     transition: .3s ease-out;
@@ -729,6 +730,13 @@ nav a
     color: #fff;
 }
 
+.footer-flex
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .button-wpp
 {
     background: var(--btn-color-gradient);
@@ -1100,12 +1108,41 @@ lottie-player
     margin: auto;
 }
 
+.endereco-item
+{
+  flex-direction: column;
+  align-items: start !important;
+  gap:0;
+  margin-bottom: 1rem;
+
+}
+
+.endereco-item input 
+{
+    margin: 0 !important;
+}
+
 
 
 }
 
 @media (max-width:768px)
 {
+
+
+
+    .footer-flex
+    {
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+
+    }
+
+    .pic-box
+    {
+      flex-direction: column !important;
+    }
 
     .profImg
     {
@@ -1201,6 +1238,24 @@ lottie-player
   
 }
 
+.trial-text
+{
+    display: none !important;
+}
+
+#sidebar
+{
+    flex-direction: row !important;
+    overflow-x:auto;
+    align-items: center;
+}
+
+.editarContainer
+{
+    flex-direction: column;
+    gap:2rem !important;   
+}
+
 .dropdown-menu a
 {
     margin:1rem 0 !important;
@@ -1208,6 +1263,8 @@ lottie-player
     text-align: center;
     font-weight: 600;
 }
+
+
 
 .item-slider
 {
@@ -1227,6 +1284,8 @@ font-size: 1rem !important;
     right:initial;
 
 }
+
+
 
 }
 
@@ -1261,10 +1320,11 @@ font-size: 1rem !important;
     background-color: #ffdddd;
   }
   
-  /* Hide all steps by default: */
-  #regForm .tab {
+  #regForm .tab
+  {
     display: none;
   }
+
 
   #idiomasContainer span, #conveniosContainer span, #servicosContainer span
   {
@@ -1274,7 +1334,7 @@ font-size: 1rem !important;
     gap:1rem;
   }
   
-  #regForm button, .editar_perfil button {
+  #regForm button {
     background-color: #04AA6D;
     color: #ffffff;
     border: none;
@@ -1284,7 +1344,42 @@ font-size: 1rem !important;
     cursor: pointer;
   }
 
-  
+
+
+  #fileInputsContainer div input
+  {
+    width: 100% !important;
+  }
+  .editar_perfil button, .attButton
+  {
+    background-color: #04AA6D;
+    color: #ffffff;
+    border: none;
+    min-width: 7rem;
+    font-size: 17px;
+    font-family: Raleway;
+    height:fit-content;
+    cursor: pointer;
+
+  }
+
+  #addEndereco
+  {
+    margin: .5rem 0;
+  }
+
+  .enderecoForm button, 
+  .enderecoForm div button
+  {
+    background-color: #04AA6D;
+    color: #ffffff;
+    border: none;
+    width: fit-content;
+    font-size: 17px;
+    font-family: Raleway;
+    height:fit-content;
+    cursor: pointer;
+  }  
 
   #updateProfileForm button
   {
@@ -1330,3 +1425,11 @@ font-size: 1rem !important;
     background-color: #04AA6D;
   }
   
+
+  .endereco-item
+  {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+  }

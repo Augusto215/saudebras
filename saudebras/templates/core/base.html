@@ -35,7 +35,7 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav" style="gap:1.5rem;">
          
                 
 
@@ -75,17 +75,37 @@
                 {% if user.is_authenticated == False %}
 
                   <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-                    <a  href="{%url 'login' %}" class="nav-link">Entrar</a>
+                    <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
             </li>
 
               {% else %}
 
               <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-                <a  class="nav-link" href="{% url 'logout' %}">Sair</a>
+                <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
                 </li>
 
               {%endif%}
-        
+                
+              <li class="nav-item">
+                <a href="#" class="nav-link">Sobre</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="#" class="nav-link">Vantanges</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="#" class="nav-link">Artigos</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="#" class="nav-link">Assistência Familiar</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="#" class="nav-link">Contato</a>
+              </li>
+
               </ul>
   
   
@@ -94,7 +114,7 @@
               {% if user.is_authenticated == False %}
 
                   <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
-                    <a  href="{%url 'login' %}" class="nav-link">Entrar</a>
+                    <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
             </li>
 
               {% else %}
@@ -217,10 +237,19 @@
 
         <div class="container">
 
-          <div class="row p-3">
+          <div class=" p-4">
 
-            <span style="text-align: center; color: #fff;">©2023 Todos os Direitos Reservados</span>
+            <div class="w-100 footer-flex mb-3"> 
+              <img style="max-height:3rem;" src="{%static 'img/saudebrasBranco.png' %}">
 
+              <div class="footer-flex">
+                <span style="color:#fff !important;">Siga-nos nas redes sociais </span><span> <i style="color:#fff;" class="bi bi-facebook"></i>&nbsp;<i style="color:#fff;" class="bi bi-instagram"></i></span>
+              </div> 
+            </div>
+        
+            <div class="text-center d-flex align-items-center justify-content-center ">
+            <span style="text-align: center; color: #fff;">SaúdeBras 2023 - Todos os Direitos Reservados</span>
+            </div>
           </div>
         </div>
 

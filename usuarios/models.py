@@ -67,7 +67,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     nome = models.CharField(_('nome'), max_length=30, blank=True)
     sobrenome = models.CharField(_('sobrenome'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), unique=True)
-    username = models.CharField(_('cpf'), max_length=30)
+    username = models.CharField(_('cpf'), max_length=30, unique=True)
     telefone = models.CharField(_('telefone'), max_length=20, blank=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     is_staff = models.BooleanField(_('staff status'), default=False)
@@ -237,6 +237,13 @@ class Depoimento(models.Model):
    rating = models.IntegerField(choices=RATING_CHOICES)
     
 
+class Banner(models.Model):
+    nome = models.CharField(max_length=255) 
+    foto = models.ImageField(upload_to='images/', blank=False, null=False, default="/images/unknown.png")
+    
+    def __str__(self):
+        return self.nome
+    
 class Subscription(models.Model):
     profissional = models.OneToOneField('Profissional', null=True, blank=True, on_delete=models.CASCADE)
     clinica = models.OneToOneField('Clinica', null=True, blank=True, on_delete=models.CASCADE)
