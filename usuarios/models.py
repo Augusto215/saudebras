@@ -235,6 +235,9 @@ class Depoimento(models.Model):
    descricao = models.TextField()
    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
    rating = models.IntegerField(choices=RATING_CHOICES)
+   
+   def __str__(self):
+       return self.profissional.email
     
 
 class Banner(models.Model):
@@ -276,6 +279,7 @@ class Profissional(CustomUser):
     ceps = models.ManyToManyField(CEP, blank=True, related_name='profissionais')
     descricao = models. TextField(blank=True)
     avaliacoes = GenericRelation(Avaliacao)
+    diploma = models.ImageField(upload_to='images/', blank=True, null=True)
     perguntas = models.ManyToManyField(PerguntaResposta, blank=True, related_name='profissionais')
     galeria = models.ManyToManyField(Foto, blank=True, related_name='profissionais')
     

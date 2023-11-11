@@ -34,6 +34,11 @@ urlpatterns = [
     path('success/', success_view, name='success'),
     path('cancel/', cancel_view, name='cancel'),
     path('stripe-webhook/', stripe_webhook, name='stripe_webhook'),
+    path('sobre/', sobre, name='sobre'),
+    path('vantagens/', vantagens, name='vantagens'),
+    path('artigos/', artigos, name='artigos'),
+    path('assistencia/', assistencia, name='assistencia'),
+    path('contato/', contato, name='contato')
 
 
 

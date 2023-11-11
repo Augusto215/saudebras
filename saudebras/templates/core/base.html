@@ -28,11 +28,11 @@
 
    <body>
     <header>
-        <nav class="navbar navbar-expand-lg p-2 " >
-            <div class="container">
-              <a class="navbar-brand" href="{%url 'home'%}"><img style="max-height: 2.5rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+        <nav class="navbar navbar-expand-lg p-4 " >
+            <div class="container mobile-nav">
+              <a class="navbar-brand" href="{%url 'home'%}"><img style="max-height: 3.5rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
+              <button style="border:none;" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <img style="height:2rem;" src="{%static 'img/menu-button-of-three-horizontal-lines.png'%}" alt="toggle icon"> <!-- Imagem personalizada -->
               </button>
               <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav" style="gap:1.5rem;">
@@ -45,10 +45,10 @@
                 {%if user.is_authenticated != True %}  <li class="nav-item">
                   <div class="dropdown">
                     <a class="nav-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                      Registre-se
+                     Cadastrar Perfil
                     </a>
                     <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Cliente</a></li>
+                      <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Paciente</a></li>
                       <li>
                        
                         <a class="dropdown-item" href="{% url 'registerProfissional'%}">Profissional</a>
@@ -87,23 +87,23 @@
               {%endif%}
                 
               <li class="nav-item">
-                <a href="#" class="nav-link">Sobre</a>
+                <a href="{%url 'sobre' %}" class="nav-link">Sobre</a>
               </li>
 
               <li class="nav-item">
-                <a href="#" class="nav-link">Vantanges</a>
+                <a href="{%url 'vantagens' %}" class="nav-link">Vantanges</a>
               </li>
 
               <li class="nav-item">
-                <a href="#" class="nav-link">Artigos</a>
+                <a href="{% url 'artigos' %}" class="nav-link">Artigos</a>
               </li>
 
               <li class="nav-item">
-                <a href="#" class="nav-link">Assistência Familiar</a>
+                <a href="{%url 'assistencia' %}" class="nav-link">Assistência Familiar</a>
               </li>
 
               <li class="nav-item">
-                <a href="#" class="nav-link">Contato</a>
+                <a href="{% url 'contato' %}" class="nav-link">Contato</a>
               </li>
 
               </ul>

@@ -5,13 +5,14 @@
     <div class="div-parte1 d-flex align-items-center w-50">
         <form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'registerProfissional'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Registrar Profissional:</h3>
+   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Perfil do Profissional:</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      Nome:
-      <p><input type="text" placeholder="Nome..." oninput="this.className = ''" name="nome"></p>
-      Sobrenome:
-      <p><input type="text" placeholder="Sobrenome..." oninput="this.className = ''" name="sobrenome"></p>
+      Nome Completo:
+      <p><input type="text" placeholder="Nome Completo..." oninput="this.className = ''" name="nome"></p>
+      C.P.F:
+      <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
+      
       
    </div>
    <div class="tab">
@@ -19,8 +20,7 @@
       <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
       Telefone:
       <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
-      C.P.F:
-      <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
+      
    </div>
 
    <div class="tab">
@@ -79,7 +79,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
   
    <div class="tab">
 
-    Tipo Profissional:
+    <span class="fw-bold mb-2">Profissão:</span>
   
                 
                     <div class="form-check medico" style="display: flex;
@@ -87,7 +87,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
                     justify-content: start;
                     padding-left: 0 !important;">
                         <input type="checkbox" style="margin:.5rem !important;"  id="medico-check" class="form-check-input registrar-check medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
-                        <label class="form-check-label" for="medico-check">Médico</label>
+                        <label class="form-check-label" for="medico-check">Médico/Especialista</label>
                     </div>
              
             
@@ -156,8 +156,9 @@ document.getElementById('add-cep').addEventListener('click', function() {
     </script>
 
 
-    <div class="mb-3 mt-3" id="especialidadesDiv">
-        <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label">Especialidades:</label>
+    <div class="mb-3 mt-5" id="especialidadesDiv">
+        <span class="fw-bold mb-2">Especializações:</span>
+        <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label"></label>
         <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
             <!-- Checkbox para médicos -->
             <div id="espcialidadesMedicos" style="display:none;">
@@ -200,8 +201,11 @@ document.getElementById('add-cep').addEventListener('click', function() {
         </div>
     </div>
 <div class="tab">
-    Código de Registro (CRM ou ORM, por exemplo):
+    Número de Registro (CRM ou ORM, por exemplo):
     <input class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Código de Registro...">
+
+    Digitalização do Diploma:
+    <p><input type="file"  name="diploma"></p>
 </div>
 
 <div class="tab">
@@ -310,8 +314,13 @@ document.getElementById('add-cep').addEventListener('click', function() {
         <p><input type="password" placeholder="Confirmar Senha..." oninput="this.className = ''" name="password2"></p>
         
         
-           
-      
+        Termos e Condições:
+        
+        <div class="d-flex">
+        <label for="termos">Eu aceito e declaro que:</label>
+        <p><input type="checkbox" id="termos"></p>
+        </div>
+
     </div>
 
 

@@ -5,22 +5,20 @@
     <div class="div-parte1 w-50">
 <form id="regForm"  method="post" action="{% url 'registerCliente'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Registrar Cliente:</h3>
+   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Perfil do Paciente:</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      Nome:
-      <p><input type="text" placeholder="Nome..." oninput="this.className = ''" name="nome"></p>
-      Sobrenome:
-      <p><input type="text" placeholder="Sobrenome..." oninput="this.className = ''" name="sobrenome"></p>
-      <input type="hidden" name="tipo_profissional" value="Médico">
+      Nome Completo:
+      <p><input type="text" placeholder="Nome Completo..." oninput="this.className = ''" name="nome"></p>
+      C.P.F:
+      <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
    </div>
    <div class="tab">
       Email:
       <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
       Telefone:
       <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
-      C.P.F:
-      <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
+    
    </div>
 
    <div class="tab">

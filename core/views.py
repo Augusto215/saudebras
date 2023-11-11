@@ -50,6 +50,32 @@ def home_view(request):
 
 
 
+def sobre(request):
+    
+    return render(request, 'core/sobre.html')
+
+
+def vantagens(request):
+    
+    return render(request, 'core/vantagens.html')
+
+
+def artigos(request):
+    
+    return render(request, 'core/artigos.html')
+
+
+def assistencia(request):
+    
+    return render(request, 'core/assistencia.html')
+
+
+def contato(request):
+    
+    return render(request, 'core/contato.html')
+
+
+
 
 def pesquisarMedicos(request):
     banners = Banner.objects.all()

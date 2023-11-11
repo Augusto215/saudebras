@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 
-import dj_database_url
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -35,8 +33,8 @@ SECRET_KEY = 'django-insecure-%9zlaip=y$6^+4h384l^b!!t#%w2a7n!+92wn(a5eu3$kr92!e
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'saudebras.onrender.com', 'saudebras.com.br','955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app', '3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app' , 'c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app', '010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app']
-CSRF_TRUSTED_ORIGINS = ['https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app/*', 'https://3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app/*', 'https://955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app/*', 'https://saudebras.com.br/*', 'https://010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app/*']
+ALLOWED_HOSTS = ['127.0.0.1', '14db-2804-1b3-6b00-a863-c1dd-ed33-5efd-eeab.ngrok-free.app', 'saudebras.onrender.com', 'saudebras.com.br','955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app', '3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app' , 'c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app', '010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app/*', 'https://14db-2804-1b3-6b00-a863-c1dd-ed33-5efd-eeab.ngrok-free.app/*', 'https://3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app/*', 'https://955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app/*', 'https://saudebras.com.br/*', 'https://010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app/*']
 CORS_ALLOWED_ORIGINS = ['*']
 
 

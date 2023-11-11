@@ -62,7 +62,6 @@ def registerCliente(request):
 
                 user = Cliente.objects.create_user(
                     nome = form.cleaned_data['nome'],
-                    sobrenome = form.cleaned_data['sobrenome'],
                     username = form.cleaned_data['username'],
                     telefone = form.cleaned_data['telefone'],
                     email=form.cleaned_data['email'],
@@ -196,10 +195,10 @@ def registerProfissional(request):
                 user.telefone = form.cleaned_data['telefone']
                 user.nome = form.cleaned_data['nome']
                 user.username = form.cleaned_data['username']
-                user.sobrenome = form.cleaned_data['sobrenome']
                 user.descricao = form.cleaned_data['descricao']
                 user.codigo = form.cleaned_data['codigo']
                 user.foto = form.cleaned_data['foto']
+                user.diploma = form.cleaned_data['diploma']
                 selected_especialidades = form.cleaned_data['especialidades']
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']

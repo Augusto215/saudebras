@@ -247,8 +247,10 @@
               </div>
               <div class="grid-items" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
             {%for profissional in profissionais_ativos_aleatorios%}
-            <div class="p-3 d-flex flex-column align-items-start justify-content-center" style="width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; max-width:100%;">
+            <div class="p-3 d-flex flex-column align-items-start justify-content-center" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
             <div class="d-flex justify-content-start align-items-start mb-3" style="gap:.5rem;">
+              <div class="d-flex flex-column">
+                <div class="d-flex align-items-center mb-2" style="gap:.5rem">
               <img style="height:6rem; width:6rem; object-fit:cover; border-radius:4px;" src="{{profissional.foto.url}}">
               <div class="d-flex flex-column align-items-start" style="gap:.5rem;">
   
@@ -256,10 +258,13 @@
                 <span>
                   {{profissional.tipo_profissional}}
                 </span>
+                              </div>
+
+              </div>
+          
                 <span>
                   {{profissional.descricao}}
                 </span>
-                
               </div>
             </div> 
   
@@ -285,7 +290,7 @@
                 </div>
                 <div class="grid-items" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
               {%for depoimento in depoimentos%}
-              <div class="p-3 d-flex flex-column align-items-start justify-content-center" style="width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; max-width:100%;">
+              <div class="p-3 d-flex flex-column align-items-start justify-content-center" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
               <div class="d-flex justify-content-start align-items-start mb-3" style="gap:.5rem;">
                 <img style="height:6rem; width:6rem; object-fit:cover; border-radius:4px;" src="{{depoimento.profissional.foto.url}}">
                 <div class="d-flex flex-column align-items-start" style="gap:.5rem;">

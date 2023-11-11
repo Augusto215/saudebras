@@ -1181,6 +1181,7 @@ lottie-player
     {
         grid-template-columns: 1fr !important;
     }
+ 
 
     .tab-buttons
     {
@@ -1348,7 +1349,15 @@ font-size: 1rem !important;
 }
 
 
-
+@media (max-width:400px)
+{
+    .mobile-nav
+    {   
+        gap:2rem;
+        flex-direction:column;
+        align-items:center;
+    }
+}
 
 
 

@@ -27,7 +27,7 @@ class ProfissionalRegistrationForm(UserCreationForm):
         model = Profissional
         fields = ['email', 'password1', 'password2', 
                   'tipo_profissional', 'ceps', 'especialidades', 
-                  'telefone', 'nome', 'sobrenome', 'username', 'foto', 'codigo', 'convenios', 'descricao',  'idiomas']
+                  'telefone', 'nome', 'sobrenome', 'username', 'foto', 'codigo', 'convenios', 'descricao',  'idiomas', 'diploma']
 
     def __init__(self, *args, **kwargs):
         super(ProfissionalRegistrationForm, self).__init__(*args, **kwargs)
