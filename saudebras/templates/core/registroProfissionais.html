@@ -8,23 +8,23 @@
    <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Perfil do Profissional:</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      Nome Completo:
+      <span    style="color:#6D6875 !important;" class="fw-bold mb-2">Nome Completo:</span>
       <p><input type="text" placeholder="Nome Completo..." oninput="this.className = ''" name="nome"></p>
-      C.P.F:
+      <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">C.P.F:</span>
       <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
       
       
    </div>
    <div class="tab">
-      Email:
+      <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Email:</span>
       <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-      Telefone:
+      <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Telefone:</span>
       <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
       
    </div>
 
    <div class="tab">
-    Endereço:<br><br>
+    <span     style="color:#6D6875 !important;" class="fw-bold mb-2">Endereço:</span><br><br>
     CEP:
     <div class="d-flex flex-column justify-content-center align-items-center">
         <div class="d-flex flex-column justify-content-center align-items-center" id="cep-fields">
@@ -62,7 +62,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
     });
     newGroup.appendChild(document.createTextNode(' CEP: '));
     newGroup.appendChild(newCepInput);
-    newGroup.appendChild(document.createTextNode(' COMPLEMENTO: '));
+    newGroup.appendChild(document.createTextNode(' Complemento: '));
     newGroup.appendChild(newComplementoField);
     newGroup.appendChild(newDeleteButton);
 
@@ -79,7 +79,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
   
    <div class="tab">
 
-    <span class="fw-bold mb-2">Profissão:</span>
+    <span     style="color:#6D6875 !important;" class="fw-bold mb-2">Profissão:</span>
   
                 
                     <div class="form-check medico" style="display: flex;
@@ -157,7 +157,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 
     <div class="mb-3 mt-5" id="especialidadesDiv">
-        <span class="fw-bold mb-2">Especializações:</span>
+        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Especializações:</span>
         <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label"></label>
         <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
             <!-- Checkbox para médicos -->
@@ -201,10 +201,10 @@ document.getElementById('add-cep').addEventListener('click', function() {
         </div>
     </div>
 <div class="tab">
-    Número de Registro (CRM ou ORM, por exemplo):
+<span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Número de Registro (CRM ou ORM, por exemplo):</span>
     <input class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Código de Registro...">
 
-    Digitalização do Diploma:
+<span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Digitalização do Diploma:</span>
     <p><input type="file"  name="diploma"></p>
 </div>
 
@@ -235,7 +235,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 <div class="tab">
 <div class="mb-3" id="conveniosDiv">
-    <label for="convenios" class="form-label">Convênios:</label>
+    <label for="convenios" class="form-label"><span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Convênios:</span></label>
     <div id="convenios">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
@@ -278,9 +278,9 @@ document.getElementById('add-cep').addEventListener('click', function() {
 <div class="tab">
     
     
-    Foto:
+    <span   style="color:#6D6875 !important;"  class="fw-bold">Foto:</span>
     <p><input type="file"  name="foto"></p>
-    Descrição:
+    <span    style="color:#6D6875 !important;" class="fw-bold">Descrição:</span>
     <p><textarea style="width:100%; font-size:1rem !important; min-height:7rem !important;" type="text" placeholder="Descrição..." oninput="this.className = ''" name="descricao"></textarea></p>
     
     
@@ -292,7 +292,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
     
 <div class="tab">
-    Informações de Pagamento:
+    <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Informações de Pagamento:</span>
     <div id="payment-info" class="mt-3">
         <!-- O container onde o Stripe vai injetar o campo de cartão -->
         <div id="card-element">
@@ -306,15 +306,15 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 
 <div class="tab">
-    Senha:
+    <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Senha:</span>
    
       
         <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password1"></p>
-        Confirmar Senha:
+        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Confirmar Senha:</span>
         <p><input type="password" placeholder="Confirmar Senha..." oninput="this.className = ''" name="password2"></p>
         
         
-        Termos e Condições:
+        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Termos e Condições:</span>
         
         <div class="d-flex">
         <label for="termos">Eu aceito e declaro que:</label>

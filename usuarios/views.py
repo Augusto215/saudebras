@@ -133,7 +133,7 @@ def save_with_retry(model_instance, retries=5, delay=1):
 
 def registerProfissional(request):
     banners = Banner.objects.all()
-    especialidades = Especialidade.objects.all()
+    especialidades = Especialidade.objects.all().order_by('nome')
     idiomas = Idioma.objects.all()
     convenios = Convenio.objects.all()
     tipo_profissional = TipoProfissional.objects.all()
