@@ -44,13 +44,21 @@
 
 .star, .star1 {
     cursor: pointer;
-    font-size: 24px;
+    font-size: 1.2rem;
     margin-right: 5px;
     color:#2D77EA !important;
   }
   
-  .star.selected {
-    color: gold;
+  .star2
+  {
+    cursor: pointer;
+    font-size: 24px;
+    margin-right: 5px;
+  }
+
+  .star2:hover,
+  .star2.selected {
+    color:#2D77EA;
   }
 .accordion
 {
@@ -67,6 +75,16 @@
     margin:0 !important;
 
 
+}
+
+.contato2
+{
+    display: none !important;
+}
+
+.contato1
+{
+    display: flex !important;
 }
 
 .navbar-toggler:focus
@@ -735,6 +753,13 @@ nav a
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap:.5rem;
+
+}
+
+.star .selected:hover
+{
+    color:blue;
 }
 
 .button-wpp
@@ -870,6 +895,11 @@ padding: .5rem;
     margin-right: 1rem;
 }
 
+.perfil-container
+{
+    align-items:start !important;
+}
+
 #search-button
 {
     background:var(--border-color);
@@ -957,8 +987,26 @@ h2
 }
 
 
+
+
 @media(max-width:1100px)
 {   
+
+    .contato-div2
+    {
+        display: flex !important;
+    }
+    
+        .perfil-container
+        {
+            align-items: center !important;
+        }
+    
+    
+    .contato1
+    {
+        display: none !important;
+    }
 
     .div-parte1
     {
@@ -1127,8 +1175,19 @@ lottie-player
 }
 
 @media (max-width:768px)
-{
+{   
 
+    .grid-items
+    {
+        grid-template-columns: 1fr !important;
+    }
+ 
+
+    .tab-buttons
+    {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
 
 
     .footer-flex
@@ -1290,7 +1349,15 @@ font-size: 1rem !important;
 }
 
 
-
+@media (max-width:400px)
+{
+    .mobile-nav
+    {   
+        gap:2rem;
+        flex-direction:column;
+        align-items:center;
+    }
+}
 
 
 
