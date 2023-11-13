@@ -86,7 +86,7 @@ def registerCliente(request):
                 print("CEP inválido ou não encontrado")
         else:
             print("Formulário inválido")
-            print(form.errors)
+            messages.error(request, form.errors)
     
     return render(request, 'core/registroClientes.html', {'form': form})
 
