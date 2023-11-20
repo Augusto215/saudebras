@@ -231,3 +231,17 @@ class ClinicaForm(UserCreationForm):
         model = Clinica
         fields = ['email', 'password1', 'password2', 'especialidades', 
                   'telefone', 'nome', 'sobrenome', 'username', 'image', 'convenios', 'idiomas','tipo_clinica', 'descricao', 'tipo_profissional', 'foto']
+
+
+
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class EmailPasswordResetForm(PasswordResetForm):
+    def get_users(self, email):
+        """ Retorna um conjunto de usuários correspondentes para redefinição de senha. """
+        # Busca usuários pelo e-mail, independente do estado 'is_active'
+        active_users = User._default_manager.filter(email__iexact=email)
+        return (u for u in active_users if u.has_usable_password())

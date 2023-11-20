@@ -17,7 +17,13 @@ urlpatterns = [
     path('convenios_perfil', convenios_perfil, name='convenios_perfil'),
     path('alterar_profissional', alterar_Profissional, name='alterar_Profissional'),
     path('alterar_clinica', alterar_Clinica, name='alterar_Clinica'),
-    
+# URL para a solicitação de redefinição de senha com formulário personalizado
+    path('password_reset/', auth_views.PasswordResetView.as_view(form_class=EmailPasswordResetForm), name='password_reset'),
+
+    # Outras URLs do processo de redefinição de senha
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),    
     
     
 ]

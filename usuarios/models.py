@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 from datetime import datetime
 import logging
-
 from django.utils import timezone
 import stripe
 from django.utils.timezone import timedelta
