@@ -157,10 +157,10 @@
               padding-top: 1.3rem;">
               {%if user.is_authenticated%}
               <a href="tel:{{ profissional.telefone|slice:":1" }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
-                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
                 {%else%}
                 <a href="{% url 'login' %}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
-                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendamento</a>
+                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
                 {%endif%}
               </div>
               <!-- Mapa Estático -->

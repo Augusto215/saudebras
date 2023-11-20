@@ -8,7 +8,7 @@
    <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Entrar:</h3>
    <!-- One "tab" for each step in the form: -->
 
-   <div class="tab">
+   <div class="tab mb-3">
       Email:
       <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="username"></p>
       
@@ -19,7 +19,10 @@
           
             <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password"></p>
      
-            
+            <a style="color:#21BFA6 !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
+
+
+              
             
                
           
