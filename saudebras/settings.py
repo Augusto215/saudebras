@@ -110,7 +110,8 @@ WSGI_APPLICATION = 'saudebras.wsgi.application'
 
 
 AUTHENTICATION_BACKENDS = [
-    'usuarios.backends.EmailAuthenticationBackend',  # Substitua 'my_app' pelo nome da sua app
+    'usuarios.backends.EmailOrCpfAuthenticationBackend',
+    'usuarios.backends.CaseInsensitiveModelBackend',  # Substitua 'my_app' pelo nome da sua app
     'django.contrib.auth.backends.ModelBackend',
 ]
 

@@ -415,9 +415,10 @@ def user_login(request):
 
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
-        email = request.POST['username']
+        username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(email=email, password=password)
+        user = authenticate(request, username=username, password=password)
+
         
         if user is not None:
             auth_login(request, user)

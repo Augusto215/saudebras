@@ -9,24 +9,13 @@
    <!-- One "tab" for each step in the form: -->
 
    <div class="tab mb-3">
-      Email:
-      <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="username"></p>
-      
-
- 
-        Senha:
-       
-          
-            <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password"></p>
-     
-            <a style="color:#21BFA6 !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
-
-
-              
-            
-               
-          
-        </div>
+    Email ou CPF:
+    <p><input type="text" id="emailCpfId" placeholder="E-mail ou CPF..." oninput="this.className = ''" name="username"></p>
+    Senha:
+    <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password"></p>
+    <a style="color:#21BFA6 !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
+    <!-- Outros elementos do formulário -->
+</div>
     
  
         

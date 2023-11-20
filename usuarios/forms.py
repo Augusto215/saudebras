@@ -110,13 +110,8 @@ class EnderecoForm(forms.ModelForm):
 
 
 class LoginForm(AuthenticationForm):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder': 'Email'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Email ou CPF'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Senha'}))
-    
-
-    def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['username'] = self.fields.get('email')
         
         
 class AvaliacaoForm(forms.ModelForm):
@@ -245,3 +240,5 @@ class EmailPasswordResetForm(PasswordResetForm):
         # Busca usuários pelo e-mail, independente do estado 'is_active'
         active_users = User._default_manager.filter(email__iexact=email)
         return (u for u in active_users if u.has_usable_password())
+
+
