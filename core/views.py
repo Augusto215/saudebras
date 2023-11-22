@@ -32,6 +32,9 @@ def nav(request):
 
 
 def home_view(request):
+    profissional = Profissional.objects.all()
+    clinica = Clinica.objects.all()
+    cliente = Cliente.objects.all()
     depoimentos = Depoimento.objects.all()
     especialidades = Especialidade.objects.all()
     profissionais_ativos_aleatorios = Profissional.objects.filter(is_active=True).order_by('?')[:4]
@@ -43,7 +46,10 @@ def home_view(request):
         'especialidades':especialidades,
         'depoimentos':depoimentos,
         'profissionais_ativos_aleatorios': profissionais_ativos_aleatorios,
-        'banners':banners
+        'banners':banners,
+        'profissional':profissional,
+        'clinica':clinica,
+        'cliente':cliente
     }
     
     return render(request, 'core/index.html', context)

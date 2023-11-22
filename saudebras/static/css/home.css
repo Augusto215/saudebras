@@ -1178,6 +1178,11 @@ lottie-player
 
 @media (max-width:768px)
 {   
+    .welcome-font
+    {
+        font-size:.9rem !important;
+    }
+
     .tab-buttons
     {
         justify-content: start !important;
