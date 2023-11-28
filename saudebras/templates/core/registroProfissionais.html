@@ -18,7 +18,7 @@
    <div class="tab">
       <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Email:</span>
       <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-      <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Telefone:</span>
+      <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Celular/Whatsapp:</span>
       <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
       
    </div>
@@ -30,8 +30,8 @@
         <div class="d-flex flex-column justify-content-center align-items-center" id="cep-fields">
             <div class="cep-complemento-group">
                 <input type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
-                Complemento:
-                <input type="text" name="complemento[]" id="complemento" placeholder="Complemento">
+                Número:
+                <input type="text" name="complemento[]" id="complemento" placeholder="Número">
             </div>
         </div>
         <button class="mb-5" style="width:fit-content !important;" type="button" id="add-cep">+</button>
@@ -51,7 +51,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
     const newComplementoField = document.createElement('input');
     newComplementoField.type = 'text';
     newComplementoField.name = 'complemento[]';
-    newComplementoField.placeholder = 'Complemento';
+    newComplementoField.placeholder = 'Número';
 
     const newDeleteButton = document.createElement('button');
     newDeleteButton.type = 'button';
@@ -204,13 +204,55 @@ document.getElementById('add-cep').addEventListener('click', function() {
 <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Número de Registro (CRM ou ORM, por exemplo):</span>
     <input class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Código de Registro...">
 
-<span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Digitalização do Diploma:</span>
-    <p><input type="file"  name="diploma"></p>
+    <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
+<span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Digitalização do Diploma ou Carteira Profissional:</span>
+<input type="file" id="inputDiploma" name="diploma" accept="image/*">
+
+<!-- Modal do Bootstrap para exibir o diploma -->
+<div class="modal fade" id="diplomaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center align-items-center">
+                <h5 class="modal-title text-center">Visualizar Diploma</h5>
+            </div>
+            <div class="modal-body d-flex justify-content-center align-items-center">
+                <img id="previewDiploma" src="" style="max-width: 10rem;  object-fit:cover; display: none;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salvar</button>
+                <button type="button" id="changeDiplomaButton" class="btn btn-primary">Trocar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var inputDiploma = document.getElementById('inputDiploma');
+    var previewDiploma = document.getElementById('previewDiploma');
+    var diplomaModal = new bootstrap.Modal(document.getElementById('diplomaModal'));
+    var changeDiplomaButton = document.getElementById('changeDiplomaButton');
+
+    inputDiploma.addEventListener('change', function(e) {
+        var files = e.target.files;
+        if (files && files.length > 0) {
+            var file = files[0];
+            previewDiploma.src = URL.createObjectURL(file);
+            previewDiploma.onload = function() {
+                previewDiploma.style.display = 'block';
+                diplomaModal.show(); // Mostra o modal
+            };
+        }
+    });
+
+    changeDiplomaButton.addEventListener('click', function() {
+        inputDiploma.click(); // Aciona o input de arquivo novamente
+    });
+</script>
 </div>
 
 <div class="tab">
 <div class="mb-3" id="IdiomasDiv">
-    <label for="especialidades" class="form-label">Idiomas:</label>
+    <label for="especialidades" class="form-label fw-bold">Idiomas:</label>
     <div id="idiomas">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
@@ -277,11 +319,53 @@ document.getElementById('add-cep').addEventListener('click', function() {
 </div>
 <div class="tab">
     
-    
+    <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
     <span   style="color:#6D6875 !important;"  class="fw-bold">Foto:</span>
-    <p><input type="file"  name="foto"></p>
-    <span    style="color:#6D6875 !important;" class="fw-bold">Descrição:</span>
-    <p><textarea style="width:100%; font-size:1rem !important; min-height:7rem !important;" type="text" placeholder="Descrição..." oninput="this.className = ''" name="descricao"></textarea></p>
+    <p> <input style="color:#000 !important;" type="file" id="inputImage" name="foto" accept="image/*">
+
+        <!-- Modal do Bootstrap para exibir a imagem -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header d-flex justify-content-center align-items-center">
+                <h5 class="modal-title text-center">Visualizar Imagem</h5>
+              </div>
+              <div class="modal-body d-flex justify-content-center align-items-center">
+                <img id="previewImage" src="" style="max-width: 10rem; height:10rem; object-fit:cover; display: none;">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salvar</button>
+                <button type="button" id="changeButton" class="btn btn-primary">Trocar</button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <script>
+            var inputImage = document.getElementById('inputImage');
+            var previewImage = document.getElementById('previewImage');
+            var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            
+            inputImage.addEventListener('change', function(e) {
+                var files = e.target.files;
+                if (files && files.length > 0) {
+                    var file = files[0];
+                    previewImage.src = URL.createObjectURL(file);
+                    previewImage.onload = function() {
+                        previewImage.style.display = 'block';
+                        imageModal.show(); // Mostra o modal
+                    };
+                }
+            });
+            var changeButton = document.getElementById('changeButton');
+
+            changeButton.addEventListener('click', function() {
+                inputImage.click(); // Aciona o input de arquivo novamente
+            });
+            </script>
+    <span    style="color:#6D6875 !important;" class="fw-bold">Experiência Profissional:</span>
+    <p><textarea style="width:100%; padding:.5rem; font-size:1rem !important; min-height:7rem !important;" type="text" placeholder="Fale um pouco sobre sua experiência profissional" oninput="this.className = ''" name="descricao"></textarea></p>
     
     
   
@@ -289,23 +373,15 @@ document.getElementById('add-cep').addEventListener('click', function() {
   
 </div>
 
-
-    
 <div class="tab">
-    <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Informações de Pagamento:</span>
-    <div id="payment-info" class="mt-3">
-        <!-- O container onde o Stripe vai injetar o campo de cartão -->
-        <div id="card-element">
-            <!-- Um espaço reservado para o Stripe injetar o Element -->
-        </div>
-        <!-- Usado para exibir mensagens de erro -->
-        <div id="card-errors" role="alert"></div>
-        
-    </div>
+    <div id="payment-element">
+        <!-- Stripe Payment Element será anexado aqui -->
+      </div>
+      <div id="payment-message"></div>
 </div>
 
-
 <div class="tab">
+    <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
     <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Senha:</span>
    
       
@@ -422,73 +498,62 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 
 <script type="text/javascript">
-    console.log('Script started');
-    var stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
-    console.log('Stripe instance created');
-
-    var elements = stripe.elements();
-
-    // Crie um Element com a opção `style` para personalizar o estilo
-    var style = {
-        base: {
-            color: '#32325d',
-            lineHeight: '18px',
-            fontFamily: 'Arial, sans-serif',
-            fontSmoothing: 'antialiased',
-            fontSize: '16px',
-            '::placeholder': {
-                color: '#aab7c4'
-            }
-        },
-        invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a'
-        }
-    };
-
-    var card = elements.create('card', {style: style});
-    card.mount('#card-element');
-    console.log('Card element mounted');  // Adicione esta linha
-
-    // Lidar com erros de validação em tempo real do Element
-    card.addEventListener('change', function(event) {
-        var displayError = document.getElementById('card-errors');
-        if (event.error) {
-            console.log('Validation error:', event.error.message);  // Adicione esta linha
-            displayError.textContent = event.error.message;
-        } else {
-            displayError.textContent = '';
-        }
-    });
-    // Manipular o formulário de submissão
-    var form = document.getElementById('regForm');
-form.addEventListener('submit', function(event) {
-    event.preventDefault();  // Previne o formulário de ser enviado da maneira tradicional
-
-    stripe.createToken(card).then(function(result) {
-        if (result.error) {
-            var errorElement = document.getElementById('card-errors');
-            errorElement.textContent = result.error.message;
-        } else {
-            stripeTokenHandler(result.token);
-        }
-    }).catch(function(error) {
-        console.error('Erro na criação de token Stripe:', error);
-    });
-});
-
-function stripeTokenHandler(token) {
-    // Inserir o token ID no formulário para que ele seja enviado ao servidor
-    var form = document.getElementById('regForm');
-    var hiddenInput = document.createElement('input');
-    hiddenInput.setAttribute('type', 'hidden');
-    hiddenInput.setAttribute('name', 'stripeToken');
-    hiddenInput.setAttribute('value', token.id);
-    form.appendChild(hiddenInput);
-
-    form.submit();
-}
+    document.addEventListener('DOMContentLoaded', function () {
+        const stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
     
+        fetch('/create-payment-intent/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Adicione o token CSRF aqui, se necessário
+            },
+            body: JSON.stringify({ items: [{ id: 'your-item-id' }] })
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            const elements = stripe.elements({ clientSecret: data.clientSecret });
+            const paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
+    
+            const form = document.getElementById('registration-form');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+    
+                stripe.confirmCardPayment(data.clientSecret).then(function (result) {
+                    if (result.error) {
+                        // Mostrar erro ao usuário
+                        console.error(result.error.message);
+                    } else {
+                        if (result.paymentIntent.status === 'succeeded') {
+                            // Pagamento bem-sucedido, envie os dados do formulário para o servidor
+                            submitRegistrationForm();
+                        }
+                    }
+                });
+            });
+        });
+    });
+    
+    function submitRegistrationForm() {
+        var formData = new FormData(document.getElementById('registration-form'));
+    
+        fetch('/register-user/', {  // Substitua pela URL correta do seu endpoint de registro
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json())
+        .then(data => {
+            // Trate a resposta do servidor aqui
+            if (data.success) {
+                window.location.href = '/success-page';  // Substitua pela sua página de sucesso
+            } else {
+                console.error('Erro no registro:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+        });
+    }
+
 </script>
 
 

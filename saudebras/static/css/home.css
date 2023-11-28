@@ -919,10 +919,65 @@ padding: .5rem;
 
 .navbar-nav .dropdown-menu {
     position: static;
-    width: 90%;
     margin: 0 auto;
 }
 
+.payment-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+}
+
+.stripe-input {
+    display: flex;
+    align-items: center;
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.input-icon-container {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    height: 20px; /* Ajuste conforme necessário */
+}
+
+.form-control {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.StripeElement {
+    width: 100%;
+    padding: 10px 15px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    height: 40px;
+}
+
+#card-errors {
+    color: #fa755a;
+    margin-top: 10px;
+}
 
 #index3
 {

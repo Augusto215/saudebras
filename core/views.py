@@ -126,7 +126,21 @@ logging.basicConfig(level=logging.INFO)
 stripe.api_key = "sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs"
 
 YOUR_DOMAIN = "https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app"
+@require_POST
+@csrf_exempt
+def create_payment_intent(request):
+    try:
+        # Substitua 1000 pela quantidade correta que você deseja cobrar, em centavos
+        payment_intent = stripe.PaymentIntent.create(
+            amount=1000,
+            currency='usd',
+            # Você pode passar informações adicionais aqui, como 'metadata'
+        )
+        return JsonResponse({'clientSecret': payment_intent.client_secret})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
+        
 @csrf_exempt
 def create_subscription(request):
     user = request.user
