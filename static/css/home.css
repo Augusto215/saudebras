@@ -8,6 +8,92 @@
     --btn-color-gradient:  #21BFA6 ;
   }
 
+  @font-face {
+    font-family: 'HUMNST';
+    src: url('/static/fonts/HUMNST777_CN_BT_BOLD.TTF') format('truetype');
+    font-weight: 800; /* Peso para Light */
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'HUMNST';
+    src: url('/static/fonts/HUMNST777_CN_BT.TTF') format('truetype');
+    font-weight: 500; /* Peso para Light */
+    font-style: normal;
+}
+
+
+
+@font-face {
+    font-family: 'HUMNST';
+    src: url('/static/fonts/HUMNST777 LT BT LIGHT.TTF') format('truetype');
+    font-weight: 500; /* Peso para Light */
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Daxline';
+    src: url('/static/fonts/DaxlinePro-Regular_13131.ttf') format('truetype');
+    font-weight: 500; /* Peso para Light */
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Daxline';
+    src: url('/static/fonts/DaxlinePro-Bold_13127.ttf') format('truetype');
+    font-weight: 800; /* Peso para Light */
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Daxline';
+    src: url('/static/fonts/DaxlinePro-ExtraBold_13128.ttf') format('truetype');
+    font-weight: 900; /* Peso para Light */
+    font-style: normal;
+}
+
+
+
+
+  @font-face {
+    font-family: 'DaxBold';
+    src: url('/static/fonts/DaxBold.ttf') format('truetype');
+    font-weight: 800; /* Peso para Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DaxBold';
+    src: url('/static/fontsDaxlinePro-Regular_13131.ttf') format('truetype');
+    font-weight: 500; /* Peso para Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DaxBold';
+    src: url('{%static 'DaxlinePro-Light_13129.ttf' %}') format('ttf');
+    font-weight: 400; /* Peso para Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DaxBold';
+    src: url('{%static 'DaxlinePro-Thin_13132.ttf' %}') format('ttf');
+    font-weight: 300; /* Peso para Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DaxBold';
+    src: url('{%static 'DaxlinePro-ExtraBold_13128.ttf' %}') format('ttf');
+    font-weight: 900; /* Peso para Light */
+    font-style: bold;
+}
+
 .nav-link, .dropdown-item
 {
     font-size:.9rem !important;
@@ -44,9 +130,8 @@
 
 .star, .star1 {
     cursor: pointer;
-    font-size: 1.2rem;
-    margin-right: 2px;
-    color:#2D77EA !important;
+    font-size: 1.4rem;
+    color:gold;
   }
   
   .star2
@@ -54,6 +139,11 @@
     cursor: pointer;
     font-size: 24px;
     margin-right: 5px;
+  }
+
+  a
+  {
+    color:#00ae9d ;
   }
 
   .star2:hover,
@@ -94,6 +184,13 @@
     box-shadow:  none  !important;
 }
 
+
+h2, h3
+
+{
+
+    font-family:'DaxBold', sans-serif !important;font-weight:800 !important;
+}
 #regForm .form-check  input
 
 {
@@ -301,7 +398,7 @@ button
 }
 .star:hover
 {
-color: #2D77EA;
+color: gold;
 }
 
 .form-group
@@ -449,7 +546,7 @@ h1
 
 footer
 {
-    background: #21BFA6;
+    background: #00ae9d;
 }
 
 #index1 h1
@@ -494,13 +591,18 @@ form
     margin-block-end: 0 !important;
 }
 
+
+
+.container
+
+{
+    padding: 0 6% !important;
+}
+
 #index7
 {
     
-    padding: 4rem 4%;
-
-    flex-grow: 1;
-    min-height: 35rem;
+    
     position: relative;
 }
 
@@ -919,10 +1021,65 @@ padding: .5rem;
 
 .navbar-nav .dropdown-menu {
     position: static;
-    width: 90%;
     margin: 0 auto;
 }
 
+.payment-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+}
+
+.stripe-input {
+    display: flex;
+    align-items: center;
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.input-icon-container {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    height: 20px; /* Ajuste conforme necessário */
+}
+
+.form-control {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.StripeElement {
+    width: 100%;
+    padding: 10px 15px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    height: 40px;
+}
+
+#card-errors {
+    color: #fa755a;
+    margin-top: 10px;
+}
 
 #index3
 {
@@ -993,6 +1150,13 @@ h2
 
 @media(max-width:1100px)
 {   
+
+    .img-carrousel
+
+{
+    height:7rem !important;
+    max-width:22rem !important;
+}
   
     .contato-div2
     {
@@ -1030,7 +1194,6 @@ h2
         display: flex;
         justify-content: center;
         align-items: center;
-        max-width: 22rem;
     }
 
     #mapStatic
@@ -1178,6 +1341,17 @@ lottie-player
 
 @media (max-width:768px)
 {   
+    
+    .valor-mobile
+{
+    display:block !important;
+}
+
+    .img-carrousel
+    {
+        width:100% !important;
+    }
+
     .welcome-font
     {
         font-size:.9rem !important;
