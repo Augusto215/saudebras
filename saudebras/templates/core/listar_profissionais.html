@@ -64,6 +64,9 @@
               <div style="display:none;" class="mb-2 verProfMob">
                 <a style="text-decoration: underline !important; font-size:.9rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
               </div>
+              <span>
+                Número de Registro: CRM 134106 SP
+              </span>
               {% load floor %}
 
               <span style="font-size:1rem; color:#000 !important;">
@@ -73,21 +76,21 @@
                               {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
                                   {% for i in "12345"|make_list %}
                                       {% if i|add:"0" <= full_stars|add:"0" %}
-                                          <span style="font-size:1.2rem !important;" class="star1 full">&#9733;</span>
+                                          <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
                                       {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
-                                          <span style="font-size:1.2rem !important;" class="star1 half">&#189;</span>
+                                          <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
                                       {% else %}
-                                          <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+                                          <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
                                       {% endif %}
                                   {% endfor %}
                               {% endwith %}
                           {% else %}
                               {% for i in "12345"|make_list %}
-                                  <span style="font-size:1.2rem !important;" class="star1">&#9734;</span>
+                                  <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
                               {% endfor %}
                           {% endif %}
                       </div>
-                      &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV">de {{ profissional.total_avaliacoes }} avaliações</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
+                      &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV"> {{ profissional.total_avaliacoes }} opiniões</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
                   </div>
               </span>
             </span> 
@@ -138,7 +141,7 @@
               <div class="d-flex mb-3">
                 {% for enderecos in profissional.enderecos.all %}
                 {% if forloop.first %}
-              <span style="margin-right:  .7rem !important;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
+              <span style="margin-right:  .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
               {% endif %}
              
             {% endfor %}
@@ -148,19 +151,20 @@
             {% if forloop.first %}
             <a href="#" class="showMapModal" 
             data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
             {% endif %}
                 {%endif%}
                 {% endfor %}
               </div>
               <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
               padding-top: 1.3rem;">
+              <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
+              <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
+
               {%if user.is_authenticated%}
-              <a href="tel:{{ profissional.telefone|slice:":1" }}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
-                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
                 {%else%}
-                <a href="{% url 'login' %}" style="display: flex; align-items: center; gap: 0.5rem;  justify-content:center; background:#18B696; width:10rem; max-width:100%; color:#fff; border-radius:4px; font-weight:600;" class="p-2 text-center"><i class="bi bi-telephone"></i> Ligar</a> 
-                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#18A73D;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
+                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
                 {%endif%}
               </div>
               <!-- Mapa Estático -->

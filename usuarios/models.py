@@ -281,6 +281,7 @@ class Profissional(CustomUser):
     diploma = models.ImageField(upload_to='images/', blank=True, null=True)
     perguntas = models.ManyToManyField(PerguntaResposta, blank=True, related_name='profissionais')
     galeria = models.ManyToManyField(Foto, blank=True, related_name='profissionais')
+    preco = models.CharField(max_length=30, blank=True)
     
     def get_trial_days_remaining(self):
         subscription = self.subscription

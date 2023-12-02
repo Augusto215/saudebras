@@ -147,7 +147,7 @@ class ProfissionalForm(forms.ModelForm):
 
     class Meta:
         model = Profissional
-        fields = ['nome', 'sobrenome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria']
+        fields = ['nome', 'sobrenome', 'descricao', 'telefone', 'convenios', 'idiomas', 'servicos', 'galeria', 'preco']
         
         
 class ClinicaEditarForm(forms.ModelForm):

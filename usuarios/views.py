@@ -563,6 +563,7 @@ def alterar_Profissional(request):
                 user.sobrenome = cleaned_data.get('sobrenome', '')
                 user.descricao = cleaned_data.get('descricao', '')
                 user.telefone = cleaned_data.get('telefone', '')
+                user.preco = cleaned_data.get('preco', '')
                 user.save()
 
                 user.convenios.set(cleaned_data.get('convenios', []))

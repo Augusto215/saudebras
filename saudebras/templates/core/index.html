@@ -8,29 +8,28 @@
 
       
         
-<div id="index7" style="background:#DEF5EF !important;">
-  {%if user.is_authenticated%} <div class="d-flex align-items-center justify-content-center"> <span class="text-center" class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;"> Olá </span>&nbsp;
-    {%if user.profissional%}<div class=" d-flex justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.profissional.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
-    {%elif user.cliente%}<div class=" d-flex justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.cliente.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
-    {%elif user.clinica%}<div class=" d-flex justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.clinica.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
-    {%else%}<div class=" d-flex justify-content-center align-items-center"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> </div>
+<div id="index7" class="fluid-container" style="background:#DEF5EF !important;">
+  <div class="container mt-5 mb-5">
+  {%if user.is_authenticated%} <div class="d-flex align-items-center justify-content-center"> <span class="text-center mb-3" style="color:#00AB9B !important; font-weight:600 !important;"> Olá </span>&nbsp;
+    {%if user.profissional%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.profissional.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
+    {%elif user.cliente%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.cliente.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
+    {%elif user.clinica%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.clinica.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
+    {%else%}<div class=" d-flex mb-4 justify-content-center align-items-center"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> </div>
     {%endif%}
 
   </div>
   {%endif%}
-  <div class="container mt-5"  id="fale-conosco">
+  <div  id="fale-conosco">
      <div class="row align-items-center">
     
         <div class=" col-12 text-center justify-content-center align-items-center">
            <div class="index1-txt text-center w-100 justify-content-center align-items-center">
-              <h2 class="text-center main-text"style="text-transform: capitalize !important;  color:#00AB9B !important;">
+              <h2 class="text-center main-text"style="font-family:'DaxBold', sans-serif !important;font-weight:800 !important;text-transform: capitalize !important;  color:#00ae9d !important;">
                  ENCONTRE OS MELHORES PROFISSIONAIS
-                 DA SAÚDE<br> PARA VOCÊ E SUA FAMÍLIA
+                 DA SAÚDE PARA VOCÊ E SUA FAMÍLIA
                 
                 </h2>
-                <br>
-                 <span style="font-size:1.2rem; color:#00AB9B !important; font-weight:500;" id="elementTxt">Agende agora sua consulta ou exames com valores reduzidos</span>
-                 <br>
+                 <span style="font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important;" id="elementTxt">Agende agora sua consulta ou exames com valores reduzidos</span>
               
               <div class="main-options d-flex flex-column w-100">
                  <div class="icones d-flex justify-content-center align-items-center w-100">
@@ -38,7 +37,7 @@
                        <a href="{% url 'pesquisarProfissionais' tipo_profissional='Médico' %}">
                           <span class="box-icon d-flex align-items-center justify-content-center ">
                              <img style="max-height:7rem; margin-right:.4rem;" class="p-1" src="{%static 'img/estetoscopio-instrumento-medico-1.svg' %}">
-                             <div class="flex-icon"><span  style=" color:#00AB9B !important; font-weight:600;font-size:.9rem !important; text-align:center !important;">Consultas    
+                             <div class="flex-icon"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1.1rem !important; text-align:center !important;">Consultas    
                                 Médicas</span>
                           </span>
                           </span>
@@ -49,7 +48,7 @@
                        <a href="{% url 'pesquisarProfissionais' tipo_profissional='Dentista' %}  ">
                           <span class="box-icon d-flex align-items-center justify-content-center ">
                              <img style="max-height:7rem; margin-right:.4rem;" class="p-1" src="{%static 'img/cuidado-dental.svg' %}">
-                             <div class="flex-icon"><span  style=" color:#00AB9B !important; font-weight:600;font-size:.9rem !important; text-align:center !important;">Consultas Odonto</span>
+                             <div class="flex-icon"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1.1rem !important; text-align:center !important;">Consultas Odonto</span>
                           </span>
                           </span>
                           </div>
@@ -58,7 +57,7 @@
                     <li>
                       <a href="{% url 'pesquisarClinicas' tipo_clinica='Clínica' %}  "> <span class="box-icon d-flex align-items-center justify-content-center ">
                           <img style="max-height:7rem; margin-right:.4rem;" class="p-1" src="{%static 'img/diagnostico.svg' %}">
-                          <div class="flex-icon"><span  style="color:#00AB9B !important; font-weight:600;font-size:.9rem !important; text-align:center !important;">Clínicas e Laboratórios</span>
+                          <div class="flex-icon"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1.1rem !important; text-align:center !important;">Clínicas e Laboratórios</span>
                        </span>
                        </span>
                        </div>
@@ -68,7 +67,7 @@
                       <a href="{% url 'pesquisarClinicas' tipo_clinica='Emergência' %}  ">
                       <span class="box-icon d-flex align-items-center justify-content-center ">
                          <img style="max-height:7rem; margin-right:.4rem;" class="p-1" src="{%static 'img/ambulancia.svg' %}">
-                         <div class="flex-icon"><span  style="color:#00AB9B !important; font-weight:600;font-size:.9rem !important; text-align:center !important;">Urgências e Emergências</span>
+                         <div class="flex-icon"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800;font-size:1.1rem !important; text-align:center !important;">Urgências e Emergências</span>
                       </span>
                       </span>
                       </div>
@@ -79,7 +78,7 @@
                   <div class="carousel-inner">
                       {% for banner in banners %}
                       <div  class="carousel-item {% if forloop.first %}active{% endif %}">
-                          <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
+                          <img class="img-carrousel" style="height:10rem; width:35rem; max-width:100%; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
                       </div>
                       {% endfor %}
                   </div>
@@ -109,6 +108,7 @@
         </div>
      
   </div>
+</div>
 </div>
 </div>
 
@@ -245,34 +245,40 @@
      
 
 
-        <div class="fluid-container" style="background:#21BFA6;">
+        <div class="fluid-container" style="background:#00ae9d;">
           <div class="mt-5 mb-5 d-flex flex-column align-items-center container"  >
             <div class="index1-txt text-center w-100 justify-content-center align-items-center mb-4">
-              <span class="text-center main-text"style="text-transform: capitalize !important; font-weight:400 !important; font-size:2rem;  color:#fff !important;">
+              <span class="text-center main-text"style="    font-family:'Daxline', sans-serif !important;font-weight:800 !important;
+;               text-transform: capitalize !important; font-size:2rem;  color:#fff !important;">
                  PROFISSIONAIS EM DESTAQUE
                 
               </span>
-                <br>
-                 <span style="font-size:1.5rem; color:#fff !important; font-weight:500;" id="elementTxt">OS MELHORES MÉDICOS E ESPECIALISTAS NA SUA CIDADE</span>
-              </div>
+                 <span class="mb-3" style="font-size:1.5rem; color:#fff !important; font-weight:800; font-family:'Daxline', sans-serif !important;" id="elementTxt">OS MELHORES MÉDICOS E ESPECIALISTAS NA SUA CIDADE</span>
               <div class="grid-items" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
             {%for profissional in profissionais_ativos_aleatorios%}
-            <div class="p-3 d-flex flex-column align-items-start justify-content-center" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
-            <div class="d-flex justify-content-start align-items-start mb-3" style="gap:.5rem;">
+            <div class="p-3 d-flex flex-column align-items-start justify-content-start" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
+            <div class="d-flex justify-content-start align-items-start mb-3">
               <div class="d-flex flex-column">
-                <div class="d-flex align-items-center mb-2" style="gap:.5rem">
-              <img style="height:6rem; width:6rem; object-fit:cover; border-radius:4px;" src="{{profissional.foto.url}}">
-              <div class="d-flex flex-column align-items-start" style="gap:.5rem;">
+                <div class="d-flex align-items-start mb-2" style="gap:.5rem">
+              <img style="height:6rem; width:6rem; object-fit:cover; border-radius:12px;" src="{{profissional.foto.url}}">
+              <div class="d-flex flex-column align-items-start">
   
-                <span>{{profissional.nome}}&nbsp;{{profissional.sobrenome}}</span>
-                <span>
+                <span style="font-family:'Daxline', sans-serif !important; font-weight:800;  color:#6D6875 !important;">Dr.&nbsp;{{profissional.nome}}&nbsp;{{profissional.sobrenome}}</span>
+                <span style="text-transform: uppercase; font-family:'DaxBold', sans-serif !important; font-weight:600; font-size:1.1rem; color:#00ae9d !important;">
                   {{profissional.tipo_profissional}}
                 </span>
+
+                <span style=" font-family:'Daxline', sans-serif !important; font-weight:800;  color:#6D6875 !important;"> 
+                  {{ profissional.cidade.first }}&nbsp;-&nbsp;
+                  {{ profissional.estado.first }}
+  
+              
+              </span> 
                               </div>
 
               </div>
           
-                <span>
+                <span class="text-start" style="font-family:'Daxline', sans-serif !important; font-weight:500;  color:#6D6875 !important;" >
                   {{profissional.descricao}}
                 </span>
               </div>
@@ -285,32 +291,49 @@
             </div>
           </div>
 
-
+        </div>
 
           <div class="fluid-container" style="background:#DEF5EF;">
    
             <div class="mt-5 mb-5 d-flex flex-column align-items-center container"  >
               <div class="index1-txt text-center w-100 justify-content-center align-items-center mb-4">
-                <span class="text-center main-text"style="text-transform: capitalize !important; font-weight:400 !important; font-size:2rem;  color:#00AB9B !important">
+                <span class="text-center main-text"style="font-family:'Daxline', sans-serif !important;font-weight:800 !important;
+                ;               text-transform: capitalize !important; font-size:2rem;  color:#00ae9d !important">
                    DEPOIMENTOS
                   
                 </span>
-                  <br>
-                   <span style="font-size:1.5rem; color:#00AB9B !important; !important; font-weight:500;" id="elementTxt">SUA SATISFAÇÃO É NOSSA MAIOR RECOMPENSA</span>
+                   <span style="font-size:1.5rem; font-family:'Daxline' !important; color:#00AB9B !important; !important; font-weight:800;" id="elementTxt">SUA SATISFAÇÃO É NOSSA MAIOR RECOMPENSA</span>
                 </div>
                 <div class="grid-items" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
               {%for depoimento in depoimentos%}
-              <div class="p-3 d-flex flex-column align-items-start justify-content-center" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
+              <div class="p-3 d-flex flex-column align-items-start justify-content-start" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
               <div class="d-flex justify-content-start align-items-start mb-3" style="gap:.5rem;">
-                <img style="height:6rem; width:6rem; object-fit:cover; border-radius:4px;" src="{{depoimento.profissional.foto.url}}">
-                <div class="d-flex flex-column align-items-start" style="gap:.5rem;">
+                <img style="height:6rem; width:6rem; object-fit:cover; border-radius:12px;" src="{{depoimento.profissional.foto.url}}">
+                <div class="d-flex flex-column align-items-start">
     
-                  <span>{{depoimento.profissional.nome}}&nbsp;{{depoimento.profissional.sobrenome}}</span>
-                  <span>
-                  {%for especialidade in depoimento.profissional.especialidades.all%}
-                  {{especialidade}}
-                  {%endfor%}
+  
+                  <span style="font-family:'Daxline', sans-serif !important; font-weight:800;  color:#6D6875 !important;">Dr.&nbsp;{{depoimento.profissional.nome}}&nbsp;{{profissional.sobrenome}}</span>
+                  <div class="d-flex profissional-column">
+                  <span style="text-transform: uppercase; font-family:'DaxBold', sans-serif !important; font-weight:600; font-size:1.1rem; color:#00ae9d !important;">
+                    {{depoimento.profissional.tipo_profissional}}
                   </span>
+                  &nbsp;
+                  <span style=" text-transform: uppercase; font-family:'DaxBold', sans-serif !important; font-weight:600; font-size:1.1rem; color:#00ae9d !important;"> 
+                    {{ depoimento.profissional.especialidades.first }}
+
+                
+                </span>   
+                
+              </div>
+           
+                  
+                  </span>
+                  <span style=" font-family:'Daxline', sans-serif !important; font-weight:800;  color:#6D6875 !important;"> 
+                    {{ depoimento.profissional.cidade.first }}&nbsp;-&nbsp;
+                    {{ depoimento.profissional.estado.first }}
+    
+                
+                </span>   
                   <span><div class="star-rating" data-value="{{depoimento.rating}}">
                     <span class="star"></span>
                     <span class="star"></span>
@@ -322,7 +345,9 @@
               </div> 
     
               <div>
+                <span style="font-family:'Daxline', sans-serif !important; font-weight:500;  color:#6D6875 !important;">
                 {{depoimento.descricao}}
+                </span>
               </div>
             </div>
               {%endfor%}
