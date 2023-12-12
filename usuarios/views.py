@@ -82,8 +82,7 @@ def registerCliente(request):
                     
                 messages.success(request, 'Cadastro Realizado com sucesso!')
                 return redirect('login')
-            else:
-                print("CEP inválido ou não encontrado")
+               
         else:
             print("Formulário inválido")
             messages.error(request, form.errors)

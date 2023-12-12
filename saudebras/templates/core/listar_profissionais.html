@@ -47,7 +47,7 @@
             <div class="d-flex" style="gap:1rem;">
               <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
               <div class="d-flex flex-column">
-                <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+                <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
                 <div class="d-flex mb-2 align-items-center">
                 
                   {% for especialidade in profissional.especialidades.all %}
@@ -59,10 +59,10 @@
                   {%endif%}
                   {% endfor %}
                 
-                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
               </div>
               <div style="display:none;" class="mb-2 verProfMob">
-                <a style="text-decoration: underline !important; font-size:.9rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
               </div>
               <span>
                 Número de Registro: CRM 134106 SP
@@ -105,7 +105,7 @@
               {% endfor %}
           
               {% if profissional.convenios.all.count > 1 %}
-                <a href="#" style="text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
               {% endif %}
             </div>
           
@@ -151,7 +151,7 @@
             {% if forloop.first %}
             <a href="#" class="showMapModal" 
             data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:.9rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
             {% endif %}
                 {%endif%}
                 {% endfor %}

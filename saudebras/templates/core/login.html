@@ -5,15 +5,14 @@
     <div class="div-parte1 d-flex align-items-center w-50">
         <form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'login'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Entrar:</h3>
+   <h3 class="mb-2 text-start" style="color:#00ae9d !important;">Acesse sua Conta:</h3>
+   <p style="color:#6D6875 !important">Informe seus dados para acessar sua conta</p>
    <!-- One "tab" for each step in the form: -->
 
-   <div class="tab mb-3">
-    Email ou CPF:
-    <p><input type="text" id="emailCpfId" placeholder="E-mail ou CPF..." oninput="this.className = ''" name="username"></p>
-    Senha:
-    <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password"></p>
-    <a style="color:#21BFA6 !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
+   <div class="tab mb-4">
+    <p><input type="text" style="border-radius:4px; border: solid 1px #000 !important;" id="emailCpfId" placeholder="CPF ou E-mail" oninput="this.className = ''" name="username"></p>
+    <p><input type="password" style="border-radius:4px; border: solid 1px #000 !important;" placeholder="Senha" oninput="this.className = ''" name="password"></p>
+    <a class=" d-flex justify-content-end" style="color:#6D6875 !important; text-decoration:underline !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
     <!-- Outros elementos do formulário -->
 </div>
     
@@ -23,10 +22,10 @@
     
 
 
-<div style="overflow:auto;">
-    <div style="float:right;">
+<div style="overflow:auto; width:100% !important;">
+    <div style="float:right; width:100% !important">
         <button type="button" id="prevBtn" onclick="nextPrev(-1)">Anterior</button>
-        <button type="button" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
+        <button type="button" style="width:100% !important; font-weight:600 !important; background:#00ae9d !important; padding: 1rem 2rem !important; font-size:1.2rem !important; border-radius:6px !important;" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
     </div>
 </div>
 
@@ -89,7 +88,7 @@
    document.getElementById("prevBtn").style.display = "inline";
    }
    if (n == (x.length - 1)) {
-   document.getElementById("nextBtn").innerHTML = "Enviar";
+   document.getElementById("nextBtn").innerHTML = "Entrar";
    } else {
    document.getElementById("nextBtn").innerHTML = "Próximo";
    }

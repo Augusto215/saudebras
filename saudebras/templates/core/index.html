@@ -8,7 +8,7 @@
 
       
         
-<div id="index7" class="fluid-container" style="background:#DEF5EF !important;">
+<div id="index7" class="fluid-container" style="background:url( '/static/img/d05b3261-e500-4f9d-8d1a-a82bbfd5c3b8.jpg'); background-size:cover; background-position:center !important;">
   <div class="container mt-5 mb-5">
   {%if user.is_authenticated%} <div class="d-flex align-items-center justify-content-center"> <span class="text-center mb-3" style="color:#00AB9B !important; font-weight:600 !important;"> Olá </span>&nbsp;
     {%if user.profissional%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.profissional.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
@@ -23,16 +23,16 @@
      <div class="row align-items-center">
     
         <div class=" col-12 text-center justify-content-center align-items-center">
-           <div class="index1-txt text-center w-100 justify-content-center align-items-center">
-              <h2 class="text-center main-text"style="font-family:'DaxBold', sans-serif !important;font-weight:800 !important;text-transform: capitalize !important;  color:#00ae9d !important;">
+          <div style="width:55%" class="index1-txt text-center justify-content-center align-items-center">
+              <h2 class="mb-3 text-start main-text"style="font-family:'DaxBold', sans-serif !important;font-weight:800 !important;text-transform: capitalize !important;  color:#00ae9d !important;">
                  ENCONTRE OS MELHORES PROFISSIONAIS
                  DA SAÚDE PARA VOCÊ E SUA FAMÍLIA
                 
                 </h2>
-                 <span style="font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important;" id="elementTxt">Agende agora sua consulta ou exames com valores reduzidos</span>
+                 <span class="mb-3" style="font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important; text-align:start !important;" id="elementTxt">Agende agora sua consulta ou exames com valores reduzidos</span>
               
               <div class="main-options d-flex flex-column w-100">
-                 <div class="icones d-flex justify-content-center align-items-center w-100">
+                 <div class="icones d-flex justify-content-center align-items-center w-100 mb-2">
                     <li >
                        <a href="{% url 'pesquisarProfissionais' tipo_profissional='Médico' %}">
                           <span class="box-icon d-flex align-items-center justify-content-center ">
@@ -338,7 +338,7 @@
                     <span class="star"></span>
                     <span class="star"></span>
                     <span class="star"></span>
-                    <span class="star"></span>
+                    <span class="star"></span>  
                     <span class="star"></span>
                 </div></span>
                 </div>

@@ -2,65 +2,91 @@
 {%load static%}
 {%block 'conteudo'%}
 <div class="container d-flex" style="flex-grow:1;">
-    <div class="div-parte1 w-50">
+    <div class="div-parte1 w-100">
 <form id="regForm"  method="post" action="{% url 'registerCliente'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Perfil do Paciente:</h3>
+   <h3 class="mb-4 text-start" style="color:#00ae9d !important;">Cadastro do Paciente</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      Nome Completo:
-      <p><input type="text" placeholder="Nome Completo..." oninput="this.className = ''" name="nome"></p>
-      C.P.F:
-      <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
+    <p style="color:#6D6875 !important">Informe seus dados e junte-se a nós para ter acesso a saúde de qualidade a preços acessíveis</p>
+
+      <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome Completo" oninput="this.className = ''" name="nome"></p>
+      <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" oninput="this.className = ''" name="username"></p>
+      <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail" oninput="this.className = ''" name="email"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel"   id="phone1" placeholder="Celular/Whatsapp" oninput="this.className = ''" name="telefone"></p>
    </div>
-   <div class="tab">
-      Email:
-      <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-      Telefone:
-      <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
-    
-   </div>
+
 
    <div class="tab">
     
-        CEP:
-        <p><input type="text" id="registerCEP" placeholder="CEP..." oninput="this.className = ''" name="cep"></p>
       
-       
-           
-      
-    </div>
-  
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="CEP" oninput="this.className = ''" name="cep"></p>
+
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="Endereço" oninput="this.className = ''" ></p>
+
+        Foto do seu perfil:
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;" style="border-radius:4px; border: solid 1px #000 !important;" type="file"  name="foto"></p>
+        
+        
+        <h3 class="mb-4 text-start" style="color:#00ae9d !important;">Cadastre sua Senha</h3>
+        <ul>
+            <li>
+                <p style="color:#6D6875 !important; font-size:.9rem !important;">A senha deve conter mínimo de 8 caracteres;</p>
+
+            </li>
+            <li>
+                <p style="color:#6D6875 !important; font-size:.9rem !important;">Pelo menos um caractere maiúsculo;</p>
+
+            </li>
+            <li>
+                <p style="color:#6D6875 !important; font-size:.9rem !important;">Pelo menos um número e pelo menos um símbolo.</p>
+
+            </li>
+
+        </ul>   
 
 
-
-    
-
-<div class="tab">
-    
-    
-        Foto:
-        <p><input type="file"  name="foto"></p>
-   
-      
-           
-      
-    </div>
-    
-
-
-    <div class="tab">
-        Senha:
        
           
-            <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password1"></p>
-            Confirmar Senha:
-            <p><input type="password" placeholder="Confirmar Senha..." oninput="this.className = ''" name="password2"></p>
-            
-            
-               
-          
+ <div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
+            <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="password-input" name="password1" placeholder="Digite sua senha">
+            <span class="p-2" onclick="togglePasswordVisibility('password-input', 'eye-icon')">
+                <i style="font-size:17px !important;    " id="eye-icon" class="bi bi-eye-slash"></i>
+            </span>
         </div>
+
+
+        <div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
+            <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="confirm-password-input" name="password2" placeholder="Confirmar Senha">
+            <span class="p-2" onclick="togglePasswordVisibility('confirm-password-input', 'confirm-eye-icon')">
+                <i style="font-size:17px !important;    " id="confirm-eye-icon" class="bi bi-eye-slash"></i>
+            </span>
+        </div>
+
+    </div>
+        
+        <script>
+            function togglePasswordVisibility(inputId, iconId) {
+                var passwordInput = document.getElementById(inputId);
+                var eyeIcon = document.getElementById(iconId);
+                
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    eyeIcon.classList.remove('bi-eye-slash');
+                    eyeIcon.classList.add('bi-eye'); // Ícone de olho aberto
+                } else {
+                    passwordInput.type = "password";
+                    eyeIcon.classList.remove('bi-eye');
+                    eyeIcon.classList.add('bi-eye-slash'); // Ícone de olho fechado
+                }
+            }
+        </script>
+
+
+    
+
+
+
     
  
         
@@ -70,8 +96,8 @@
 
 <div style="overflow:auto;">
     <div style="float:right;">
-        <button type="button" id="prevBtn" onclick="nextPrev(-1)">Anterior</button>
-        <button type="button" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
+        <button   type="button" id="prevBtn" style="padding:.7rem 1.3rem !important; border-radius:4px; background:rgb(130 130 130) !important; color:#fff !important; font-weight:600 !important;" onclick="nextPrev(-1)">Voltar</button>
+        <button  type="button" id="nextBtn" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important;" onclick="nextPrev(1)">Próximo</button>
     </div>
 </div>
 
@@ -80,16 +106,11 @@
          <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
-         <span class="step"></span>
-         <span class="step"></span>
-         <span class="step"></span>
    
       </div>
 </form>
 </div>
-<div class="div-parte2 w-50 d-flex justify-content-center align-items-center" >
-    <img style="max-height:20rem;" src=" {%static 'img/Pediatrician-bro.png' %}">
-</div>
+
 </div>
 
 <div class="container d-none justify-content-center mt-4 mb-4">
