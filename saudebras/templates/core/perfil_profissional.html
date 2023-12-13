@@ -91,7 +91,7 @@
   </div>
 </div>  
 <div class="perfil-container d-flex flex-column justify-content-center">
-  <div class="d-flex" style="gap:1rem;">
+  <div class="d-flex" style="gap:1rem; background:#F0F0F0 !important; padding:1.5rem;">
      <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:4px;" src="{{ profissional.foto.url }}">
      <div class="d-flex flex-column">
         <span style="font-size:1.2rem !important; font-family:'Arial' !important; font-weight:600 !important;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
@@ -156,14 +156,16 @@
   style=" border-radius:12px; filter: drop-shadow(2px 4px 6px #DBDBDB); height:fit-content; display:none;">
   <div class='d-flex align-items-center w-100' style="gap:1rem;">
   {%if user.is_authenticated%}
-  <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
-  padding-top: 1.3rem;">
+  
+</div>
+<div class="d-flex  justify-content-start align-items-center" style="gap:1rem; max-width:100%; 
+  padding:1.3rem 1rem 0;">
   <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
   <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
       <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
                   {%else%}
-                  <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
-                  padding-top: 1.3rem;">
+                  <div class="d-flex  justify-content-start align-items-center" style="gap:1rem; max-width:100%; 
+                  padding:1.3rem 1rem 0;">
                   <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
                   <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
                       <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; width:10rem; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
@@ -171,7 +173,6 @@
   </div>
 </div>
   </div>
-</div>
   <div class="tab-container container mb-3">
     <div class="wrapper " style="overflow-x: auto;">
 
