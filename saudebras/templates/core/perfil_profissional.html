@@ -44,8 +44,16 @@
  <div class="fluid-container fluid-profissional" style="padding:.7rem 0; background:#e2e2e2 !important; display:none;">
 
   <div class="container d-flex justify-content-between align-items-center">
-<i style="font-size:2rem !important;" class="bi bi-arrow-left-short"></i> <span>Dr.&nbsp;{{profissional.nome}}</span> <div class="d-flex justify-content-center align-items-center" style="gap:.5rem;">
-  <i style="font-size:1.2rem" class="bi bi-share-fill"></i>
+<i style="font-size:2rem !important; cursor:pointer;" onclick="goBack()" class="bi bi-arrow-left-short"></i> <span>Dr.&nbsp;{{profissional.nome}}</span> <div class="d-flex justify-content-center align-items-center" style="gap:.5rem;">
+  <i  style="font-size:1.2rem" class="bi bi-share-fill"></i>
+
+
+    <!-- Script JavaScript -->
+    <script>
+    function goBack() {
+        window.history.back();
+    }
+    </script>
   <i style="color:#00ae9d !important; font-size:1.2rem;" class="bi bi-heart-fill"></i>
 
 </div>
