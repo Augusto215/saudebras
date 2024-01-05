@@ -1368,9 +1368,25 @@ h2
 }
 
 
+.mobile-prof
+
+{
+    display: none;
+}
+
+#mapStatic
+{
+    display: none;
+}
+
 
 @media(max-width:1100px)
 {   
+
+    .mobile-prof
+    {
+        display: block;
+    }
 
     .div-img
     {

@@ -517,12 +517,10 @@ border-radius: 12px;
 .index1-txt
 
 {
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: flex-start;
-    z-index: 2;
 }
 .navbar-brand
 
@@ -989,25 +987,233 @@ padding: .5rem;
     
 }
 
+.navbar-toggler
+{
+    position: absolute;
+}
+
+.mobile-nav
+{
+    position:relative !important;
+    display: flex;
+    justify-content: center !important;
+}
+
+.navbar-toggler
+{
+    position: absolute !important;
+    left: 0 !important;
+    padding: 0 !important;
+}
 
 .img-div
 {
     display: flex;
 }
 
+.icones a
+{
+    display: flex;
+    justify-content: center;
+    align-items: center ;
+}
+
+@media(max-width:1100px)
+{
+    .box-icon
+{
+    padding:.7rem 3rem;
+    width: 100% !important;
+    max-width: 22rem !important;
+    margin-right: 0 !important;
+
+}
+}
+header {
+    position: relative;
+    z-index: 1000; /* Assegura que a header fique sobre os outros elementos */
+  }
+  
+  /* Estilos para o menu de navegação no modo mobile */
+/* Sobrescreve o padding para a nav no modo mobile */
+.navbar {
+    position: relative; /* Faz com que o menu absoluto se posicione relativamente a esta navbar */
+  }
+
+  /* Estilo para o fundo sombreado */
+.backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Cor cinza com transparência */
+    z-index: 20; /* Deve ser menor que o z-index do menu para aparecer por baixo */
+  }
+  
+
+@media(min-width:992px)
+{
+    
+
+    #navbarNavDropdown
+    {
+        display: none !important;
+    }
+
+    .backdrop
+    {
+        display: none !important;
+    }
+}
+
+.carousel-item.active
+
+{
+    z-index: 9999;
+}
+  
+
+.nav-link
+{
+    font-weight: 800 !important;
+}
+
+.icones
+{
+    gap:.6rem;
+}
+
+.slide
+
+{
+    position: relative;
+    z-index: 999;
+}
+.navbar
+{
+    background: #fff !important;
+    z-index: 9999;
+}
+
+.main-text
+{
+    font-size:2.2rem;
+}
+
+  /* Quando o menu está ativo, exibe o fundo sombreado */
+
+  
+  /* CSS específico para mobile */
+  @media (max-width: 992px) { /* Ajuste conforme o breakpoint de sua escolha */
+    .navbar.navbar-expand-lg.p-4 {
+      padding-left: 0;
+      padding-right: 0; /* Remove o padding lateral no mobile */
+    }
+    
+    .subtext
+    {
+        text-align: center !important;
+    }
+
+    .main-text
+    {
+        text-align: center !important;
+
+    }
+    .navbar-collapse {
+      position: absolute;
+      top: 100%; /* Fica logo abaixo da navbar */
+      left: 0;
+      background: #fff;;
+      right: 0; /* Estende-se até as extremidades da tela */
+      transform: none; /* Remove qualquer transformação anterior que possa ter sido aplicada */
+      width:55%; /* Ocupa a largura total da tela */
+      padding: 1.5rem 0  !important;
+
+      
+    }
+
+    .navbar-collapse li {
+       padding: .5rem 0;
+    }
+  
+    .navbar-toggler {
+      margin-right: 0; /* Remove margem do botão caso exista */
+    }
+  
+    .navbar-collapse.collapsing,
+    .navbar-collapse.show {
+      transform: translateY(0); /* Garante que o menu esteja visível */
+    }
+  }
+  
+.subtext
+{
+    width:43rem;
+    max-width: 100%;
+    text-align: left;
+}
+@media(max-width:450px)
+{
+
+.box-icon
+{
+    justify-content: space-between !important;
+    gap:1rem !important;
+    padding: .7rem 3rem;
+
+}
+
+.flex-icon
+{
+    text-align: left !important;
+    width: 100% !important;
+}
+
+}
+
+
+@media(max-width:360px)
+{
+.profImg
+{
+ width:70px !important;
+ height: 70px !important;   
+}
+
+}
+
+.span-prof
+{
+    font-size:.9rem !important;
+}
+
+.index1-txt
+{
+    width: 60%;
+}
+
+
+
+.div-img
+{
+    width: 40%;
+    
+}
 
 .box-icon
 {
     
-    box-shadow: 0 15px 30px 5px rgba(0, 0, 0, 0.089);
     border-radius: 30px;
     display: flex;
-    height: 12rem;
-    width: 12rem;
+    height: 10rem;
     background:var(--border-color);
-    padding: .5rem;
-    margin: 1rem 0;
+    margin: .5rem 0;
+    justify-content: center;
     margin-right: 1rem;
+    width: 10rem;
 }
 
 .perfil-container
@@ -1162,11 +1368,30 @@ h2
 }
 
 
+.mobile-prof
+
+{
+    display: none;
+}
+
+#mapStatic
+{
+    display: none;
+}
+
 
 @media(max-width:1100px)
 {   
 
+    .mobile-prof
+    {
+        display: block;
+    }
 
+    .div-img
+    {
+        display: none !important;
+    }
     .index1-txt
     {
         width: 100% !important;
@@ -1367,6 +1592,11 @@ lottie-player
 }
 
 
+.container1
+{
+    max-width:100%; padding: 0 1rem !important;
+}
+
 .tab-button {
     border-bottom: 5px solid #c1c1c1 !important; /* Cor e estilo do border */
     padding-right: 1rem !important;
@@ -1381,7 +1611,10 @@ lottie-player
 @media (max-width:768px)
 {   
     
-
+    .container1
+    {
+        max-width:100%; padding: 0 6% !important;
+    }
 
     .valor-mobile
 {
@@ -1442,12 +1675,11 @@ lottie-player
 
     .profImg
     {
-        width: 120px !important;
-        height: 120px !important;
-        min-width: 120px;
+        width: 90px;
+        height: 90px;
     }
 
-
+    
 
     .especialidadeFlex a, .convenioFlex a
     {
@@ -1641,11 +1873,12 @@ font-size: 1rem !important;
     cursor: pointer;
   }
 
-.index1-txt
-
+.navbar-brand
 {
-    width: 65%;
+    margin: 0 !important;
 }
+
+
 
   #regForm .tab
   {
@@ -1657,6 +1890,15 @@ font-size: 1rem !important;
     display: none !important;
   }
 
+  .block
+  {
+    display: block !important;
+  }
+  #carouselExampleControls
+  {
+    position: relative;
+    z-index:9999;
+  }
 
   .carousel-control-prev  {
     display: none !important;
