@@ -184,7 +184,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 JAZZMIN_SETTINGS = {
-
+    
     # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "SAUDEBRAS",
 

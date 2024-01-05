@@ -91,21 +91,21 @@
   </div>
 </div>  
 <div class="perfil-container d-flex flex-column justify-content-center">
-  <div class="d-flex" style="gap:1rem; background:#F0F0F0 !important; padding:1.5rem;">
-     <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:4px;" src="{{ profissional.foto.url }}">
+  <div class="d-flex" style="gap:1rem; width:100%; background:#F0F0F0 !important; padding:1.5rem 1.5rem .6rem;">
+     <img class="profImg" style=" object-fit:cover; border-radius:4px;" src="{{ profissional.foto.url }}">
      <div class="d-flex flex-column">
-        <span style="font-size:1.2rem !important; font-family:'Arial' !important; font-weight:600 !important;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+        <span style="font-size:1.1rem !important; font-family:'Arial' !important; font-weight:600 !important;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
        
         <div class="d-flex">
           
           <div class="d-flex especialidadeFlex ">
             {% for especialidade in profissional.especialidades.all %}
             {% if forloop.counter < 2 %}
-            <span style="color:#555 !important;margin-right: .5rem !important; text-decoration:none; font-family:'DaxBold !important'; font-weight:400;">{{ especialidade.nome }}</span>
+            <span class="span-prof" style="color:#555 !important;margin-right: .5rem !important; text-decoration:none; font-family:'DaxBold !important'; font-weight:400;">{{ especialidade.nome }}</span>
             {% endif %}
             {% endfor %}
             {% if profissional.especialidades.all.count > 1 %}
-            <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#especialidadesModal-{{ profissional.id }}">Ver mais</a>
+            <a class="span-prof" href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#especialidadesModal-{{ profissional.id }}">Ver mais</a>
             {% endif %}
          </div>
          
@@ -113,10 +113,10 @@
 
         </div>
         {%if profissional.codigo%}
-        <span st>Código de Registro:&nbsp;CRM&nbsp;{{profissional.codigo}}</span>
+        <span class="span-prof">Registro:&nbsp;CRM&nbsp;{{profissional.codigo}}</span>
         {%endif%} 
         {%load floor%}
-        <span class="mb-3" style="font-size:1rem; color:#000 !important;">
+        <span style="font-size:1rem; color:#000 !important;">
            <span>
               <div class="rating-display d-flex align-items-center">
                  <div class="rating">
@@ -124,11 +124,11 @@
                     {%endfor%}
                     {% for star in stars %}
                     {% if star == "full" %}
-                    <span style="font-size:1.2rem !important;" class="star2 full">&#9733;</span>
+                    <span style="font-size:1.7rem !important;" class="star2 full">&#9733;</span>
                     {% elif star1 == "half" %}
-                    <span style="font-size:1.2rem !important;" class="star2 half">&#189;</span>
+                    <span style="font-size:1.7rem !important;" class="star2 half">&#189;</span>
                     {% else %}
-                    <span style="font-size:1.2rem !important;" class="star2">&#9734;</span>
+                    <span style="font-size:1.7rem !important;" class="star2">&#9734;</span>
                     {% endif %}
                     {% endfor %}
                  </div>
@@ -139,11 +139,11 @@
         <div class="d-flex mb-2 convenioFlex">
            {% for convenio in profissional.convenios.all %}
            {% if forloop.counter < 2 %}
-           <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+           <span class="span-prof" style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
            {% endif %}
            {% endfor %}
            {% if profissional.convenios.all.count > 1 %}
-           <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+           <a class="span-prof" href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
            {% endif %}
            
         </div>
@@ -160,14 +160,14 @@
 </div>
 <div class="d-flex  justify-content-start align-items-center" style="gap:1rem; max-width:100%; 
   padding:1.3rem 1rem 0;">
-  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
-  <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
+  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span class="span-prof">Valor reduzido da consulta:</span>
+  <span style="color:#00ae9d !important; font-weight:600;white-space: nowrap;">R$ 180,00</span></div>
       <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
                   {%else%}
                   <div class="d-flex  justify-content-start align-items-center" style="gap:1rem; max-width:100%; 
                   padding:1.3rem 1rem 0;">
-                  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
-                  <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
+                  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span class="span-prof">Valor reduzido da consulta:</span>
+                  <span style="color:#00ae9d !important; font-weight:600;white-space: nowrap;">R$ 180,00</span></div>
                       <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; width:10rem; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
                   {%endif%}
   </div>

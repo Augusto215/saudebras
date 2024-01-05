@@ -28,15 +28,93 @@
 </head>
 
    <body>
+    <div class="backdrop" id="backdrop"></div>
+
     <header>
+      <div class="collapse navbar-collapse"  id="navbarNavDropdown">
+        <ul class="navbar-nav" >
+ 
+        
+
+    
+         
+          
+        {%if user.is_authenticated != True %}  <li class="nav-item">
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+             Cadastrar Perfil
+            </a>
+            <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
+              <li>
+               
+                <a class="dropdown-item" href="{% url 'registerProfissional'%}">Sou Profissional</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        {%endif%}
+        {% if request.is_profissional %}
+
+        <li class="nav-item">
+          <a href="{%url 'editar_perfil' %}" class="nav-link">Editar Perfil</a>
+        </li>
+        {%elif request.is_clinica%}
+        <li class="nav-item">
+          <a href="{%url 'editar_clinica' %}" class="nav-link">Editar Perfil</a>
+        </li>
+      {% endif %}
+        
+
+        {% if user.is_authenticated == False %}
+
+          <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
+            <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
+    </li>
+
+      {% else %}
+
+      <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
+        <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
+        </li>
+
+      {%endif%}
+        
+      <li class="nav-item">
+        <a href="{%url 'sobre' %}" class="nav-link">Sobre</a>
+      </li>
+
+      <li class="nav-item">
+        <a href="{%url 'vantagens' %}" class="nav-link">Vantanges</a>
+      </li>
+
+      <li class="nav-item">
+        <a href="{% url 'artigos' %}" class="nav-link">Artigos</a>
+      </li>
+
+      <li class="nav-item">
+        <a href="{%url 'assistencia' %}" class="nav-link">Assistência Familiar</a>
+      </li>
+
+      <li class="nav-item">
+        <a href="{% url 'contato' %}" class="nav-link">Contato</a>
+      </li>
+
+      </ul>
+
+
+      </div>
         <nav class="navbar navbar-expand-lg p-4 " >
             <div class="container mobile-nav">
-              <button style="border:none;" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              
+              <button style="border:none;" class="navbar-toggler" type="button" data-bs-toggle="collapse"  aria-controls="navbarNavDropdown" data-bs-target="#navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <img style="height:1.5rem;" src="{%static 'img/menu-button-of-three-horizontal-lines.png'%}" alt="toggle icon"> <!-- Imagem personalizada -->
             </button>
               <a class="navbar-brand" href="{%url 'home'%}"><img style="max-height: 3.5rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
-              
-              <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <div class="collapse navbar-collapse"  id="navbarNavDropdown2">
                 <ul class="navbar-nav" style="gap:1.5rem;">
          
                 
@@ -112,6 +190,7 @@
   
   
               </div>
+              
 
               {% if user.is_authenticated == False %}
 
@@ -137,69 +216,69 @@
       
     </header>
 
-  
-  <!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <!-- ... rest of modal content ... -->
-      <div class="modal-body">
-        <div class="d-flex flex-column align-items-center" style="gap:1rem;">
-          <img style="max-height:5rem;" src="{%static 'img/verify.png'%}">
-        {% if messages %}
-          <div class="messages">
-            {% for message in messages %}
-              {% if message.tags == 'success' %}
-                <span>{{ message }}</span>
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Error Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <!-- ... rest of modal content ... -->
-      <div class="modal-body">
-
+    
+    <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- ... rest of modal content ... -->
+        <div class="modal-body">
           <div class="d-flex flex-column align-items-center" style="gap:1rem;">
-            <img style="max-height:5rem;" src="{%static 'img/cancel.png'%}">
+            <img style="max-height:5rem;" src="{%static 'img/verify.png'%}">
           {% if messages %}
-          <div class="messages">
-            {% for message in messages %}
-              {% if message.tags == 'error' %}
-          <span>{{ message }}</span>
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% endif %}
+            <div class="messages">
+              {% for message in messages %}
+                {% if message.tags == 'success' %}
+                  <span>{{ message }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script type="text/javascript">
-  document.addEventListener('DOMContentLoaded', (event) => {
-    {% if messages %}
-      {% for message in messages %}
-        {% if message.tags == 'success' %}
-          var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-          successModal.show();
-        {% elif message.tags == 'error' %}
-          var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-          errorModal.show();
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-  });
-</script>
+  <!-- Error Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- ... rest of modal content ... -->
+        <div class="modal-body">
+
+            <div class="d-flex flex-column align-items-center" style="gap:1rem;">
+              <img style="max-height:5rem;" src="{%static 'img/cancel.png'%}">
+            {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                {% if message.tags == 'error' %}
+            <span>{{ message }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', (event) => {
+      {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'success' %}
+            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+          {% elif message.tags == 'error' %}
+            var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    });
+  </script>
 
      
 <!-- Modal Login -->
@@ -274,7 +353,30 @@
           <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox-plus-jquery.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              var navbarToggler = document.querySelector('.navbar-toggler');
+              var navbarCollapse = document.querySelector('#navbarNavDropdown');
+              var backdrop = document.querySelector('#backdrop');
+              
+              navbarToggler.addEventListener('click', function()
+              {
+                document.getElementById('navbarNavDropdown').classList.remove('show');
 
+              })
+              navbarToggler.addEventListener('click', function () {
+                backdrop.classList.toggle('block'); // Mostra o fundo sombreado
+                document.body.classList.toggle('menu-active'); // Adiciona classe para impedir rolagem da página
+              });
+            
+              // Quando o usuário clica no fundo sombreado, fecha o menu
+              backdrop.addEventListener('click', function () {
+                document.getElementById('navbarNavDropdown').classList.remove('show');
+                backdrop.classList.remove('block'); // Mostra o fundo sombreado
+                document.body.classList.remove('menu-active'); // Adiciona classe para impedir rolagem da página
+              });
+            });
+          </script>
 
 
 

@@ -2,36 +2,29 @@
 {%load static%}
 {%block 'conteudo'%}
 <div class="container d-flex" style="flex-grow:1;">
-    <div class="div-parte1 d-flex align-items-center w-50">
+    <div class="div-parte1 w-100 d-flex align-items-center">
         <form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'registerProfissional'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center" style="color:#6D6875 !important;">Perfil do Profissional:</h3>
+   <h3 class="mb-4 text-left" style="color:#00ae9d !important;">Cadastro do Profissional:</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      <span    style="color:#6D6875 !important;" class="fw-bold mb-2">Nome Completo:</span>
-      <p><input type="text" placeholder="Nome Completo..." oninput="this.className = ''" name="nome"></p>
-      <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">C.P.F:</span>
-      <p><input type="text" id="cpfId" placeholder="C.P.F..." oninput="this.className = ''" name="username"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome Completo" oninput="this.className = ''" name="nome"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" oninput="this.className = ''" name="username"></p>
       
       
    </div>
    <div class="tab">
-      <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Email:</span>
-      <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-      <span    style="color:#6D6875 !important;"  class="fw-bold mb-2">Celular/Whatsapp:</span>
-      <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel"  style="padding-left:3rem;" id="phone1" placeholder="Celular/Whatsapp" oninput="this.className = ''" name="telefone"></p>
       
    </div>
 
    <div class="tab">
-    <span     style="color:#6D6875 !important;" class="fw-bold mb-2">Endereço:</span><br><br>
-    CEP:
     <div class="d-flex flex-column justify-content-center align-items-center">
-        <div class="d-flex flex-column justify-content-center align-items-center" id="cep-fields">
-            <div class="cep-complemento-group">
-                <input type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
-                Número:
-                <input type="text" name="complemento[]" id="complemento" placeholder="Número">
+        <div class="d-flex flex-column justify-content-center align-items-center w-100" id="cep-fields">
+            <div class="cep-complemento-group w-100">
+                <input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
+                <input style="border-radius:4px; border: solid 1px #000 !important;" type="text" name="complemento[]" id="complemento" placeholder="Número">
             </div>
         </div>
         <button class="mb-5" style="width:fit-content !important;" type="button" id="add-cep">+</button>
@@ -42,15 +35,20 @@
 document.getElementById('add-cep').addEventListener('click', function() {
     const newGroup = document.createElement('div');
     newGroup.className = 'cep-complemento-group';
+    newGroup.style.width = '100%';
 
     const newCepInput = document.createElement('input');
     newCepInput.type = 'text';
+    newCepInput.style.borderRadius = '4px';
+    newCepInput.style.border = 'solid 1px #000';
     newCepInput.name = 'cep[]';
     newCepInput.placeholder = 'Digite o CEP';
 
     const newComplementoField = document.createElement('input');
     newComplementoField.type = 'text';
     newComplementoField.name = 'complemento[]';
+    newComplementoField.style.borderRadius = '4px';
+    newComplementoField.style.border = 'solid 1px #000';
     newComplementoField.placeholder = 'Número';
 
     const newDeleteButton = document.createElement('button');
@@ -60,9 +58,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
     newDeleteButton.addEventListener('click', function() {
         newGroup.remove();
     });
-    newGroup.appendChild(document.createTextNode(' CEP: '));
     newGroup.appendChild(newCepInput);
-    newGroup.appendChild(document.createTextNode(' Complemento: '));
     newGroup.appendChild(newComplementoField);
     newGroup.appendChild(newDeleteButton);
 
@@ -79,7 +75,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
   
    <div class="tab">
 
-    <span     style="color:#6D6875 !important;" class="fw-bold mb-2">Profissão:</span>
+    <span     style="color:#6D6875 !important;" class=" mb-2">Profissão:</span>
   
                 
                     <div class="form-check medico" style="display: flex;
@@ -157,7 +153,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 
     <div class="mb-3 mt-5" id="especialidadesDiv">
-        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Especializações:</span>
+        <span   style="color:#6D6875 !important;"  class=" mb-2">Especializações:</span>
         <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label"></label>
         <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
             <!-- Checkbox para médicos -->
@@ -201,12 +197,11 @@ document.getElementById('add-cep').addEventListener('click', function() {
         </div>
     </div>
 <div class="tab">
-<span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Número de Registro (CRM ou ORM, por exemplo):</span>
-    <input class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Código de Registro...">
+    <input style="border-radius:4px; border: solid 1px #000 !important;" class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Número de Registro (CRM ou ORM, por exemplo):">
 
     <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
-<span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Digitalização do Diploma ou Carteira Profissional:</span>
-<input type="file" id="inputDiploma" name="diploma" accept="image/*">
+<span   style="color:#6D6875 !important;"  class=" mb-2">Digitalização do Diploma ou Carteira Profissional:</span>
+<input style="border-radius:4px; border: solid 1px #000 !important;" type="file" id="inputDiploma" name="diploma" accept="image/*">
 
 <!-- Modal do Bootstrap para exibir o diploma -->
 <div class="modal fade" id="diplomaModal" tabindex="-1" aria-hidden="true">
@@ -252,7 +247,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 <div class="tab">
 <div class="mb-3" id="IdiomasDiv">
-    <label for="especialidades" class="form-label fw-bold">Idiomas:</label>
+    <label for="especialidades" class="form-label " style="color:#555;" >Idiomas:</label>
     <div id="idiomas">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
@@ -277,7 +272,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 <div class="tab">
 <div class="mb-3" id="conveniosDiv">
-    <label for="convenios" class="form-label"><span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Convênios:</span></label>
+    <label for="convenios" class="form-label"><span   style="color:#6D6875 !important;"  class=" mb-2">Convênios:</span></label>
     <div id="convenios">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
@@ -321,7 +316,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
     
     <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
     <span   style="color:#6D6875 !important;"  class="fw-bold">Foto:</span>
-    <p> <input style="color:#000 !important;" type="file" id="inputImage" name="foto" accept="image/*">
+    <p> <input style="border-radius:4px; border: solid 1px #000 !important;" type="file" id="inputImage" name="foto" accept="image/*">
 
         <!-- Modal do Bootstrap para exibir a imagem -->
         <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
@@ -364,8 +359,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
                 inputImage.click(); // Aciona o input de arquivo novamente
             });
             </script>
-    <span    style="color:#6D6875 !important;" class="fw-bold">Experiência Profissional:</span>
-    <p><textarea style="width:100%; padding:.5rem; font-size:1rem !important; min-height:7rem !important;" type="text" placeholder="Fale um pouco sobre sua experiência profissional" oninput="this.className = ''" name="descricao"></textarea></p>
+    <p><textarea class="w-100" style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Fale um pouco sobre sua experiência profissional" oninput="this.className = ''" name="descricao"></textarea></p>
     
     
   
@@ -382,12 +376,10 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 <div class="tab">
     <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
-    <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Senha:</span>
    
       
-        <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password1"></p>
-        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Confirmar Senha:</span>
-        <p><input type="password" placeholder="Confirmar Senha..." oninput="this.className = ''" name="password2"></p>
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="password" placeholder="Senha" oninput="this.className = ''" name="password1"></p>
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;"type="password" placeholder="Confirmar Senha" oninput="this.className = ''" name="password2"></p>
         
         
         <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Termos e Condições:</span>
@@ -411,9 +403,9 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 <div style="overflow:auto;">
     <div style="float:right;">
-        <button type="button" id="prevBtn" onclick="nextPrev(-1)">Anterior</button>
-        <button type="button" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
-        <button type="submit" style="display:none;" id="submitBtn">Enviar</button>
+        <button type="button" style="padding:.7rem 1.3rem !important; border-radius:4px; background:rgb(130 130 130) !important; color:#fff !important; font-weight:600 !important;" id="prevBtn" onclick="nextPrev(-1)">Voltar</button>
+        <button type="button" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important;" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
+        <button type="submit" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important; display:none;" id="submitBtn">Enviar</button>
     </div>
 </div>
 
@@ -435,9 +427,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
       </div>
 </form>
 </div>
-<div class="div-parte2 w-50 d-flex justify-content-center align-items-center" >
-    <img style="max-height:20rem;" src=" {%static 'img/Doctors-bro.png' %}">
-</div>
+
 </div>
 <div class="container d-none justify-content-center mt-4 mb-4">
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">

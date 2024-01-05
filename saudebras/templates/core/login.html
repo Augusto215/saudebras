@@ -2,7 +2,7 @@
 {%load static%}
 {%block 'conteudo'%}
 <div class="container d-flex" style="flex-grow:1;">
-    <div class="div-parte1 d-flex align-items-center w-50">
+    <div class="div-parte1 d-flex align-items-center w-100">
         <form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'login'  %}">
    {% csrf_token %}
    <h3 class="mb-2 text-start" style="color:#00ae9d !important;">Acesse sua Conta:</h3>
@@ -37,9 +37,7 @@
       </div>
 </form>
 </div>
-<div class="div-parte2 w-50 d-flex justify-content-center align-items-center" >
-    <img style="max-height:20rem;" src=" {%static 'img/Doctor-pana.png' %}">
-</div>
+
 </div>
 
 

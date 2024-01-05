@@ -2,34 +2,29 @@
 {%load static%}
 {%block 'conteudo'%}
 <div class="container d-flex" style="flex-grow:1;">
-    <div class="div-parte1 d-flex align-items-center w-50">
-<form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'registerClinica'  %}">
+    <div class="div-parte1 w-100 d-flex align-items-center">
+        <form id="regForm"  method="post" enctype="multipart/form-data" action="{% url 'registerClinica'  %}">
    {% csrf_token %}
-   <h3 class="mb-4 text-center w-100" style="color:#6D6875 !important;">Perfil do Clínica:</h3>
+   <h3 class="mb-4 text-left" style="color:#00ae9d !important;">Cadastro da Clínica:</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      Nome da Instituição:
-      <p><input type="text" placeholder="Nome..." oninput="this.className = ''" name="nome"></p>
-     
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome da Instituição" oninput="this.className = ''" name="nome"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.N.P.J" oninput="this.className = ''" name="username"></p>
+      
+      
    </div>
    <div class="tab">
-      Email:
-      <p><input type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-      Telefone:
-      <p><input type="tel"  style="padding-left:3rem;" id="phone" placeholder="Telefone..." oninput="this.className = ''" name="telefone"></p>
-      C.N.P.J:
-      <p><input type="text" id="cpfId" placeholder="C.N.P.J..." oninput="this.className = ''" name="username"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail" oninput="this.className = ''" name="email"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel"  style="padding-left:3rem;" id="phone1" placeholder="Celular/Whatsapp" oninput="this.className = ''" name="telefone"></p>
+      
    </div>
 
    <div class="tab">
-    Endereço:<br><br>
-    CEP:
     <div class="d-flex flex-column justify-content-center align-items-center">
-        <div class="d-flex flex-column justify-content-center align-items-center" id="cep-fields">
-            <div class="cep-complemento-group">
-                <input type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
-                Complemento:
-                <input type="text" name="complemento[]" id="complemento" placeholder="Complemento">
+        <div class="d-flex flex-column justify-content-center align-items-center w-100" id="cep-fields">
+            <div class="cep-complemento-group w-100">
+                <input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" name="cep[]" placeholder="Digite o CEP">
+                <input style="border-radius:4px; border: solid 1px #000 !important;" type="text" name="complemento[]" id="complemento" placeholder="Número">
             </div>
         </div>
         <button class="mb-5" style="width:fit-content !important;" type="button" id="add-cep">+</button>
@@ -40,16 +35,21 @@
 document.getElementById('add-cep').addEventListener('click', function() {
     const newGroup = document.createElement('div');
     newGroup.className = 'cep-complemento-group';
+    newGroup.style.width = '100%';
 
     const newCepInput = document.createElement('input');
     newCepInput.type = 'text';
+    newCepInput.style.borderRadius = '4px';
+    newCepInput.style.border = 'solid 1px #000';
     newCepInput.name = 'cep[]';
     newCepInput.placeholder = 'Digite o CEP';
 
     const newComplementoField = document.createElement('input');
     newComplementoField.type = 'text';
     newComplementoField.name = 'complemento[]';
-    newComplementoField.placeholder = 'Complemento';
+    newComplementoField.style.borderRadius = '4px';
+    newComplementoField.style.border = 'solid 1px #000';
+    newComplementoField.placeholder = 'Número';
 
     const newDeleteButton = document.createElement('button');
     newDeleteButton.type = 'button';
@@ -58,9 +58,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
     newDeleteButton.addEventListener('click', function() {
         newGroup.remove();
     });
-    newGroup.appendChild(document.createTextNode(' CEP: '));
     newGroup.appendChild(newCepInput);
-    newGroup.appendChild(document.createTextNode(' Complemento: '));
     newGroup.appendChild(newComplementoField);
     newGroup.appendChild(newDeleteButton);
 
@@ -74,51 +72,52 @@ document.getElementById('add-cep').addEventListener('click', function() {
            
       
     </div>
+    
     <div class="tab">
-        Tipo Clínica:
-        {% for tipo_clinica in tipos_clinicas %}
-                    
-                    
-                        <div class="form-check medico" style="display: flex;
-                        align-items: center;
-                        justify-content: start;
-                        padding-left: 0 !important;">
-                            <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ tipo_clinica.id }}" name="tipo_clinica" value="{{ tipo_clinica.id }}">
-                            <label class="form-check-label" for="{{ tipo_clinica.id }}">{{ tipo_clinica.nome }}</label>
-                        </div>
-                   
-                   
-                {% endfor %}
+        <span     style="color:#6D6875 !important;" class=" mb-2">Tipo Clínica:</span>
+  
+                
+        <div class="form-check medico" style="display: flex;
+        align-items: center;
+        justify-content: start;
+        padding-left: 0 !important;">
+            <input type="checkbox" style="margin:.5rem !important;"   class="form-check-input registrar-check "  name="tipo_clinica" value="clinica">
+            <label class="form-check-label" for="medico-check">Exames e Laboratórios</label>
+        </div>
+
+        <div class="form-check medico" style="display: flex;
+                align-items: center;
+                justify-content: start;
+                padding-left: 0 !important;">
+                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check " name="tipo_clinica" value="exames">
+                    <label class="form-check-label" for="dentista-check">Hospital</label>
+                </div>
+
     </div>
+
    <div class="tab">
 
-    Tipo Profissional:
-    {% for tipo_profissional in tipos_profissionais %}
-                {% if tipo_profissional.nome == 'Médico' %}
+    <span     style="color:#6D6875 !important;" class=" mb-2">Profissionais Disponíveis:</span>
+  
                 
                     <div class="form-check medico" style="display: flex;
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check medico_check" id="{{ tipo_profissional.id }}" onclick="changeMedico()" name="tipo_profissional" value="{{ tipo_profissional.id }}">
-                        <label class="form-check-label" for="{{ tipo_profissional.id }}">{{ tipo_profissional.nome }}</label>
+                        <input type="checkbox" style="margin:.5rem !important;"  id="medico-check" class="form-check-input registrar-check medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
+                        <label class="form-check-label" for="medico-check">Médico/Especialista</label>
                     </div>
-               
-                {% endif %}
-            {% endfor %}
-            {% for tipo_profissional in tipos_profissionais %}
-            {% if tipo_profissional.nome == 'Dentista' %}
+             
             
                 <div class="form-check medico" style="display: flex;
                 align-items: center;
                 justify-content: start;
                 padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check dentista_check" id="{{ tipo_profissional.id }}" onclick="changeDentista()" name="tipo_profissional" value="{{ tipo_profissional.id }}">
-                    <label class="form-check-label" for="{{ tipo_profissional.id }}">{{ tipo_profissional.nome }}</label>
+                    <input type="checkbox" style="margin:.5rem !important;"  id="dentista-check" class="form-check-input registrar-check dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
+                    <label class="form-check-label" for="dentista-check">Dentista</label>
                 </div>
            
-            {% endif %}
-        {% endfor %}
+
     <script>
         function uncheckAllCheckboxes(containerId) {
             const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
@@ -175,8 +174,9 @@ document.getElementById('add-cep').addEventListener('click', function() {
     </script>
 
 
-    <div class="mb-3 mt-3" id="especialidadesDiv">
-        <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label">Especialidades:</label>
+    <div class="mb-3 mt-5" id="especialidadesDiv">
+        <span   style="color:#6D6875 !important;"  class=" mb-2">Especializações:</span>
+        <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label"></label>
         <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
             <!-- Checkbox para médicos -->
             <div id="espcialidadesMedicos" style="display:none;">
@@ -218,11 +218,58 @@ document.getElementById('add-cep').addEventListener('click', function() {
            
         </div>
     </div>
+<div class="tab">
+    <input style="border-radius:4px; border: solid 1px #000 !important;" class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Número de Registro (CRM ou ORM, por exemplo):">
 
+    <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
+<span   style="color:#6D6875 !important;"  class=" mb-2">Digitalização do Diploma ou Carteira Profissional:</span>
+<input style="border-radius:4px; border: solid 1px #000 !important;" type="file" id="inputDiploma" name="diploma" accept="image/*">
+
+<!-- Modal do Bootstrap para exibir o diploma -->
+<div class="modal fade" id="diplomaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center align-items-center">
+                <h5 class="modal-title text-center">Visualizar Diploma</h5>
+            </div>
+            <div class="modal-body d-flex justify-content-center align-items-center">
+                <img id="previewDiploma" src="" style="max-width: 10rem;  object-fit:cover; display: none;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salvar</button>
+                <button type="button" id="changeDiplomaButton" class="btn btn-primary">Trocar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var inputDiploma = document.getElementById('inputDiploma');
+    var previewDiploma = document.getElementById('previewDiploma');
+    var diplomaModal = new bootstrap.Modal(document.getElementById('diplomaModal'));
+    var changeDiplomaButton = document.getElementById('changeDiplomaButton');
+
+    inputDiploma.addEventListener('change', function(e) {
+        var files = e.target.files;
+        if (files && files.length > 0) {
+            var file = files[0];
+            previewDiploma.src = URL.createObjectURL(file);
+            previewDiploma.onload = function() {
+                previewDiploma.style.display = 'block';
+                diplomaModal.show(); // Mostra o modal
+            };
+        }
+    });
+
+    changeDiplomaButton.addEventListener('click', function() {
+        inputDiploma.click(); // Aciona o input de arquivo novamente
+    });
+</script>
+</div>
 
 <div class="tab">
 <div class="mb-3" id="IdiomasDiv">
-    <label for="especialidades" class="form-label">Idiomas:</label>
+    <label for="especialidades" class="form-label " style="color:#555;" >Idiomas:</label>
     <div id="idiomas">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
@@ -247,7 +294,7 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 <div class="tab">
 <div class="mb-3" id="conveniosDiv">
-    <label for="convenios" class="form-label">Convênios:</label>
+    <label for="convenios" class="form-label"><span   style="color:#6D6875 !important;"  class=" mb-2">Convênios:</span></label>
     <div id="convenios">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
@@ -287,68 +334,100 @@ document.getElementById('add-cep').addEventListener('click', function() {
        
     </div>
 </div>
-
-
-
-    
-
 <div class="tab">
     
-    
-        Foto:
-        <p><input type="file"  name="foto"></p>
-        Descrição:
-        <p><textarea style="width:100%; font-size:1rem !important; min-height:7rem !important;" type="text" placeholder="Descrição..." oninput="this.className = ''" name="descricao"></textarea></p>
-        
-        
-      
-           
-      
-    </div>
+    <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
+    <span   style="color:#6D6875 !important;"  class="fw-bold">Foto:</span>
+    <p> <input style="border-radius:4px; border: solid 1px #000 !important;" type="file" id="inputImage" name="foto" accept="image/*">
 
+        <!-- Modal do Bootstrap para exibir a imagem -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header d-flex justify-content-center align-items-center">
+                <h5 class="modal-title text-center">Visualizar Imagem</h5>
+              </div>
+              <div class="modal-body d-flex justify-content-center align-items-center">
+                <img id="previewImage" src="" style="max-width: 10rem; height:10rem; object-fit:cover; display: none;">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salvar</button>
+                <button type="button" id="changeButton" class="btn btn-primary">Trocar</button>
 
-    
-    
-<div class="tab">
-    Informações de Pagamento:
-    <div id="payment-info" class="mt-3">
-        <!-- O container onde o Stripe vai injetar o campo de cartão -->
-        <div id="card-element">
-            <!-- Um espaço reservado para o Stripe injetar o Element -->
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- Usado para exibir mensagens de erro -->
-        <div id="card-errors" role="alert"></div>
         
-    </div>
+        <script>
+            var inputImage = document.getElementById('inputImage');
+            var previewImage = document.getElementById('previewImage');
+            var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            
+            inputImage.addEventListener('change', function(e) {
+                var files = e.target.files;
+                if (files && files.length > 0) {
+                    var file = files[0];
+                    previewImage.src = URL.createObjectURL(file);
+                    previewImage.onload = function() {
+                        previewImage.style.display = 'block';
+                        imageModal.show(); // Mostra o modal
+                    };
+                }
+            });
+            var changeButton = document.getElementById('changeButton');
+
+            changeButton.addEventListener('click', function() {
+                inputImage.click(); // Aciona o input de arquivo novamente
+            });
+            </script>
+    <p><textarea class="w-100" style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Fale um pouco sobre sua experiência profissional" oninput="this.className = ''" name="descricao"></textarea></p>
+    
+    
+  
+       
+  
 </div>
 
-    
+<div class="tab">
+    <div id="payment-element">
+        <!-- Stripe Payment Element será anexado aqui -->
+      </div>
+      <div id="payment-message"></div>
+</div>
 
-
-    <div class="tab">
-        Senha:
-       
-          
-            <p><input type="password" placeholder="Senha..." oninput="this.className = ''" name="password1"></p>
-            Confirmar Senha:
-            <p><input type="password" placeholder="Confirmar Senha..." oninput="this.className = ''" name="password2"></p>
-            
-            
-               
-          
-        </div>
-    
- 
+<div class="tab">
+    <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
+   
+      
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="password" placeholder="Senha" oninput="this.className = ''" name="password1"></p>
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;"type="password" placeholder="Confirmar Senha" oninput="this.className = ''" name="password2"></p>
         
+        
+        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Termos e Condições:</span>
+        
+        <div class="d-flex">
+        <label for="termos">Eu aceito e declaro que:</label>
+        <p><input type="checkbox" id="termos"></p>
+        </div>
+
+    </div>
+
+
+    
+
+
+
+
     
     
 
 
 <div style="overflow:auto;">
     <div style="float:right;">
-        <button type="button" id="prevBtn" onclick="nextPrev(-1)">Anterior</button>
-        <button type="button" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
-        <button type="submit" id="submitBtn" style="display:none;">Enviar</button>
+        <button type="button" style="padding:.7rem 1.3rem !important; border-radius:4px; background:rgb(130 130 130) !important; color:#fff !important; font-weight:600 !important;" id="prevBtn" onclick="nextPrev(-1)">Voltar</button>
+        <button type="button" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important;" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
+        <button type="submit" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important; display:none;" id="submitBtn">Enviar</button>
     </div>
 </div>
 
@@ -360,51 +439,48 @@ document.getElementById('add-cep').addEventListener('click', function() {
          <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
-         <span class="step"><span>
-               
          <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
+         <span class="step"></span>
+        <span class="step"></span>
+
+         
+         
       </div>
 </form>
 </div>
-<div class="div-parte2 w-50 d-flex justify-content-center align-items-center" >
-    <img style="max-height:20rem;" src=" {%static 'img/Hospital building-bro.png' %}">
-</div>
-</div>
 
-
+</div>
 <div class="container d-none justify-content-center mt-4 mb-4">
-    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner">
-            {% for banner in banners %}
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
-            </div>
-            {% endfor %}
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+        {% for banner in banners %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
         </div>
-        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
+        {% endfor %}
     </div>
-    </div>
-    <script>
+    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+</div>
+<script>
+
+    const carouselInner = document.querySelector('.carousel-inner');
+    images.forEach((image, index) => {
+        const isActive = index === 0 ? 'active' : '';
     
-        const carouselInner = document.querySelector('.carousel-inner');
-        images.forEach((image, index) => {
-            const isActive = index === 0 ? 'active' : '';
-        
-        });
-                    </script>
-
+    });
+                </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
 <script>
     var currentTab = 0;  // A aba atual é a primeira aba (0)
     showTab(currentTab);  // Exibir a aba atual
@@ -436,77 +512,63 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 
 <script type="text/javascript">
-    console.log('Script started');
-    var stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
-    console.log('Stripe instance created');
-
-    var elements = stripe.elements();
-
-    // Crie um Element com a opção `style` para personalizar o estilo
-    var style = {
-        base: {
-            color: '#32325d',
-            lineHeight: '18px',
-            fontFamily: 'Arial, sans-serif',
-            fontSmoothing: 'antialiased',
-            fontSize: '16px',
-            '::placeholder': {
-                color: '#aab7c4'
-            }
-        },
-        invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a'
-        }
-    };
-
-    var card = elements.create('card', {style: style});
-    card.mount('#card-element');
-    console.log('Card element mounted');  // Adicione esta linha
-
-    // Lidar com erros de validação em tempo real do Element
-    card.addEventListener('change', function(event) {
-        var displayError = document.getElementById('card-errors');
-        if (event.error) {
-            console.log('Validation error:', event.error.message);  // Adicione esta linha
-            displayError.textContent = event.error.message;
-        } else {
-            displayError.textContent = '';
-        }
-    });
-    // Manipular o formulário de submissão
-    var form = document.getElementById('regForm');
-form.addEventListener('submit', function(event) {
-    event.preventDefault();  // Previne o formulário de ser enviado da maneira tradicional
-
-    stripe.createToken(card).then(function(result) {
-        if (result.error) {
-            var errorElement = document.getElementById('card-errors');
-            errorElement.textContent = result.error.message;
-        } else {
-            stripeTokenHandler(result.token);
-        }
-    }).catch(function(error) {
-        console.error('Erro na criação de token Stripe:', error);
-    });
-});
-
-function stripeTokenHandler(token) {
-    // Inserir o token ID no formulário para que ele seja enviado ao servidor
-    var form = document.getElementById('regForm');
-    var hiddenInput = document.createElement('input');
-    hiddenInput.setAttribute('type', 'hidden');
-    hiddenInput.setAttribute('name', 'stripeToken');
-    hiddenInput.setAttribute('value', token.id);
-    form.appendChild(hiddenInput);
-
-    form.submit();
-}
+    document.addEventListener('DOMContentLoaded', function () {
+        const stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
     
+        fetch('/create-payment-intent/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Adicione o token CSRF aqui, se necessário
+            },
+            body: JSON.stringify({ items: [{ id: 'your-item-id' }] })
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            const elements = stripe.elements({ clientSecret: data.clientSecret });
+            const paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
+    
+            const form = document.getElementById('registration-form');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+    
+                stripe.confirmCardPayment(data.clientSecret).then(function (result) {
+                    if (result.error) {
+                        // Mostrar erro ao usuário
+                        console.error(result.error.message);
+                    } else {
+                        if (result.paymentIntent.status === 'succeeded') {
+                            // Pagamento bem-sucedido, envie os dados do formulário para o servidor
+                            submitRegistrationForm();
+                        }
+                    }
+                });
+            });
+        });
+    });
+    
+    function submitRegistrationForm() {
+        var formData = new FormData(document.getElementById('registration-form'));
+    
+        fetch('/register-user/', {  // Substitua pela URL correta do seu endpoint de registro
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json())
+        .then(data => {
+            // Trate a resposta do servidor aqui
+            if (data.success) {
+                window.location.href = '/success-page';  // Substitua pela sua página de sucesso
+            } else {
+                console.error('Erro no registro:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+        });
+    }
+
 </script>
-
-
-
 
 
 <script src="{%static 'js/form.js' %}"> </script>
