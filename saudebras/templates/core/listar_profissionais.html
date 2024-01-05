@@ -36,6 +36,8 @@
           </form>
         </div>
         </div>      
+
+        <div class="fluid-container background-main" style="background:#e3e3e3;">
         <div class="container mt-5 d-flex justify-content-center" style=" flex-grow:1;">
 
 
@@ -174,8 +176,8 @@
 
 
           <div class="mb-5 desk-prof">
-            <div class="d-flex align-items-start justify-content-center">
-            <div class="d-flex" style="gap:1rem;">
+            <div class="d-flex align-items-start justify-content-center desk-div">
+            <div class="d-flex" style="padding-right:2rem; border-right: dashed 1.6px #a3a3a3; gap:1rem" >
               <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
               <div class="d-flex flex-column">
                 <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
@@ -228,7 +230,7 @@
 
             
 
-            <div class="d-flex mb-3">
+            <div class="d-flex mb-3" >
               {% for convenio in profissional.convenios.all %}
                 {% if forloop.counter < 2 %}
                   <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
@@ -269,7 +271,7 @@
     
               </div>
             </div>
-              <div class="d-flex mb-3 flex-column">
+              <div class="d-flex mb-3 flex-column" style="padding-left:2rem;">
                 {% for enderecos in profissional.enderecos.all %}
                 {% if forloop.first %}
               <span style="margin-right:  .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
@@ -314,7 +316,31 @@
     
         <div class="d-none" id="mapStatic" ></div>
       </div>  
-
+      {% load url_filters %}
+      <div class="container p-2 mt-4 mb-4 pagination">
+      
+      {% with queries=request.GET.copy %}
+      <div class="pagination">
+          <span class="step-links">
+              {% if profissionais.has_previous %}
+                  <a class="p-2" style="text-decoration:none  !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt;</a>
+                  <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">&lt;</a>
+              {% endif %}
+              
+              <span class="current">
+                  Página {{ profissionais.number }} de {{ profissionais.paginator.num_pages }}.
+              </span>
+              
+              {% if profissionais.has_next %}
+                  <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;"  href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">&gt;</a>
+                  <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">&gt;&gt;</a>
+              {% endif %}
+          </span>
+      </div>
+      {% endwith %}
+      
+      </div>
+    </div>
        <!-- Mapa Modal -->
 <!-- Mapa Modal -->
 <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
@@ -330,6 +356,7 @@
       
     </div>
   </div>
+  
 </div>
 
 <script>
@@ -436,30 +463,7 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script>
 
-{% load url_filters %}
-<div class="container p-2 mt-4 mb-4 pagination">
 
-{% with queries=request.GET.copy %}
-<div class="pagination">
-    <span class="step-links">
-        {% if profissionais.has_previous %}
-            <a class="p-2" style="text-decoration:none  !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt;</a>
-            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">&lt;</a>
-        {% endif %}
-        
-        <span class="current">
-            Página {{ profissionais.number }} de {{ profissionais.paginator.num_pages }}.
-        </span>
-        
-        {% if profissionais.has_next %}
-            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;"  href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">&gt;</a>
-            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">&gt;&gt;</a>
-        {% endif %}
-    </span>
-</div>
-{% endwith %}
-
-</div>
 <span id="dentistaImg" style="display:none;">{% static 'img\cuidado-dental.svg' %}</span>
 
 <span id="medicoImg" style="display:none;">{% static 'img\estetoscopio-instrumento-medico-1.svg' %}</span>

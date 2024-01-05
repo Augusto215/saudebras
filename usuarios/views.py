@@ -80,8 +80,7 @@ def registerCliente(request):
                
                
                     
-                messages.success(request, 'Cadastro Realizado com sucesso!')
-                return redirect('login')
+                return redirect('sucessoCliente')
                
         else:
             print("Formulário inválido")
@@ -91,7 +90,8 @@ def registerCliente(request):
 
 
 
-
+def redirectCliente(request):
+    return render(request, 'core/contacriada.html')
 
 
 from django.shortcuts import render, redirect
@@ -241,8 +241,8 @@ def registerProfissional(request):
                 profissional_subscription.save()
 
 
-                messages.success(request, 'Cadastro Realizado com sucesso!')
-                return redirect('login')
+                return redirect('sucessoCliente')
+
 
         else:
             print("Formulário inválido")
@@ -376,8 +376,8 @@ def registerClinica(request):
                 clinica_subscription.save()
 
                 user.save()
-                messages.success(request, 'Clínica criada com sucesso!')
-                return redirect('login')
+                return redirect('sucessoCliente')
+
 
         else:
             messages.error(request, form.errors)

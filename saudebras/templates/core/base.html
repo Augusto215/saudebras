@@ -41,17 +41,17 @@
           
         {%if user.is_authenticated != True %}  <li class="nav-item">
           <div class="dropdown">
-            <a class="nav-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-             Cadastrar Perfil
+            <a class="nav-link dropdown-toggle" style="color:#00ae9d " type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"> 
+             Criar Conta
             </a>
             <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
               <li>
                
-                <a class="dropdown-item" href="{% url 'registerProfissional'%}">Sou Profissional</a>
+                <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerProfissional'%}">Sou Profissional</a>
               </li>
               <li>
-                <a class="dropdown-item" href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
+                <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
               </li>
             </ul>
           </div>
@@ -72,7 +72,7 @@
         {% if user.is_authenticated == False %}
 
           <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-            <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
+            <a  href="{%url 'login' %}" class="nav-link" >Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
     </li>
 
       {% else %}
@@ -84,7 +84,7 @@
       {%endif%}
         
       <li class="nav-item">
-        <a href="{%url 'sobre' %}" class="nav-link">Sobre</a>
+        <a href="{%url 'sobre' %}" class="nav-link" >Sobre</a>
       </li>
 
       <li class="nav-item">
@@ -122,23 +122,7 @@
             
                  
                   
-                {%if user.is_authenticated != True %}  <li class="nav-item">
-                  <div class="dropdown">
-                    <a class="nav-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                     Cadastrar Perfil
-                    </a>
-                    <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
-                      <li>
-                       
-                        <a class="dropdown-item" href="{% url 'registerProfissional'%}">Sou Profissional</a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
+                {%if user.is_authenticated != True %}  
                 {%endif%}
                 {% if request.is_profissional %}
 
@@ -154,7 +138,7 @@
   
                 {% if user.is_authenticated == False %}
 
-                  <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
+                  <li class="contato-li-ul" style="list-style: none; display: none; align-items: center; color:#00ae9d">
                     <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
             </li>
 
@@ -167,11 +151,11 @@
               {%endif%}
                 
               <li class="nav-item">
-                <a href="{%url 'sobre' %}" class="nav-link">Sobre</a>
+                <a href="{%url 'sobre' %}"  class="nav-link">Sobre</a>
               </li>
 
               <li class="nav-item">
-                <a href="{%url 'vantagens' %}" class="nav-link">Vantanges</a>
+                <a href="{%url 'vantagens' %}" class="nav-link">Vantangens</a>
               </li>
 
               <li class="nav-item">
@@ -185,29 +169,46 @@
               <li class="nav-item">
                 <a href="{% url 'contato' %}" class="nav-link">Contato</a>
               </li>
-
-              </ul>
-  
-  
-              </div>
-              
-
+              <li class="nav-item">
+                <div class="dropdown">
+                  <a class="nav-link dropdown-toggle" style="color:#00ae9d;" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  Criar conta
+                  </a>
+                  <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
+                    <li>
+                     
+                      <a class="dropdown-item" href="{% url 'registerProfissional'%}">Sou Profissional</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
               {% if user.is_authenticated == False %}
 
-                  <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
-                    <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
+              <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
+                <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
+        </li>
+
+          {% else %}
+
+          <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
+            <a  class="nav-link" href="{% url 'logout' %}">Sair</a>
             </li>
 
-              {% else %}
-
-              <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
-                <a  class="nav-link" href="{% url 'logout' %}">Sair</a>
-                </li>
-
-              {%endif%}
+          {%endif%}
+      
           
+    </li>
+              </ul>
+  
               
-        </li>
+              </div>
+              
+             
+            
            
           
       </div>

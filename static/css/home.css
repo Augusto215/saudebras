@@ -108,7 +108,7 @@
 
 .nav-link, .dropdown-item
 {
-    font-size:.9rem !important;
+    font-size:1.1rem !important;
     font-weight: 500 !important;
     color: #6D6875 !important;
     display: flex;
@@ -1018,8 +1018,18 @@ padding: .5rem;
     align-items: center ;
 }
 
+.nav-link
+{
+    font-size:1.1rem;
+}
+
 @media(max-width:1100px)
 {
+ 
+    .navbar-brand
+{
+margin:0 !important;}
+
     .box-icon
 {
     padding:.7rem 3rem;
@@ -1102,16 +1112,47 @@ header {
     font-size:2.2rem;
 }
 
+.dropdown-item:focus, .dropdown-item:hover
+{
+    background: transparent;
+}
   /* Quando o menu está ativo, exibe o fundo sombreado */
 
   
   /* CSS específico para mobile */
-  @media (max-width: 992px) { /* Ajuste conforme o breakpoint de sua escolha */
+  @media (max-width: 992px) { 
+    
+    .dropdown-item
+    
+    {
+        font-size:.9rem !important;   
+    }/* Ajuste conforme o breakpoint de sua escolha */
+    .nav-link
+    {
+        font-size:.9rem !important;
+    }
     .navbar.navbar-expand-lg.p-4 {
       padding-left: 0;
       padding-right: 0; /* Remove o padding lateral no mobile */
     }
     
+    .navbar-collapse .nav-item:hover
+    {
+        background:#00ae9d;
+    }
+
+    .navbar-collapse li a
+    {
+        color:#00ae9d !important;
+
+    }
+    .navbar-collapse li:hover .nav-link
+    {
+        color:#fff !important;
+
+    }
+
+
     .subtext
     {
         text-align: center !important;
@@ -1239,6 +1280,20 @@ header {
 .navbar-nav .dropdown-menu {
     position: static;
     margin: 0 auto;
+}
+
+@media(max-width:500px)
+{   
+    .fluid-profissional
+    {
+        display: flex !important;
+    }
+
+
+    .mainPerfil
+    {
+        display: flex !important;
+    }
 }
 
 .payment-container {
@@ -1379,9 +1434,32 @@ h2
     display: none;
 }
 
+.mainPerfil
+{
+    display: none;
+}
+
+ .desk-prof
+ {
+    background:#fff;
+    padding:1.5rem;
+    border-radius:14px;
+ }   
 
 @media(max-width:1100px)
 {   
+   
+
+
+    .background-main
+    {
+        background: #fff !important;
+    }
+
+    .desk-prof
+    {
+        display: none;
+    }
 
     .mobile-prof
     {
@@ -1591,6 +1669,10 @@ lottie-player
     color: #00ae9d !important;
 }
 
+.navbar-brand
+{
+    margin-right: 2rem;
+}
 
 .container1
 {
@@ -1610,6 +1692,7 @@ lottie-player
 
 @media (max-width:768px)
 {   
+ 
     
     .container1
     {
@@ -1695,11 +1778,7 @@ lottie-player
         display: none !important;
     }
 
-    .fluid-profissional
-    {
-        display: flex !important;
-    }
-
+   
     .verProfMob
     {
         display: block !important;
@@ -1786,14 +1865,28 @@ lottie-player
     gap:2rem !important;   
 }
 
-.dropdown-menu a
+.dropdown-menu li a
 {
-    margin:1rem 0 !important;
-
+    color:#00ae9d !important;
     text-align: center;
     font-weight: 600;
 }
 
+.dropdown-menu li a:hover
+{
+    color:#00ae9d !important;
+
+}
+
+.dropdown-menu li:hover
+{
+    background: transparent !important;
+}
+
+.dropdown-menu li:hover a
+{
+    color:#00ae9d !important;
+}
 
 
 .item-slider
@@ -1873,10 +1966,6 @@ font-size: 1rem !important;
     cursor: pointer;
   }
 
-.navbar-brand
-{
-    margin: 0 !important;
-}
 
 
 
