@@ -1353,6 +1353,18 @@ header {
     margin-top: 10px;
 }
 
+.contaModalDiv ul li
+{
+    padding:.5rem 3rem;
+   
+}
+
+.contaModalDiv ul li a
+{
+    color:#00ae9d;
+    font-size: 1rem !important;
+}
+
 #index3
 {
    

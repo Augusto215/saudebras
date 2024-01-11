@@ -29,6 +29,20 @@
 
    <body>
     <div class="backdrop" id="backdrop"></div>
+    <div class="contaModal">
+      <div class="contaModalDiv">
+        <ul>
+          <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
+          <li>
+           
+            <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerProfissional'%}">Sou Profissional da Saúde</a>
+          </li>
+          <li>
+            <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
+          </li>
+        </ul>
+      </div>
+    </div>
 
     <header>
       <div class="collapse navbar-collapse"  id="navbarNavDropdown">
@@ -38,11 +52,26 @@
 
     
          
-          
+          {% if user.is_authenticated == False %}
+
+          <li class="contato-li-ul nav-item" style="list-style: none; display: none; align-items: center;">
+            <a  href="{%url 'login' %}" class="nav-link" ><i style="font-size:1.3rem;" class="bi bi-box-arrow-in-right"></i>
+              &nbsp; Entrar</a>
+    </li>
+
+      {% else %}
+
+      <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
+        <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
+        </li>
+
+      {%endif%}
+        
         {%if user.is_authenticated != True %}  <li class="nav-item">
           <div class="dropdown">
-            <a class="nav-link dropdown-toggle" style="color:#00ae9d " type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"> 
-             Criar Conta
+            <a class="d-flex nav-link dropdown-toggle criarConta" style="color:#00ae9d;" type="button" id="dropdownMenuButton" aria-expanded="false"> 
+              <i style="font-size:1.3rem !important;" class="bi bi-person"></i>
+ &nbsp;<span>Criar Conta</span>
             </a>
             <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
@@ -68,23 +97,29 @@
         </li>
       {% endif %}
         
+<script>
+  
+  let criarConta = document.querySelector('.criarConta')
+  let contaModal = document.querySelector('.contaModal')
 
-        {% if user.is_authenticated == False %}
+  criarConta.addEventListener('click', function()
+  {
+    contaModal.classList.add('active')
 
-          <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-            <a  href="{%url 'login' %}" class="nav-link" >Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
-    </li>
+  })
 
-      {% else %}
-
-      <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-        <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
-        </li>
-
-      {%endif%}
-        
+  contaModal.addEventListener('click', function(event)
+  {
+    event.stopPropagation()
+    if(event.target === contaModal)
+    {
+      contaModal.classList.remove('active')
+    }
+  })
+</script>
+   
       <li class="nav-item">
-        <a href="{%url 'sobre' %}" class="nav-link" >Sobre</a>
+        <a href="{%url 'sobre' %}" class="nav-link" >Quem Somos</a>
       </li>
 
       <li class="nav-item">
@@ -100,7 +135,7 @@
       </li>
 
       <li class="nav-item">
-        <a href="{% url 'contato' %}" class="nav-link">Contato</a>
+        <a href="{% url 'contato' %}" class="nav-link">Fale Conosco</a>
       </li>
 
       </ul>
