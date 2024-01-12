@@ -1066,15 +1066,7 @@ header {
 @media(min-width:992px)
 {
     
-    .main-text-mobile
-    {
-        display: none !important;
-    }
 
-    .main-text-desktop
-    {
-        display: flex !important;
-    }
 
     #navbarNavDropdown
     {
@@ -1185,6 +1177,23 @@ header {
   /* CSS específico para mobile */
   @media (max-width: 992px) { 
     
+    .urgencias
+    {
+        width:145px !important;
+        text-align: start !important;
+    }
+
+    .main-text-mobile
+    {
+        display: flex !important;
+    }
+
+    .main-text-desktop
+    
+    {
+        display: none !important;
+
+    }
     .dropdown-item
     
     {
