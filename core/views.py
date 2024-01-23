@@ -1139,3 +1139,6 @@ def buscar_bairros(request):
     
     bairros_list = [b['bairro__nome'] for b in bairros]  # Extração dos nomes dos bairros
     return JsonResponse({'bairros': bairros_list})  
+
+
+    
