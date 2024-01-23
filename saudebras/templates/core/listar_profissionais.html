@@ -6,35 +6,45 @@
 
 
  <div class="fluid-container w-100" style="background-color:#EDF5F2;">
-          <div class="mt-4 container d-flex flex-column align-items-center justify-content-center">
+          <div class="mt-3 mb-3 container d-flex flex-column align-items-center justify-content-center">
             <div class="listarHeader d-flex w-100 justify-content-between">
 
               
               <div class="d-flex  justify-content-center flex-column align-items-start">
                 <span style="color:#17ABA0; font-size:1.3rem; font-weight:600;" id="tipoProfissionalSpan">
                 </span> 
-                <div class="d-flex align-items-center" style="gap:1rem;">
-                   <span style="font-weight:600;color:gray; font-size:1.3rem;">&gt;</span><span id="especialidadeSpan" style="font-weight:600;color:gray;">
+                <div class="d-flex align-items-center" style="gap:.5rem;">
+                   <span style="font-weight:600;color:gray; font-size:1.1rem;">&gt;</span><span id="especialidadeSpan" style="font-weight:600;color:gray;">
           </span>
-          <span id="estadoSpan" style="font-weight:600;color:gray;">
-          </span>
-          <span style="font-weight:600;color:gray; font-size:1.5rem;" >&#183;
-          </span>
-          <span id="cidadeSpan" style="font-weight:600;color:gray;">
-          </span>
-        </div>
-        </div>
+    
+        
          
-          <img style="max-height:4rem;" class="mb-3" id="suaImagem" src="">
+          </span>
+        </div>
+        <div class="d-flex" style="gap:.5rem;">
+        <span id="cidadeSpan" style="font-weight:600;color:gray;">
+        </span>
+        <span id="estadoSpan" style="font-weight:600;color:gray;">
+        </span>
+      </div>
+        </div>
+         <div class="d-flex align-items-center">
+          <img style="max-height:3rem;" id="suaImagem" src="">
+         </div>
           </div>
-          <form id="cidade_form"  class="mb-2 w-100 d-flex justify-content-end">
+     
+           
+        </div>
+        <div class="fluid-container p-2 d-flex align-items-center" style="background:#17ABA0; color:#fff;">
+          <div class="container">
+          <form id="cidade_form" style="margin-bottom:0 !important;"  class="mb-2 w-100 d-flex justify-content-end">
             <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; background:#fff; " class="w-30 p-2" id="convenios_select">
              
               <!-- Opções de cidade aqui -->
-            </select>
-           
-          </form>
-        </div>
+            </select>          </form>
+          </div>
+
+          </div>
         </div>      
 
         <div class="fluid-container background-main" style="background:#e3e3e3;">
@@ -51,28 +61,31 @@
               <div class="d-flex flex-column">
                 <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
                 <div class="d-flex mb-2 align-items-center">
-                
+                  <div class="d-flex" style="gap:1rem;">
+
                   {% for especialidade in profissional.especialidades.all %}
                   {% if forloop.first %}
                   <span style="color:#000 !important; font-size:1rem !important;">
                     {{ especialidade.nome }}
                     
                   </span> 
+                 
                   {%endif%}
                   {% endfor %}
-                
-                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Ver Biografia</a>
+              <div style="display:none;" class=" verProfMob">
+                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Ver Biografia</a>
               </div>
-              <div style="display:none;" class="mb-2 verProfMob">
-                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
-              </div>
+            </div>
+
+            </div>
               <span>
-                Número de Registro: CRM 134106 SP
+                 CRM 134106 SP
               </span>
               {% load floor %}
 
               <span style="font-size:1rem; color:#000 !important;">
-                  <div class="rating-display d-flex align-items-center mb-2">
+                  <div class="rating-display d-flex align-items-center mb-2" style="gap:.5rem;">
                       <div class="rating">
                           {% if profissional.media %}
                               {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
@@ -92,7 +105,7 @@
                               {% endfor %}
                           {% endif %}
                       </div>
-                      &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV"> {{ profissional.total_avaliacoes }} opiniões</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
+{% if profissional.total_avaliacoes %} <span class="totalAV d-flex"> {{ profissional.total_avaliacoes }} opiniões</span>  {% endif %}
                   </div>
               </span>
             </span> 
@@ -101,12 +114,12 @@
 
             <div class="d-flex mb-3">
               {% for convenio in profissional.convenios.all %}
-                {% if forloop.counter < 2 %}
+                {% if forloop.counter < 3 %}
                   <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
                 {% endif %}
               {% endfor %}
           
-              {% if profissional.convenios.all.count > 1 %}
+              {% if profissional.convenios.all.count > 2 %}
                 <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
               {% endif %}
             </div>
@@ -140,10 +153,10 @@
     
               </div>
             </div>
-              <div class="d-flex mb-3">
+              <div class="d-flex mb-3" style="gap:.5rem">
                 {% for enderecos in profissional.enderecos.all %}
                 {% if forloop.first %}
-              <span style="margin-right:  .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
+              <span style=" width:100%; text-align:end;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
               {% endif %}
              
             {% endfor %}
@@ -153,20 +166,20 @@
             {% if forloop.first %}
             <a href="#" class="showMapModal" 
             data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            data-longitude="{{ enderecos.longitude }}" style="width:7rem;  text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
             {% endif %}
                 {%endif%}
                 {% endfor %}
               </div>
-              <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
+              <div class="d-flex justify-content-center flex-column align-items-center w-100" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
               padding-top: 1.3rem;">
               <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
               <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
 
               {%if user.is_authenticated%}
-                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                 {%else%}
-                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
+                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                 {%endif%}
               </div>
               <!-- Mapa Estático -->
@@ -192,18 +205,20 @@
                   {%endif%}
                   {% endfor %}
                 
-                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
-              </div>
-              <div style="display:none;" class="mb-2 verProfMob">
-                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
-              </div>
+              <div class="d-flex">
               <span>
                 Número de Registro: CRM 134106 SP
               </span>
+              <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+            </div>
+            <div style="display:none;" class="mb-2 verProfMob">
+              <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
+            </div>
+            </div>
               {% load floor %}
 
               <span style="font-size:1rem; color:#000 !important;">
-                  <div class="rating-display d-flex align-items-center mb-2">
+                  <div class="rating-display d-flex align-items-center mb-2" style="gap:1rem;">
                       <div class="rating">
                           {% if profissional.media %}
                               {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
@@ -223,8 +238,11 @@
                               {% endfor %}
                           {% endif %}
                       </div>
-                      &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV"> {{ profissional.total_avaliacoes }} opiniões</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
-                  </div>
+                      
+                      &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV d-flex"> {{ profissional.total_avaliacoes }} opiniões</span> 
+{% endif %}
+                 
+                </div>
               </span>
             </span> 
 
@@ -232,12 +250,12 @@
 
             <div class="d-flex mb-3" >
               {% for convenio in profissional.convenios.all %}
-                {% if forloop.counter < 2 %}
+                {% if forloop.counter < 3 %}
                   <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
                 {% endif %}
               {% endfor %}
           
-              {% if profissional.convenios.all.count > 1 %}
+              {% if profissional.convenios.all.count > 2 %}
                 <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
               {% endif %}
             </div>
@@ -295,9 +313,9 @@
                 <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
   
                 {%if user.is_authenticated%}
-                  <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
+                  <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                   {%else%}
-                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
+                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                   {%endif%}
                 </div>
                 <!-- Mapa Estático -->
