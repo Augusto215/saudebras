@@ -91,7 +91,7 @@
 </div>  
 <div class="perfil-container d-flex flex-column justify-content-center">
   <div class="d-flex" style="gap:1rem; width:100%; background:#F0F0F0 !important; padding:1.5rem 1.5rem .6rem;">
-     <img class="profImg" style=" object-fit:cover; border-radius:4px;" src="{{ profissional.foto.url }}">
+     <img class="profImg" style=" object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
      <div class="d-flex flex-column">
         <span style="font-size:1.1rem !important; font-family:'Arial' !important; font-weight:600 !important;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
        
@@ -161,13 +161,13 @@
   padding:1.3rem 1rem 0;">
   <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span class="span-prof">Valor reduzido da consulta:</span>
   <span style="color:#00ae9d !important; font-weight:600;white-space: nowrap;">R$ 180,00</span></div>
-      <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; padding: .7rem 2rem !important; justify-content:center; gap: 0.5rem; background:#00ae9d;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+      <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; padding: .7rem 2rem !important; justify-content:center; gap: 0.5rem; background:#00ae9d;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-size:.8rem; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> AGENDAR CONSULTA</a>
                   {%else%}
                   <div class="d-flex  justify-content-start align-items-center flex-column" style="gap:.5rem; max-width:100%; 
                   padding:1.3rem 1rem 0;">
                   <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span class="span-prof">Valor reduzido da consulta:</span>
                   <span style="color:#00ae9d !important; font-weight:600;white-space: nowrap;">R$ 180,00</span></div>
-                      <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; padding: .7rem 2rem !important; min-width:10rem; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                      <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; padding: .7rem 2rem !important; min-width:10rem; border-radius:4px; color:#fff; font-weight:600; font-size:.8rem;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> AGENDAR CONSULTA</a>
                   {%endif%}
   </div>
 </div>
@@ -176,11 +176,14 @@
     <div class="wrapper " style="overflow-x: auto;">
 
     <div class="tab-buttons mb-3 mt-3 d-flex justify-content-center" style="gap:1rem;">
+
       <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button active" onclick="showTab(0)">Consultórios</a>
-      <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button" onclick="showTab(1)">Serviços</a>
+      <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button" onclick="showTab(4)">Experiência</a>
+
       <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button" onclick="showTab(2)">Opiniões</a>
       <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button" onclick="showTab(3)">Dúvidas</a>
-      <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button" onclick="showTab(4)">Experiência</a>
+      <a style="background:none;font-weight: 600 !important; border:none; text-decoration:none; color:#A9A9A9;" class="tab-button" onclick="showTab(1)">Serviços</a>
+
 
    
       
@@ -190,17 +193,18 @@
       <div class="tab-pane active">
         <div class="d-flex justify-content-center align-items-start flex-column w-100 mt-4">
 
-          <div class="d-flex flex-column align-items-center justify-content-center mt-3">
+          <div class="d-flex flex-column align-items-center justify-content-center">
       
         {%for endereco in profissional.enderecos.all%}
 
        
           <div style="max-width:25rem !important;" class="mb-3 text-start">
-            <span  ><i class="bi bi-geo-alt-fill"></i>&nbsp;Endereço&nbsp;{{ forloop.counter }}{%if endereco.latitude != None and endereco.longitude != None %}
+            <div class="mb-3"><span  ><i class="bi bi-geo-alt-fill"></i>&nbsp;Endereço&nbsp;{{ forloop.counter }}{%if endereco.latitude != None and endereco.longitude != None %}
               <a href="#" class="showMapModal"  data-latitude="{{ endereco.latitude }}" 
               data-longitude="{{ endereco.longitude }}" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            </div>
         
-              <br>
+
               {%endif%} {{endereco.rua}},{%if endereco.complemento %}&nbsp;{{endereco.complemento}},{%endif%}&nbsp;{{endereco.bairro.nome}},
           &nbsp;{{endereco.cidade.nome}}&nbsp;-&nbsp;{{endereco.estado.nome}}</span>
         
@@ -392,10 +396,10 @@ style="width:20%; background:#fff; border-radius:12px; filter: drop-shadow(2px 4
 <div class="d-flex justify-content-start flex-column align-items-center" style="gap:.5rem; max-width:100%; border-top: dashed 2px gray;
               padding-top: 1.3rem;">
             
-                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; padding:.7rem 2rem !important; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; padding:.7rem 2rem !important; align-items: center; justify-content:center; font-size:.8rem; gap: 0.5rem; background:#00ae9d;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> AGENDAR CONSULTA</a>
                 {%else%}
                 
-                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; padding:.7rem 2rem !important;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; padding:.7rem 2rem !important;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-size:.8rem; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> AGENDAR CONSULTA</a>
                 {%endif%}
 </div>
 </div>
