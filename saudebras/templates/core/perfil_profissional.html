@@ -91,7 +91,7 @@
 </div>  
 <div class="perfil-container d-flex flex-column justify-content-center">
   <div class="d-flex" style="gap:1rem; width:100%; background:#F0F0F0 !important; padding:1.5rem 1.5rem .6rem;">
-     <img class="profImg" style=" object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
+     <img class="profImg" style="height:8rem !important; width:8rem !important; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
      <div class="d-flex flex-column">
         <span style="font-size:1.1rem !important; font-family:'Arial' !important; font-weight:600 !important;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
        
@@ -159,13 +159,13 @@
 </div>
 <div class="d-flex flex-column justify-content-start align-items-center" style="gap:.5rem; max-width:100%; 
   padding:1.3rem 1rem 0;">
-  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span class="span-prof">Valor reduzido da consulta:</span>
+  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
   <span style="color:#00ae9d !important; font-weight:600;white-space: nowrap;">R$ 180,00</span></div>
       <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; padding: .7rem 2rem !important; justify-content:center; gap: 0.5rem; background:#00ae9d;min-width:10rem; max-width:100%; border-radius:4px; color:#fff; font-size:.8rem; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> AGENDAR CONSULTA</a>
                   {%else%}
                   <div class="d-flex  justify-content-start align-items-center flex-column" style="gap:.5rem; max-width:100%; 
                   padding:1.3rem 1rem 0;">
-                  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span class="span-prof">Valor reduzido da consulta:</span>
+                  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
                   <span style="color:#00ae9d !important; font-weight:600;white-space: nowrap;">R$ 180,00</span></div>
                       <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; padding: .7rem 2rem !important; min-width:10rem; border-radius:4px; color:#fff; font-weight:600; font-size:.8rem;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> AGENDAR CONSULTA</a>
                   {%endif%}
