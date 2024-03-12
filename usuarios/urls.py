@@ -24,7 +24,7 @@ path(
         'password_reset/',
         auth_views.PasswordResetView.as_view(
             form_class=EmailPasswordResetForm,
-            email_template_name='registration/password_reset_email.html'  # Nome do template personalizado do e-mail
+            html_email_template_name='registration/password_reset_email.html',  # Template para HTML
         ),
         name='password_reset'
     ),
