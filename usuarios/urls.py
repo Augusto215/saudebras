@@ -20,8 +20,14 @@ urlpatterns = [
     path('sucesso', redirectCliente, name='sucessoCliente'),
 
 # URL para a solicitação de redefinição de senha com formulário personalizado
-    path('password_reset/', auth_views.PasswordResetView.as_view(form_class=EmailPasswordResetForm), name='password_reset'),
-
+path(
+        'password_reset/',
+        auth_views.PasswordResetView.as_view(
+            form_class=EmailPasswordResetForm,
+            email_template_name='registration/password_reset_email.html'  # Nome do template personalizado do e-mail
+        ),
+        name='password_reset'
+    ),
     # Outras URLs do processo de redefinição de senha
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
