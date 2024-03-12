@@ -1,19 +1,82 @@
-<div style="font-family: Arial, sans-serif; color: #333;">
-    <h2 style="color: #4CAF50;">SaúdeBras</h2>
-    <p>Consultas & Exames</p>
-  
-    <h3>Apenas um passo para configurar sua nova senha</h3>
-    <p>Clique no botão para configurar uma nova senha para sua conta na <a href="https://saudebras.com.br" style="color: #4CAF50; text-decoration: none;">SaúdeBras.com.br</a>.</p>
-  
-    <a href="{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Criar nova senha</a>
-  
-    <p>Seu nome de usuário, caso tenha esquecido: <strong>{{ user.get_username }}</strong></p>
-  
-    <p>Obrigado por usar a SaúdeBras.</p>
-    <p>Equipe <a href="mailto:suporte@saudebras.com.br" style="color: #4CAF50; text-decoration: none;">suporte@saudebras.com.br</a></p>
-  
-    <hr>
-  
-    <p style="font-size: small;">Você recebeu este e-mail porque utiliza os serviços da SaúdeBras. Trata-se de um e-mail transacional, o que significa que esta relacionado ao uso que você faz dos nossos serviços.</p>
-    <p style="font-size: small;">Por favor, se precisar de mais informações, entre em contato conosco pelo e-mail <a href="mailto:suporte@saudebras.com.br" style="color: #4CAF50; text-decoration: none;">suporte@saudebras.com.br</a></p>
-  </div>
+
+<!DOCTYPE html>
+<html lang="pt-br" >
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Redefinição de senha | SAUDEBRAS</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/static/vendor/fontawesome-free/css/all.min.css">
+
+    <!-- Bootstrap and adminLTE -->
+    <link rel="stylesheet" href="/static/vendor/adminlte/css/adminlte.min.css">
+
+    <!-- Bootswatch theme -->
+    
+
+    
+
+    <!-- Custom fixes for django -->
+    <link rel="stylesheet" href="/static/jazzmin/css/main.css">
+
+    
+
+    <!-- favicons -->
+    <link rel="shortcut icon" href="/static/True" type="image/png">
+    <link rel="icon" href="/static/True" sizes="32x32" type="image/png">
+
+    
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    
+
+     
+     
+</head>
+<body class="hold-transition  d-flex align-items-center flex-column" style="padding: 0 6%;">
+
+<div class="login-box">
+    <div class="login-logo" style="margin-top:7rem;">
+        <h1>
+            <picture>
+                <source
+                    srcset="/static/img/saudebras-logo.png"
+                    media="(prefers-color-scheme: dark)">
+                 <img class="mb-5" style="max-width:16rem;" src="/static/img/saudebras-logo.png" alt="SAUDEBRAS">
+            </picture>
+        </h1>
+    </div>
+
+
+
+    <p class="login-box-msg mb-0 pb-0 mt-4" style="font-family:'Arial' !important; color:#555; font-size:1.1rem;">
+       <strong>Sua senha foi definida. Você pode prosseguir e se autenticar agora.</strong>
+       <br>
+    </p>
+
+    <div class="col-12 mt-4">
+        <a href="/login/">
+
+        <button  style="width:100% !important; font-weight:600 !important; background:#00ae9d !important; padding: 1rem 2rem !important; font-size:1.4rem !important; border-radius:6px !important; border:none;" class="btn btn-primary btn-block">
+            Acessar
+        </button>
+    </a>
+
+    </div>
+        </div>
+<!-- jQuery -->
+<script src="/static/admin/js/vendor/jquery/jquery.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/vendor/adminlte/js/adminlte.min.js"></script>
+
+
+    <script src="/static/True"></script>
+
+
+</body>
+</html>
