@@ -422,7 +422,8 @@ def user_login(request):
         if user is not None:
             auth_login(request, user)
             messages.success(request, "Usuário logado com sucesso!")
-            return redirect('home')
+            next_page = request.POST.get('next', 'home')
+            return redirect(next_page)
         else:
             messages.error(request, "Email ou senha inválidos.")
     else:
@@ -1020,3 +1021,5 @@ def send_password_reset_email(request, user_id):
     email.send()
 
     return HttpResponse('E-mail de redefinição de senha enviado com sucesso!')
+
+

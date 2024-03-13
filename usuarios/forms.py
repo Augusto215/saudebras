@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Profissional, Cliente
 from .models import *
+from django import forms
+from django.core.exceptions import ValidationError
 
 
 class ProfissionalRegistrationForm(UserCreationForm):
@@ -242,3 +244,17 @@ class EmailPasswordResetForm(PasswordResetForm):
         return (u for u in active_users if u.has_usable_password())
 
 
+
+class CustomPasswordResetForm(forms.Form):
+    new_password1 = forms.CharField(widget=forms.PasswordInput)
+    new_password2 = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password1 = cleaned_data.get("new_password1")
+        new_password2 = cleaned_data.get("new_password2")
+
+        if new_password1 and new_password2 and new_password1 != new_password2:
+            raise ValidationError("As senhas não coincidem.")
+
+        return cleaned_data
