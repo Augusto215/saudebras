@@ -11,8 +11,33 @@
 
    <div class="tab mb-4">
     <p><input type="text" style="border-radius:4px; border: solid 1px #000 !important;" id="emailCpfId" placeholder="CPF" oninput="maskCPF(this)" oninput="this.className = ''" name="username"></p>
-    <p><input type="password" style="border-radius:4px; border: solid 1px #000 !important;" placeholder="Senha" oninput="this.className = ''" name="password"></p>
-    <a class=" d-flex justify-content-end" style="color:#6D6875 !important; text-decoration:underline !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
+    <div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
+        <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="password-input" name="password" placeholder="Digite sua senha">
+        <span class="p-2" onclick="togglePasswordVisibility('password-input', 'eye-icon')">
+            <i style="font-size:17px !important;    " id="eye-icon" class="bi bi-eye-slash"></i>
+        </span>
+    </div>
+
+
+
+    
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            var passwordInput = document.getElementById(inputId);
+            var eyeIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove('bi-eye-slash');
+                eyeIcon.classList.add('bi-eye'); // Ícone de olho aberto
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove('bi-eye');
+                eyeIcon.classList.add('bi-eye-slash'); // Ícone de olho fechado
+            }
+        }
+    </script>
+<a class=" d-flex justify-content-end" style="color:#6D6875 !important; text-decoration:underline !important;" href="{% url 'password_reset' %}">Esqueci minha senha</a>
     <!-- Outros elementos do formulário -->
 </div>
     
