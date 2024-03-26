@@ -377,9 +377,40 @@ document.getElementById('add-cep').addEventListener('click', function() {
 <div class="tab">
     <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
    
-      
-        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="password" placeholder="Senha" oninput="this.className = ''" name="password1"></p>
-        <p><input style="border-radius:4px; border: solid 1px #000 !important;"type="password" placeholder="Confirmar Senha" oninput="this.className = ''" name="password2"></p>
+     
+ <div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
+    <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="password-input" name="password1" placeholder="Digite sua senha">
+    <span class="p-2" onclick="togglePasswordVisibility('password-input', 'eye-icon')">
+        <i style="font-size:17px !important;    " id="eye-icon" class="bi bi-eye-slash"></i>
+    </span>
+</div>
+
+
+<div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
+    <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="confirm-password-input" name="password2" placeholder="Confirmar Senha">
+    <span class="p-2" onclick="togglePasswordVisibility('confirm-password-input', 'confirm-eye-icon')">
+        <i style="font-size:17px !important;    " id="confirm-eye-icon" class="bi bi-eye-slash"></i>
+    </span>
+</div>
+
+
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        var passwordInput = document.getElementById(inputId);
+        var eyeIcon = document.getElementById(iconId);
+        
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.classList.remove('bi-eye-slash');
+            eyeIcon.classList.add('bi-eye'); // Ícone de olho aberto
+        } else {
+            passwordInput.type = "password";
+            eyeIcon.classList.remove('bi-eye');
+            eyeIcon.classList.add('bi-eye-slash'); // Ícone de olho fechado
+        }
+    }
+</script>
+
         
         
         <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Termos e Condições:</span>
