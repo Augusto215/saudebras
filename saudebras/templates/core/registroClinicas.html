@@ -9,9 +9,28 @@
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome da Instituição" oninput="this.className = ''" name="nome"></p>
-      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.N.P.J" oninput="this.className = ''" name="username"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" oninput="maskCNPJ(this)" id="cpfId2" placeholder="C.N.P.J" oninput="this.className = ''" name="username"></p>
       
-      
+      <script>
+        function maskCNPJ(cnpjField) {
+            var cnpjValue = cnpjField.value;
+    
+            // Limita a entrada a 18 caracteres para se ajustar ao formato do CNPJ
+            cnpjValue = cnpjValue.slice(0, 18);
+    
+            // Remove tudo o que não é dígito
+            cnpjValue = cnpjValue.replace(/\D/g, '');
+    
+            // Formata o valor como CNPJ (00.000.000/0000-00)
+            cnpjValue = cnpjValue.replace(/^(\d{2})(\d)/, '$1.$2');
+            cnpjValue = cnpjValue.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            cnpjValue = cnpjValue.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            cnpjValue = cnpjValue.replace(/(\d{4})(\d)/, '$1-$2');
+    
+            // Atualiza o valor no campo
+            cnpjField.value = cnpjValue;
+        }
+    </script>
    </div>
    <div class="tab">
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail" oninput="this.className = ''" name="email"></p>

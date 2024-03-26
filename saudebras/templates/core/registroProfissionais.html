@@ -9,8 +9,28 @@
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome Completo" oninput="this.className = ''" name="nome"></p>
-      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" oninput="this.className = ''" name="username"></p>
-      
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" oninput="maskCPF(this)" id="cpfId" placeholder="C.P.F" oninput="this.className = ''" name="username"></p>
+      <script>
+        function maskCPF(cpfField) {
+            var cpfValue = cpfField.value;
+        
+            // Limita a entrada a 14 caracteres
+            cpfValue = cpfValue.slice(0, 14);
+        
+            // Remove tudo o que não é dígito
+            cpfValue = cpfValue.replace(/\D/g, '');
+        
+            // Coloca ponto nos terceiros e sextos dígitos
+            cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+            cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+        
+            // Coloca traço antes do nono dígito
+            cpfValue = cpfValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        
+            // Atualiza o valor no campo
+            cpfField.value = cpfValue;
+        }
+    </script>
       
    </div>
    <div class="tab">
