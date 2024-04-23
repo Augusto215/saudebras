@@ -8,23 +8,58 @@
    <h3 class="mb-4 text-start" style="color:#00ae9d !important;">Cadastro do Paciente</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-    <p style="color:#6D6875 !important">Informe seus dados e junte-se a nós para ter acesso a saúde de qualidade a preços acessíveis</p>
+    <p style="color:#6D6875 !important">Informe seus dados e junte-se a nós para ter acesso a saúde de qualidade a preços acessíveis.</p>
 
       <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome Completo" oninput="this.className = ''" name="nome"></p>
-      <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" oninput="this.className = ''" name="username"></p>
+      <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" oninput="maskCPF(this)" oninput="this.className = ''" name="username"></p>
       <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail" oninput="this.className = ''" name="email"></p>
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel"   id="phone1" placeholder="Celular/Whatsapp" oninput="this.className = ''" name="telefone"></p>
    </div>
 
 
+   <script>
+    function maskCPF(cpfField) {
+        var cpfValue = cpfField.value;
+    
+        // Limita a entrada a 14 caracteres
+        cpfValue = cpfValue.slice(0, 14);
+    
+        // Remove tudo o que não é dígito
+        cpfValue = cpfValue.replace(/\D/g, '');
+    
+        // Coloca ponto nos terceiros e sextos dígitos
+        cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+        cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+    
+        // Coloca traço antes do nono dígito
+        cpfValue = cpfValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    
+        // Atualiza o valor no campo
+        cpfField.value = cpfValue;
+    }
+</script>
    <div class="tab">
     
       
-        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="CEP" oninput="this.className = ''" name="cep"></p>
+        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="CEP" oninput="aplicaMascaraCEP(this)" oninput="this.className = ''" name="cep"></p>
 
         <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="Endereço" oninput="this.className = ''" ></p>
-
-        <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
+        <script>
+            function aplicaMascaraCEP(input) {
+              let valor = input.value;
+              
+              // Remove tudo o que não é dígito
+              valor = valor.replace(/\D/g, '');
+              
+              // Adiciona o hífen antes do último grupo de 3 dígitos
+              valor = valor.replace(/^(\d{5})(\d)/, '$1-$2');
+              
+              // Limita o input a 9 caracteres
+              valor = valor.substring(0, 9);
+              
+              input.value = valor;
+            }
+            </script>
     <span   style="color:#6D6875 !important;"  class="fw-bold">Foto:</span>
     <p> <input style="border-radius:4px; border: solid 1px #000 !important;" type="file" id="inputImage" name="foto" accept="image/*">
 

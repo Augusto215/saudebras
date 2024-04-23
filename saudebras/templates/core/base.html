@@ -60,7 +60,9 @@
     </li>
 
       {% else %}
-
+      <li class="nav-item">
+        <a href="{% url 'contato' %}" class="nav-link">Editar Conta</a>
+      </li>
       <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
         <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
         </li>
@@ -178,6 +180,9 @@
             </li>
 
               {% else %}
+              <li class="nav-item">
+                <a href="{% url 'contato' %}" class="nav-link">Contato</a>
+              </li>
 
               <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
                 <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
@@ -204,6 +209,8 @@
               <li class="nav-item">
                 <a href="{% url 'contato' %}" class="nav-link">Contato</a>
               </li>
+              {% if user.is_authenticated == False %}
+
               <li class="nav-item">
                 <div class="dropdown">
                   <a class="nav-link dropdown-toggle" style="color:#00ae9d;" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -221,6 +228,7 @@
                   </ul>
                 </div>
               </li>
+              {%endif%}
               {% if user.is_authenticated == False %}
 
               <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
@@ -228,7 +236,9 @@
         </li>
 
           {% else %}
-
+          <li class="nav-item">
+            <a href="{% url 'contato' %}" class="nav-link">Editar Conta</a>
+          </li>
           <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
             <a  class="nav-link" href="{% url 'logout' %}">Sair</a>
             </li>
@@ -389,30 +399,30 @@
           <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox-plus-jquery.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
-          <script>
-            document.addEventListener('DOMContentLoaded', function () {
-              var navbarToggler = document.querySelector('.navbar-toggler');
-              var navbarCollapse = document.querySelector('#navbarNavDropdown');
-              var backdrop = document.querySelector('#backdrop');
-              
-              navbarToggler.addEventListener('click', function()
-              {
-                document.getElementById('navbarNavDropdown').classList.remove('show');
+            <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                var navbarToggler = document.querySelector('.navbar-toggler');
+                var navbarCollapse = document.querySelector('#navbarNavDropdown');
+                var backdrop = document.querySelector('#backdrop');
+                
+                navbarToggler.addEventListener('click', function()
+                {
+                  document.getElementById('navbarNavDropdown').classList.remove('show');
 
-              })
-              navbarToggler.addEventListener('click', function () {
-                backdrop.classList.toggle('block'); // Mostra o fundo sombreado
-                document.body.classList.toggle('menu-active'); // Adiciona classe para impedir rolagem da página
+                })
+                navbarToggler.addEventListener('click', function () {
+                  backdrop.classList.toggle('block'); // Mostra o fundo sombreado
+                  document.body.classList.toggle('menu-active'); // Adiciona classe para impedir rolagem da página
+                });
+              
+                // Quando o usuário clica no fundo sombreado, fecha o menu
+                backdrop.addEventListener('click', function () {
+                  document.getElementById('navbarNavDropdown').classList.remove('show');
+                  backdrop.classList.remove('block'); // Mostra o fundo sombreado
+                  document.body.classList.remove('menu-active'); // Adiciona classe para impedir rolagem da página
+                });
               });
-            
-              // Quando o usuário clica no fundo sombreado, fecha o menu
-              backdrop.addEventListener('click', function () {
-                document.getElementById('navbarNavDropdown').classList.remove('show');
-                backdrop.classList.remove('block'); // Mostra o fundo sombreado
-                document.body.classList.remove('menu-active'); // Adiciona classe para impedir rolagem da página
-              });
-            });
-          </script>
+            </script>
 
 
 
