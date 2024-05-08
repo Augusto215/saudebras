@@ -41,9 +41,32 @@
    <div class="tab">
     
       
-        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="CEP" oninput="aplicaMascaraCEP(this)" oninput="this.className = ''" name="cep"></p>
+    <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cep" placeholder="CEP" oninput="buscarCEP(this.value)" name="cep"></p>
+    <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cidade" placeholder="Cidade"></p>
+    <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="logradouro" placeholder="Logradouro"></p>
+    <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="bairro" placeholder="Bairro"></p>
+    <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="complemento" placeholder="Complemento"></p>
 
-        <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="registerCEP" placeholder="Endereço" oninput="this.className = ''" ></p>
+    <script>
+        function buscarCEP(cep) {
+            cep = cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+            if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.erro) {
+                            alert('CEP não encontrado.');
+                            return;
+                        }
+                        document.getElementById('cidade').value = data.localidade;
+                        document.getElementById('logradouro').value = data.logradouro;
+                        document.getElementById('bairro').value = data.bairro; // Adiciona o bairro
+                        document.getElementById('complemento').value = data.complemento;
+                    })
+                    .catch(error => console.error('Erro ao buscar o CEP:', error));
+            }
+        }
+    </script>
         <script>
             function aplicaMascaraCEP(input) {
               let valor = input.value;
