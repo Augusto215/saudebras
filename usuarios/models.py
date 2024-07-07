@@ -67,6 +67,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     sobrenome = models.CharField(_('sobrenome'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), unique=True)
     username = models.CharField(_('cpf'), max_length=30, unique=True)
+    ddd = models.CharField(_('DDD'), max_length=2, blank=True)
     telefone = models.CharField(_('telefone'), max_length=20, blank=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     is_staff = models.BooleanField(_('staff status'), default=False)
@@ -162,6 +163,7 @@ class Cidade(models.Model):
 
 
 
+
 class Bairro(models.Model):
     nome = models.CharField(max_length=255)
     cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE)
@@ -225,8 +227,11 @@ class Cliente(CustomUser):
     estado = models.ForeignKey(Estado, on_delete=models.CASCADE, blank=True, null=True)
     cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE, blank=True, null=True)
     bairro = models.ForeignKey(Bairro, on_delete=models.CASCADE, blank=True, null=True)
+    rua = models.CharField(max_length=255, blank=True, null=True)
+    numero = models.CharField(max_length=255, blank=True, null=True)
     foto = models.ImageField(upload_to='images/', blank=True, null=True, default="/images/unknown.png")
     cep = models.CharField(max_length=50, blank=True, null=True)
+    gender = models.CharField( max_length=50, blank=True, null=True)
 
 
 class Depoimento(models.Model):

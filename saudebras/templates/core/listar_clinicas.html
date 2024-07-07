@@ -3,479 +3,370 @@
 {% block 'conteudo' %}
 {% load get_item %}
 
-
-
- <div class="fluid-container w-100" style="background-color:#EDF5F2;">
-          <div class="mt-4 container d-flex flex-column align-items-center justify-content-center">
-            <div class="listarHeader d-flex w-100 justify-content-between">
-
-              
-              <div class="d-flex  justify-content-center flex-column align-items-start">
-                <span style="color:#17ABA0; font-size:1.3rem; font-weight:600;" id="tipoClinicaSpan">
-                </span> 
-                <div class="d-flex align-items-center" style="gap:1rem;">
-                   <span style="font-weight:600;color:gray; font-size:1.3rem;">&gt;</span><span id="especialidadeSpan" style="font-weight:600;color:gray;">
-          </span>
-          <span id="estadoSpan" style="font-weight:600;color:gray;">
-          </span>
-          <span style="font-weight:600;color:gray; font-size:1.5rem;" >&#183;
-          </span>
-          <span id="cidadeSpan" style="font-weight:600;color:gray;">
-          </span>
-        </div>
-        </div>
-         
-          <img style="max-height:4rem;" class="mb-3" id="suaImagem" src="">
-          </div>
-          <form id="cidade_form"  class="mb-2 w-100 d-flex justify-content-end">
-            <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; background:#fff; " class="w-30 p-2" id="convenios_select">
-             
-              <!-- Opções de cidade aqui -->
-            </select>
-           
-          </form>
-        </div>
-        </div>      
-
-        <div class="fluid-container background-main" style="background:#e3e3e3;">
-        <div class="container mt-5 d-flex justify-content-center" style=" flex-grow:1;">
-
-
-          <div class="clinicaDiv">
-
-          {% for clinica in clinicas %}
-          <div class="mb-5 mobile-prof">
-            <div class="d-flex flex-column align-items-start justify-content-center">
-            <div class="d-flex" style="gap:1rem;">
-              <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
-              <div class="d-flex flex-column">
-                <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{% if not clinica.has_emergency %}Laboratório{% else %}Hospital{% endif %}
-
-                  {{ clinica.nome }}</span>                <div class="d-flex mb-2 align-items-center">
-                
-                  {% for especialidade in clinica.especialidades.all %}
-                  {% if forloop.first %}
-                  <span style="color:#000 !important; font-size:1rem !important;">
-                    {{ especialidade.nome }}
-                    
-                  </span> 
-                  {%endif%}
-                  {% endfor %}
-                
-                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
-              </div>
-              <div style="display:none;" class="mb-2 verProfMob">
-                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
-              </div>
-              <span>
-                Número de Registro: CRM 134106 SP
-              </span>
-              {% load floor %}
-
-              <span style="font-size:1rem; color:#000 !important;">
-                  <div class="rating-display d-flex align-items-center mb-2">
-                      <div class="rating">
-                          {% if clinica.media %}
-                              {% with full_stars=clinica.media|floor half_stars=clinica.media|floatformat:"-1"|slice:"-1" %}
-                                  {% for i in "12345"|make_list %}
-                                      {% if i|add:"0" <= full_stars|add:"0" %}
-                                          <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
-                                      {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
-                                          <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
-                                      {% else %}
-                                          <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                                      {% endif %}
-                                  {% endfor %}
-                              {% endwith %}
-                          {% else %}
-                              {% for i in "12345"|make_list %}
-                                  <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                              {% endfor %}
-                          {% endif %}
-                      </div>
-                      &nbsp;{% if clinica.total_avaliacoes %} <span class="totalAV"> {{ clinica.total_avaliacoes }} opiniões</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
-                  </div>
-              </span>
-            </span> 
-
-            
-
-            <div class="d-flex mb-3">
-              {% for convenio in clinica.convenios.all %}
-                {% if forloop.counter < 2 %}
-                  <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                {% endif %}
-              {% endfor %}
-          
-              {% if clinica.convenios.all.count > 1 %}
-                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Ver mais</a>
-              {% endif %}
-            </div>
-          
-            <!-- Modal com todos os convênios -->
-            <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">Convênios</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    {%for convenio in clinica.convenios.all%}
-                    <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                    {%endfor%}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                  </div>
+<div class="fluid-container w-100" style="background-color:#EDF5F2;">
+    <div class="mt-3 mb-3 container d-flex flex-column align-items-center justify-content-center">
+        <div class="listarHeader d-flex w-100 justify-content-between">
+            <div class="d-flex justify-content-center flex-column align-items-start">
+                <span style="color:#17ABA0; font-size:1.3rem; font-weight:600;" id="tipoClinicaSpan"></span>
+                <div class="d-flex align-items-center" style="gap:.5rem;">
+                    <span style="font-weight:600;color:gray; font-size:1.1rem;">&gt;</span>
+                    <span id="especialidadeSpan" style="font-weight:600;color:gray;"></span>
                 </div>
-              </div>
-            </div>
-         
-              
-             
-          
-
-       
-              
-    
-              </div>
-            </div>
-              <div class="d-flex mb-3">
-                {% for enderecos in clinica.enderecos.all %}
-                {% if forloop.first %}
-              <span style="margin-right:  .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
-              {% endif %}
-             
-            {% endfor %}
-
-            {% for enderecos in clinica.enderecos.all %}
-            {%if enderecos.latitude != None and enderecos.longitude != None %}
-            {% if forloop.first %}
-            <a href="#" class="showMapModal" 
-            data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
-            {% endif %}
-                {%endif%}
-                {% endfor %}
-              </div>
-              <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; border-top: dashed 2px gray;
-              padding-top: 1.3rem;">
-              <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
-              <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
-
-              {%if user.is_authenticated%}
-                <a class="agendamento-btn p-2 text-center" data-phone="{{ clinica.telefone }}" data-nome="{{clinica.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{clinica.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
-                {%else%}
-                <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
-                {%endif%}
-              </div>
-              <!-- Mapa Estático -->
-            </div>
-
-          </div>
-
-
-          <div class="mb-5 desk-prof">
-            <div class="d-flex align-items-start justify-content-center desk-div">
-            <div class="d-flex" style="padding-right:2rem; border-right: dashed 1.6px #a3a3a3; gap:1rem" >
-              <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
-              <div class="d-flex flex-column">
-                <span style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{% if not clinica.has_emergency %}Laboratório{% else %}Hospital{% endif %}
-
-                  {{ clinica.nome }}</span>
-                <div class="d-flex mb-2 align-items-center">
-                
-                  {% for especialidade in clinica.especialidades.all %}
-                  {% if forloop.first %}
-                  <span style="color:#000 !important; font-size:1rem !important;">
-                    {{ especialidade.nome }}
-                    
-                  </span> 
-                  {%endif%}
-                  {% endfor %}
-                
-                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
-              </div>
-              <div style="display:none;" class="mb-2 verProfMob">
-                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
-              </div>
-              <span>
-                Número de Registro: CRM 134106 SP
-              </span>
-              {% load floor %}
-
-              <span style="font-size:1rem; color:#000 !important;">
-                  <div class="rating-display d-flex align-items-center mb-2">
-                      <div class="rating">
-                          {% if clinica.media %}
-                              {% with full_stars=clinica.media|floor half_stars=clinica.media|floatformat:"-1"|slice:"-1" %}
-                                  {% for i in "12345"|make_list %}
-                                      {% if i|add:"0" <= full_stars|add:"0" %}
-                                          <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
-                                      {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
-                                          <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
-                                      {% else %}
-                                          <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                                      {% endif %}
-                                  {% endfor %}
-                              {% endwith %}
-                          {% else %}
-                              {% for i in "12345"|make_list %}
-                                  <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                              {% endfor %}
-                          {% endif %}
-                      </div>
-                      &nbsp;{% if clinica.total_avaliacoes %} <span class="totalAV"> {{ clinica.total_avaliacoes }} opiniões</span> {% else %} <span class="totalAV">Sem avaliações</span> {% endif %}
-                  </div>
-              </span>
-            </span> 
-
-            
-
-            <div class="d-flex mb-3" >
-              {% for convenio in clinica.convenios.all %}
-                {% if forloop.counter < 2 %}
-                  <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                {% endif %}
-              {% endfor %}
-          
-              {% if clinica.convenios.all.count > 1 %}
-                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Ver mais</a>
-              {% endif %}
-            </div>
-          
-            <!-- Modal com todos os convênios -->
-            <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">Convênios</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    {%for convenio in clinica.convenios.all%}
-                    <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                    {%endfor%}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                  </div>
+                <div class="d-flex" style="gap:.5rem;">
+                    <span id="cidadeSpan" style="font-weight:600;color:gray;"></span>
+                    <span id="estadoSpan" style="font-weight:600;color:gray;"></span>
                 </div>
-              </div>
             </div>
-         
-              
-             
-          
-
-       
-              
-    
-              </div>
-            </div>
-              <div class="d-flex mb-3 flex-column" style="padding-left:2rem;">
-                {% for enderecos in clinica.enderecos.all %}
-                {% if forloop.first %}
-              <span style="margin-right:  .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
-              {% endif %}
-             
-            {% endfor %}
-
-            {% for enderecos in clinica.enderecos.all %}
-            {%if enderecos.latitude != None and enderecos.longitude != None %}
-            {% if forloop.first %}
-            <a href="#" class="showMapModal" 
-            data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
-            {% endif %}
-                {%endif%}
-                {% endfor %}
-
-                <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%;
-                padding-top: 1.3rem;">
-                <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor reduzido da consulta:</span>
-                <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
-  
-                {%if user.is_authenticated%}
-                  <a class="agendamento-btn p-2 text-center" data-phone="{{ clinica.telefone }}" data-nome="{{clinica.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{clinica.telefone}}"><i class="bi bi-whatsapp"></i> Agendar</a>
-                  {%else%}
-                  <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ;width:10rem; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar</a>
-                  {%endif%}
-                </div>
-                <!-- Mapa Estático -->
-              </div>
-              </div>
-             
-
-          </div>
-          
-        {% endfor %}
-
-
-
-
+            <div class="d-flex align-items-center">
+                <img style="max-height:3rem;" id="suaImagem" src="">
+            </div>  
         </div>
-    
-        <div class="d-none" id="mapStatic" ></div>
-      </div>  
-      {% load url_filters %}
-      <div class="container p-2 mt-4 mb-4 pagination">
-      
-      {% with queries=request.GET.copy %}
-      <div class="pagination">
-          <span class="step-links">
-              {% if clinicas.has_previous %}
-                  <a class="p-2" style="text-decoration:none  !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt;</a>
-                  <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:clinicas.previous_page_number }}">&lt;</a>
-              {% endif %}
-              
-              <span class="current">
-                  Página {{ clinicas.number }} de {{ clinicas.paginator.num_pages }}.
-              </span>
-              
-              {% if clinicas.has_next %}
-                  <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;"  href="?{{ request.GET|add_page_to_query:clinicas.next_page_number }}">&gt;</a>
-                  <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:clinicas.paginator.num_pages }}">&gt;&gt;</a>
-              {% endif %}
-          </span>
-      </div>
-      {% endwith %}
-      
-      </div>
     </div>
-       <!-- Mapa Modal -->
+    <div class="fluid-container p-2 d-flex align-items-center" style="background:#17ABA0; color:#fff;">
+        <div class="container">
+            <form id="cidade_form" style="margin-bottom:0 !important;" class="mb-2 w-100 d-flex justify-content-end">
+                <select style="max-width: 20rem; border-radius:4px; border:none; outline:none; background:#fff;" class="w-30 p-2" id="convenios_select">
+                    <!-- Opções de cidade aqui -->
+                </select>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="fluid-container background-main" style="background:#f3f3f3;">
+    <div class="fluid-container d-flex justify-content-center" style=" flex-grow:1;">
+        <div class="clinicaDiv">
+            {% for clinica in clinicas %}
+            <div class="mb-4 mobile-prof" style="background:#fff; padding:1.5rem 6%;">
+                <div class="d-flex flex-column align-items-start justify-content-center">
+                    <div class="d-flex" style="gap:1rem;">
+                        <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{{ clinica.nome }}</span>
+                            <div class="d-flex mb-2 align-items-center">
+                                <div class="d-flex" style="gap:1rem;">
+                                    {% for especialidade in clinica.especialidades.all %}
+                                    {% if forloop.first %}
+                                    <span style="color:#000 !important; font-size:1rem !important;">{{ especialidade.nome }}</span>
+                                    {%endif%}
+                                    {% endfor %}
+                                    <a class="verClinica d-flex align-items-center text-center justify-content-center" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_clinica' clinica.id %}">Perfil</a>
+                                    <div style="display:none;" class=" verClinicaMob">
+                                        <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_clinica' clinica.id %}">Perfil</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <span>Número de Registro: CRM 134106 SP</span>
+                            {% load floor %}
+                            <span style="font-size:1rem; color:#000 !important;">
+                                <div class="rating-display d-flex align-items-center mb-1" style="gap:.5rem;">
+                                    <div class="rating d-flex">
+                                        {% if clinica.media %}
+                                        {% with full_stars=clinica.media|floor half_stars=clinica.media|floatformat:"-1"|slice:"-1" %}
+                                        {% for i in "12345"|make_list %}
+                                        {% if i|add:"0" <= full_stars|add:"0" %}
+                                        <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
+                                        {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
+                                        <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
+                                        {% else %}
+                                        <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endwith %}
+                                        {% else %}
+                                        {% for i in "12345"|make_list %}
+                                        <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {% if clinica.total_avaliacoes %} <span class="totalAV d-flex"> {{ clinica.total_avaliacoes }} opiniões</span> {% endif %}
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-1 align-items-center">
+                        {% for convenio in clinica.convenios.all %}
+                        {% if forloop.counter < 3 %}
+                        <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+                        {% endif %}
+                        {% endfor %}
+                        {% if clinica.convenios.all.count > 2 %}
+                        <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">Mais</a>
+                        {% endif %}
+                    </div>
+                    <!-- Modal com todos os convênios -->
+                    <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">Convênios</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {%for convenio in clinica.convenios.all%}
+                                    <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
+                                    {%endfor%}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3" style="gap:.5rem">
+                        {% for enderecos in clinica.enderecos.all %}
+                        {% if forloop.first %}
+                        <span style="width:100%; text-align:end;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
+                        {% endif %}
+                        {% endfor %}
+                        {% for enderecos in clinica.enderecos.all %}
+                        {%if enderecos.latitude != None and enderecos.longitude != None %}
+                        {% if forloop.first %}
+                        <a href="#" class="showMapModal" data-latitude="{{ enderecos.latitude }}" data-longitude="{{ enderecos.longitude }}" style="width:7rem;  text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+                        {% endif %}
+                        {%endif%}
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-center flex-column align-items-center w-100" style="gap:.5rem; max-width:100%; border-top: dashed 2px gray; padding-top: .5rem;">
+                        <div class="d-flex valor-mobile flex-column justify-content-start text-end">
+                            <span>Valor reduzido da consulta:</span>
+                            <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span>
+                        </div>
+                        {%if user.is_authenticated%}
+                        <a class="agendamento-btn p-2 text-center" data-phone="{{ clinica.telefone }}" data-nome="{{clinica.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{{clinica.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                        {%else%}
+                        <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                        {%endif%}
+                    </div>
+                    <!-- Mapa Estático -->
+                </div>
+            </div>
+           
+
+            <div class="mb-5 desk-prof mt-4">
+                <div class="d-flex align-items-start justify-content-center desk-div">
+                    <div class="d-flex" style="padding-right:2rem; border-right: dashed 1.6px #a3a3a3; gap:1rem">
+                        <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ clinica.foto.url }}">
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">{{ clinica.nome }}</span>
+                            <div class="d-flex mb-2 align-items-center">
+                                {% for especialidade in clinica.especialidades.all %}
+                                {% if forloop.first %}
+                                <span style="color:#000 !important; font-size:1rem !important;">{{ especialidade.nome }}</span>
+                                {%endif%}
+                                {% endfor %}
+                                <div class="d-flex">
+                                    <span>Número de Registro: CRM 134106 SP</span>
+                                    <a class="verClinica d-flex align-items-center text-center justify-content-center" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
+                                    <div style="display:none;" class="mb-2 verClinicaMob">
+                                        <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_clinica' clinica.id %}">Abrir Perfil</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% load floor %}
+                            <span style="font-size:1rem; color:#000 !important;">
+                                <div class="rating-display d-flex align-items-center mb-1" style="gap:1rem;">
+                                    <div class="rating d-flex">
+                                        {% if clinica.media %}
+                                        {% with full_stars=clinica.media|floor half_stars=clinica.media|floatformat:"-1"|slice:"-1" %}
+                                        {% for i in "12345"|make_list %}
+                                        {% if i|add:"0" <= full_stars|add:"0" %}
+                                        <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
+                                        {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
+                                        <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
+                                        {% else %}
+                                        <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endwith %}
+                                        {% else %}
+                                        {% for i in "12345"|make_list %}
+                                        <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    &nbsp;{% if clinica.total_avaliacoes %} <span class="totalAV d-flex"> {{ clinica.total_avaliacoes }} opiniões</span> {% endif %}
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3 flex-column" style="padding-left:2rem;">
+                        {% for enderecos in clinica.enderecos.all %}
+                        {% if forloop.first %}
+                        <span style="margin-right: .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
+                        {% endif %}
+                        {% endfor %}
+                        {% for enderecos in clinica.enderecos.all %}
+                        {%if enderecos.latitude != None and enderecos.longitude != None %}
+                        {% if forloop.first %}
+                        <a href="#" class="showMapModal" data-latitude="{{ enderecos.latitude }}" data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+                        {% endif %}
+                        {%endif%}
+                        {% endfor %}
+                        <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%; padding-top: 1.3rem;">
+                            <div class="d-flex valor-mobile flex-column justify-content-start text-end">
+                                <span>Valor reduzido da consulta:</span>
+                                <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span>
+                            </div>
+                            {%if user.is_authenticated%}
+                            <a class="agendamento-btn p-2 text-center" data-phone="{{ clinica.telefone }}" data-nome="{{clinica.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{clinica.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                            {%else%}
+                            <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                            {%endif%}
+                        </div>
+                        <!-- Mapa Estático -->
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="d-none" id="mapStatic"></div>
+    {% load url_filters %}
+<div class="container p-2 mb-4 pagination">
+    {% with queries=request.GET.copy %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if clinicas.has_previous %}
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt;</a>
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:clinicas.previous_page_number }}">&lt;</a>
+            {% endif %}
+            <span class="current">Página {{ clinicas.number }} de {{ clinicas.paginator.num_pages }}.</span>
+            {% if clinicas.has_next %}
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:clinicas.next_page_number }}">&gt;</a>
+            <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:clinicas.paginator.num_pages }}">&gt;&gt;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endwith %}
+</div>
+
+</div>
 <!-- Mapa Modal -->
 <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="mapModalLabel">Localização</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="map" style="height: 400px; width: 100%;"></div>
-      </div>
-      
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">Localização</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
     </div>
-  </div>
-  
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
-    agendamentoBtns.forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            let rawPhone = this.getAttribute('data-phone');
-            let rawNome = this.getAttribute('data-nome');
-            let formattedPhone = rawPhone.replace('+', '');
-            
-            window.location.href = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`;
+    document.addEventListener("DOMContentLoaded", function() {
+        let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
+        agendamentoBtns.forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                let rawPhone = this.getAttribute('data-phone');
+                let rawNome = this.getAttribute('data-nome');
+                let formattedPhone = rawPhone.replace('+', '');
+
+                window.location.href = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`;
+            });
         });
     });
-});
-
 </script>
 
 <script>
-  let map, mapStatic;
-  let marker, markerStatic;
-  
-  function initMap() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const estado = urlParams.get("estado");
-    const cidade = urlParams.get("cidade");
-    const location = `${cidade}, ${estado}`;
-  
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE`)
-      .then((response) => response.json())
-      .then((data) => {
-        const initialPos = {
-          lat: data.results[0].geometry.location.lat,
-          lng: data.results[0].geometry.location.lng
-        };
-        
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: initialPos,
-          zoom: 15,
-        });
-  
-        mapStatic = new google.maps.Map(document.getElementById("mapStatic"), {
-          center: initialPos,
-          zoom: 15,
-        });
-        
-        fetchActiveProfessionals();
-      });
-  }
-  
-  document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll(".showMapModal");
-  
-    buttons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        let latitude = parseFloat(this.getAttribute("data-latitude").replace(",", "."));
-        let longitude = parseFloat(this.getAttribute("data-longitude").replace(",", "."));
-        showMapModal(latitude, longitude);
-      });
-    });
-  });
-  
-  function fetchActiveProfessionals() {
-    fetch("/get_enderecos/")
-      .then((response) => response.json())
-      .then((data) => {
-        data.forEach((prof) => {
-          if (prof.enderecos__latitude !== null && prof.enderecos__longitude !== null) {
-            const position = { lat: prof.enderecos__latitude, lng: prof.enderecos__longitude };
-            new google.maps.Marker({
-              position,
-              map: mapStatic,
+    let map, mapStatic;
+    let marker, markerStatic;
+
+    function initMap() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const estado = urlParams.get("estado");
+        const cidade = urlParams.get("cidade");
+        const location = `${cidade}, ${estado}`;
+
+        fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE`)
+            .then((response) => response.json())
+            .then((data) => {
+                const initialPos = {
+                    lat: data.results[0].geometry.location.lat,
+                    lng: data.results[0].geometry.location.lng
+                };
+
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: initialPos,
+                    zoom: 15,
+                });
+
+                mapStatic = new google.maps.Map(document.getElementById("mapStatic"), {
+                    center: initialPos,
+                    zoom: 15,
+                });
+
+                fetchActiveProfessionals();
             });
-          }
-        });
-      });
-  }
-  
-  function showMapModal(latitude, longitude) {
-    const position = { lat: latitude, lng: longitude };
-  
-    map.setCenter(position);
-  
-    if (marker) {
-      marker.setPosition(position);
-    } else {
-      marker = new google.maps.Marker({
-        position,
-        map,
-      });
     }
-  
-    const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
-    mapModal.show();
-  }
-  
-  function hideMapModal() {
-    const mapModal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
-    mapModal.hide();
-  }
-  
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const buttons = document.querySelectorAll(".showMapModal");
+
+        buttons.forEach(function(button) {
+            button.addEventListener("click", function() {
+                let latitude = parseFloat(this.getAttribute("data-latitude").replace(",", "."));
+                let longitude = parseFloat(this.getAttribute("data-longitude").replace(",", "."));
+                showMapModal(latitude, longitude);
+            });
+        });
+    });
+
+    function fetchActiveProfessionals() {
+        fetch("/get_enderecos/")
+            .then((response) => response.json())
+            .then((data) => {
+                data.forEach((prof) => {
+                    if (prof.enderecos__latitude !== null && prof.enderecos__longitude !== null) {
+                        const position = {
+                            lat: prof.enderecos__latitude,
+                            lng: prof.enderecos__longitude
+                        };
+                        new google.maps.Marker({
+                            position,
+                            map: mapStatic,
+                        });
+                    }
+                });
+            });
+    }
+
+    function showMapModal(latitude, longitude) {
+        const position = {
+            lat: latitude,
+            lng: longitude
+        };
+
+        map.setCenter(position);
+
+        if (marker) {
+            marker.setPosition(position);
+        } else {
+            marker = new google.maps.Marker({
+                position,
+                map,
+            });
+        }
+
+        const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+        mapModal.show();
+    }
+
+    function hideMapModal() {
+        const mapModal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
+        mapModal.hide();
+    }
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script>
 
 
-<span id="dentistaImg" style="display:none;">{% static 'img\cuidado-dental.svg' %}</span>
-
-<span id="medicoImg" style="display:none;">{% static 'img\estetoscopio-instrumento-medico-1.svg' %}</span>
-
-</div>
-
-
-
-<script src="{%static 'js/filtrarClinicas.js'%}">
-</script>
-
+<span class="d-none"  id="laboratorioImg">{%static 'img/diagnostic.png'%} </span>
+<span class="d-none"  id="emergenciaImg">{%static 'img/diagnostic.png'%}</span>
+<script src="{%static 'js/filtrarClinicas.js'%}"></script>
 {% endblock %}

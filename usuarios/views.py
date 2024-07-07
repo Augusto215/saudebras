@@ -7,8 +7,24 @@ from django.db import IntegrityError, transaction
 from django.db import OperationalError
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
+from django.contrib.auth import update_session_auth_hash
+import logging
+import json
+import requests
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash, authenticate
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db import transaction
+import json
+from django.contrib.auth.forms import PasswordChangeForm
+logger = logging.getLogger(__name__)
+
+from django.http import JsonResponse
+from django.contrib.auth import authenticate
+
 import stripe
 import requests
 from geopy.geocoders import Nominatim
@@ -19,6 +35,14 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+
+from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.http import HttpResponse
+from django.contrib.auth.tokens import default_token_generator
+
 
 
 
@@ -977,11 +1001,116 @@ def alterar_Clinica(request):
   
     })
     
+def editar_cliente(request):
+    try:
+        user = request.user.cliente
+        print('cliente encontrado')
+        password = user.password
+        print(password)
+    except:
+        print('cliente não encontrado')
+        messages.error(request, 'Usuário não encontrado')
+        return redirect('home')
 
-from django.contrib.auth.models import User
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.http import HttpResponse
-from django.contrib.auth.tokens import default_token_generator
+    if request.method == 'POST':
+        if 'clienteForm' in request.POST:
+            cliente_form = ClienteForm(request.POST, instance=user)
+            if cliente_form.is_valid():
+                cep = cliente_form.cleaned_data['cep']
+                response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                data = response.json()
+                
+                if response.status_code == 200 and not data.get('erro'):
+                    estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                    cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                    bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
 
+                    user.estado = estado
+                    user.cidade = cidade
+                    user.bairro = bairro
+                    user.cep = cep
+                    user.rua = data['logradouro']
+                    
+                    cliente_form.save()
+                    messages.success(request, 'Perfil atualizado com sucesso!')
+                    return redirect('editar_cliente')
+                else:
+                    messages.error(request, 'CEP inválido')
+            else:
+                messages.error(request, 'Erro ao atualizar perfil')
+
+        elif 'fotoForm' in request.POST:
+            foto_form = FotoForm(request.POST, request.FILES, instance=user)
+            if foto_form.is_valid():
+                foto_form.save()
+                messages.success(request, 'Foto atualizada com sucesso')
+                return redirect('editar_cliente')
+            else:
+                messages.error(request, 'Erro ao atualizar foto')
+
+    else:
+        cliente_form = ClienteForm(instance=user)
+        foto_form = FotoForm(instance=user)
+
+    context = {
+        'cliente_form': cliente_form,
+        'foto_form': foto_form
+    }
+    return render(request, 'core/editar_perfil.html', context)
+
+def editar_senha(request):
+    try:
+        user = request.user.cliente
+        print('cliente encontrado')
+    except:
+        print('cliente não encontrado')
+        messages.error(request, 'Usuário não encontrado')
+        return redirect('home')
+
+    logger.info("Acessando a função editar_senha.")
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        logger.info("Método POST detectado.")
+
+        if not request.user.check_password(current_password):
+            logger.warning("Senha atual incorreta.")
+            messages.error(request, 'Senha atual incorreta.')
+            return redirect('editar_cliente', render_password_form=True)
+
+        if new_password != confirm_password:
+            logger.warning("As novas senhas não coincidem.")
+            messages.error(request, 'As novas senhas não coincidem.')
+            return redirect('editar_cliente', render_password_form=True)
+
+        if not new_password or not confirm_password:
+            logger.warning("Nova senha não pode ser vazia.")
+            messages.error(request, 'Nova senha não pode ser vazia.')
+            return redirect('editar_cliente', render_password_form=True)
+
+        request.user.set_password(new_password)
+        request.user.save()
+        update_session_auth_hash(request, request.user)  # Importante para manter o usuário logado
+        messages.success(request, 'Sua senha foi alterada com sucesso!')
+        return redirect('editar_cliente')
+    
+    logger.info("Método GET detectado.")
+    context = {
+        'cliente_form': ClienteForm(instance=request.user.cliente),
+        'foto_form': FotoForm(instance=request.user.cliente)
+    }
+    return render(request, 'core/editar_perfil.html', context)
+
+@csrf_exempt
+def validate_password(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        current_password = data.get('current_password')
+        user = authenticate(username=request.user.username, password=current_password)
+        if user is not None:
+            return JsonResponse({'valid': True})
+        else:
+            return JsonResponse({'valid': False})
+    return JsonResponse({'valid': False}, status=400)

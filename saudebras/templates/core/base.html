@@ -61,7 +61,7 @@
 
       {% else %}
       <li class="nav-item">
-        <a href="{% url 'contato' %}" class="nav-link">Editar Conta</a>
+        <a href="{% url 'editar_cliente' %}" class="nav-link">Editar Conta</a>
       </li>
       <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
         <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
@@ -96,6 +96,10 @@
         {%elif request.is_clinica%}
         <li class="nav-item">
           <a href="{%url 'editar_clinica' %}" class="nav-link">Editar Perfil</a>
+        </li>
+        {%elif user_cliente%}
+        <li class="nav-item">
+          <a href="{%url 'editar_cliente' %}" class="nav-link">Editar Perfil</a>
         </li>
       {% endif %}
         
@@ -133,7 +137,7 @@
       </li>
 
       <li class="nav-item">
-        <a href="{%url 'assistencia' %}" class="nav-link">Assistência Familiar</a>
+        <a href="{%url 'assistencia' %}" class="nav-link">Assistência</a>
       </li>
 
       <li class="nav-item">
@@ -203,7 +207,7 @@
               </li>
 
               <li class="nav-item">
-                <a href="{%url 'assistencia' %}" class="nav-link">Assistência Familiar</a>
+                <a href="{%url 'assistencia' %}" class="nav-link">Assistência</a>
               </li>
 
               <li class="nav-item">
@@ -237,7 +241,7 @@
 
           {% else %}
           <li class="nav-item">
-            <a href="{% url 'contato' %}" class="nav-link">Editar Conta</a>
+            <a href="{% url 'editar_cliente' %}" class="nav-link">Editar Conta</a>
           </li>
           <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
             <a  class="nav-link" href="{% url 'logout' %}">Sair</a>

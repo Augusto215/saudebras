@@ -18,6 +18,11 @@ urlpatterns = [
     path('alterar_profissional', alterar_Profissional, name='alterar_Profissional'),
     path('alterar_clinica', alterar_Clinica, name='alterar_Clinica'),
     path('sucesso', redirectCliente, name='sucessoCliente'),
+    path('editar_cliente', editar_cliente, name='editar_cliente'),
+    path('editar_senha/', editar_senha, name='editar_senha'),
+    path('validate_password/', validate_password, name='validate_password'),
+
+
 
 # URL para a solicitação de redefinição de senha com formulário personalizado
 path(

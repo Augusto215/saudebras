@@ -258,3 +258,19 @@ class CustomPasswordResetForm(forms.Form):
             raise ValidationError("As senhas não coincidem.")
 
         return cleaned_data
+
+
+
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['email', 'ddd',  'telefone', 'cep', 'numero']
+        widgets = {
+            'username': forms.TextInput(attrs={'disabled': 'disabled'}),
+            'email': forms.EmailInput(attrs={'disabled': 'disabled'}),
+        }
+
+class FotoForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['foto']

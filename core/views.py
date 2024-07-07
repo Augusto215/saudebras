@@ -35,6 +35,10 @@ def home_view(request):
     profissional = Profissional.objects.all()
     clinica = Clinica.objects.all()
     cliente = Cliente.objects.all()
+    try:
+        user_cliente = request.user.cliente
+    except:
+        user_cliente = None
     depoimentos = Depoimento.objects.all()
     especialidades = Especialidade.objects.all()
     profissionais_ativos_aleatorios = Profissional.objects.filter(is_active=True).order_by('?')[:4]
@@ -49,7 +53,8 @@ def home_view(request):
         'banners':banners,
         'profissional':profissional,
         'clinica':clinica,
-        'cliente':cliente
+        'cliente':cliente,
+        'user_cliente':user_cliente
     }
     
     return render(request, 'core/index.html', context)

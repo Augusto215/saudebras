@@ -47,7 +47,7 @@
           </div>
         </div>      
 
-        <div class="fluid-container background-main" style="background:#e3e3e3;">
+        <div class="fluid-container background-main" style="background:#f3f3f3;">
         <div class="fluid-container d-flex justify-content-center" style=" flex-grow:1;">
 
 
@@ -72,9 +72,9 @@
                  
                   {%endif%}
                   {% endfor %}
-                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Ver Biografia</a>
+                <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Perfil</a>
               <div style="display:none;" class=" verProfMob">
-                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Ver Biografia</a>
+                <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Perfil</a>
               </div>
             </div>
 
@@ -86,7 +86,7 @@
 
               <span style="font-size:1rem; color:#000 !important;">
                   <div class="rating-display d-flex align-items-center mb-1" style="gap:.5rem;">
-                      <div class="rating">
+                      <div class="rating d-flex">
                           {% if profissional.media %}
                               {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
                                   {% for i in "12345"|make_list %}
@@ -112,7 +112,7 @@
 
             
 
-            <div class="d-flex mb-1">
+            <div class="d-flex mb-1 align-items-center">
               {% for convenio in profissional.convenios.all %}
                 {% if forloop.counter < 3 %}
                   <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
@@ -120,7 +120,7 @@
               {% endfor %}
           
               {% if profissional.convenios.all.count > 2 %}
-                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Mais</a>
               {% endif %}
             </div>
           
@@ -188,7 +188,7 @@
           </div>
 
 
-          <div class="mb-5 desk-prof">
+          <div class="mb-5 desk-prof mt-4">
             <div class="d-flex align-items-start justify-content-center desk-div">
             <div class="d-flex" style="padding-right:2rem; border-right: dashed 1.6px #a3a3a3; gap:1rem" >
               <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
@@ -219,7 +219,7 @@
 
               <span style="font-size:1rem; color:#000 !important;">
                   <div class="rating-display d-flex align-items-center mb-1" style="gap:1rem;">
-                      <div class="rating">
+                      <div class="rating d-flex">
                           {% if profissional.media %}
                               {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
                                   {% for i in "12345"|make_list %}
@@ -256,7 +256,7 @@
               {% endfor %}
           
               {% if profissional.convenios.all.count > 2 %}
-                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Ver mais</a>
+                <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Mais</a>
               {% endif %}
             </div>
           

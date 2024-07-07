@@ -10,15 +10,7 @@
         
 <div id="index7" class="fluid-container" style="background:#DEF5EF">
   <div class=" mt-4 mb-4 container1">
-  {%if user.is_authenticated%} <div class="d-flex align-items-center justify-content-center"> <span class="text-center mb-3" style="color:#00AB9B !important; font-weight:600 !important;"> Olá </span>&nbsp;
-    {%if user.profissional%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.profissional.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
-    {%elif user.cliente%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.cliente.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
-    {%elif user.clinica%}<div class=" d-flex mb-3 justify-content-center align-items-center" style="gap:.5rem;"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> <img style="height:2rem;width:2rem; object-fit:cover; border-radius:50%;"  src="{{user.clinica.foto.url}}"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">!</span></div>
-    {%else%}<div class=" d-flex mb-4 justify-content-center align-items-center"><span class="welcome-font" style="color:#00AB9B !important; font-weight:600 !important;">{{user.nome}}</span> </div>
-    {%endif%}
 
-  </div>
-  {%endif%}
   <div  id="fale-conosco">
      <div class="row align-items-center">
     
