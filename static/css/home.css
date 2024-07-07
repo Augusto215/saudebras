@@ -1773,7 +1773,18 @@ lottie-player
 @media (max-width:768px)
 {   
  
-    
+    h2 
+    {
+        font-size: 1.3rem !important;
+    }
+    h3 
+    {
+        font-size: 1.15rem !important;
+    }
+    p 
+    {
+        font-size: 1rem !important;
+    }
     .container1
     {
         max-width:100%; padding: 0 6% !important;
@@ -1803,7 +1814,7 @@ lottie-player
         grid-template-columns: 1fr !important;
     }
 
-    #regform
+    #regform, #fotoForm
     {
         width:auto !important;
         min-width: auto !important;
@@ -2000,7 +2011,7 @@ font-size: 1rem !important;
 
 
 
-#regForm {
+#regForm, #fotoForm {
     background-color: #ffffff;
     margin: 50px auto;
     font-family: Raleway;
