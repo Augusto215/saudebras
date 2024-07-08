@@ -60,7 +60,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editPasswordModalLabel">Editar Senha</h5>
+                <h3 class="mb-4 mt-4 text-start" style="color:#00ae9d !important;">Editar senha</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -68,36 +68,52 @@
                 <form id="passwordForm" method="post" action="{% url 'editar_senha' %}">
                     {% csrf_token %}
                     <div id="step1">
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Senha Atual</label>
-                            <input style="font-size:17px; padding:10px !important; border-radius:4px; border: solid 1px #000 !important;" type="password" class="form-control" id="currentPassword" name="current_password" required>
+                        <label for="password-field" class="form-label">Senha atual</label>
+
+                        <div  id="password-field" class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;     ">
+                            <input class="w-100 d-flex m-0" style="font-size:17px; border-radius:4px; background:transparent !important; border:none !important; outline:none !important;" type="password" class="form-control" id="currentPassword" name="current_password" required>
+                            <span class="p-2" onclick="togglePasswordVisibility('currentPassword', 'current-eye-icon')">
+                                <i style="font-size:17px !important;" id="current-eye-icon" class="bi bi-eye-slash"></i>
+                            </span>
                         </div>
-                        <button type="button" style="background-color: #04AA6D;
-                        color: #ffffff;
-                        border: none;
-                        padding: 10px 20px;
-                        font-size: 17px;
-                        font-family: Raleway;
-                        cursor: pointer;" class="btn btn-primary" onclick="validateCurrentPassword()">Próximo</button>
+                        <button type="button" style="background-color: #04AA6D; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer;" class="btn btn-primary" onclick="validateCurrentPassword()">Próximo</button>
                     </div>
                     <div id="step2" style="display: none;">
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">Nova Senha</label>
-                            <input style="font-size:17px; padding:10px !important; border-radius:4px; border: solid 1px #000 !important;" type="password" class="form-control" id="newPassword" name="new_password" required>
+                        <label for="newPassword" class="form-label">Nova senha</label>
+
+                        <div class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;  ">
+                            <input class="w-100 d-flex m-0" style="font-size:17px;  border-radius:4px; border:none !important;background:transparent !important; outline:none !important;" type="password" class="form-control" id="newPassword" name="new_password" required>
+                            <span class="p-2" onclick="togglePasswordVisibility('newPassword', 'new-eye-icon')">
+                                <i style="font-size:17px !important;" id="new-eye-icon" class="bi bi-eye-slash"></i>
+                            </span>
                         </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirme a Nova Senha</label>
-                            <input style="font-size:17px; padding:10px !important; border-radius:4px; border: solid 1px #000 !important;" type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                        <label for="confirmPassword1" class="form-label">Confirme a nova senha</label>
+                        
+                        <div id="confirmPassword1" class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;  ">
+                            <input class="w-100 d-flex m-0" id="confirmPassword" style="font-size:17px; border-radius:4px; border: none !important; outline:none !important;" type="password" class="form-control"  name="confirm_password" required>
+                            <span class="p-2"  onclick="togglePasswordVisibility('confirmPassword', 'confirm-new-eye-icon')">
+                                <i style="font-size:17px !important;" id="confirm-new-eye-icon" class="bi bi-eye-slash"></i>
+                            </span>
                         </div>
-                        <button type="submit" style="background-color: #04AA6D;
-                        color: #ffffff;
-                        border: none;
-                        padding: 10px 20px;
-                        font-size: 17px;
-                        font-family: Raleway;
-                        cursor: pointer;" class="btn btn-primary">Salvar</button>
+                        <button type="submit" style="background-color: #04AA6D; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer;" class="btn btn-primary">Salvar</button>
                     </div>
                 </form>
+                <script>
+                    function togglePasswordVisibility(inputId, iconId) {
+                        var input = document.getElementById(inputId);
+                        var icon = document.getElementById(iconId);
+                        if (input.type === "password") {
+                            input.type = "text";
+                            icon.classList.remove("bi-eye-slash");
+                            icon.classList.add("bi-eye");
+                        } else {
+                            input.type = "password";
+                            icon.classList.remove("bi-eye");
+                            icon.classList.add("bi-eye-slash");
+                        }
+                    }
+                </script>
+                
                 <div id="passwordError" class="alert alert-danger mt-3" style="display: none;"></div>
             </div>
         </div>

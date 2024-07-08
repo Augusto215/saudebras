@@ -1078,17 +1078,17 @@ def editar_senha(request):
         if not request.user.check_password(current_password):
             logger.warning("Senha atual incorreta.")
             messages.error(request, 'Senha atual incorreta.')
-            return redirect('editar_cliente', render_password_form=True)
+            return redirect('editar_cliente')
 
         if new_password != confirm_password:
             logger.warning("As novas senhas não coincidem.")
             messages.error(request, 'As novas senhas não coincidem.')
-            return redirect('editar_cliente', render_password_form=True)
+            return redirect('editar_cliente')
 
         if not new_password or not confirm_password:
             logger.warning("Nova senha não pode ser vazia.")
             messages.error(request, 'Nova senha não pode ser vazia.')
-            return redirect('editar_cliente', render_password_form=True)
+            return redirect('editar_cliente')
 
         request.user.set_password(new_password)
         request.user.save()
