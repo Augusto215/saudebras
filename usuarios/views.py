@@ -187,7 +187,7 @@ def registerProfissional(request):
                         bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
                         cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
                         endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
 
                         complemento_atual = complementos[i]
                         endereco, _ = Endereco.objects.get_or_create(
@@ -320,7 +320,7 @@ def registerClinica(request):
                         bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
                         cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
                         endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
                         
                         
                         complemento_atual = complementos[i]
@@ -688,7 +688,7 @@ def alterar_Profissional(request):
 
                             # Obtenha as coordenadas
                             endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
 
                             # Cria o objeto Endereco
                             endereco, _ = Endereco.objects.get_or_create(
@@ -949,7 +949,7 @@ def alterar_Clinica(request):
 
                             # Obtenha as coordenadas
                             endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE")
+                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
 
                             # Cria o objeto Endereco
                             endereco, _ = Endereco.objects.get_or_create(
