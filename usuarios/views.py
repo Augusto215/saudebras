@@ -200,7 +200,6 @@ def registerProfissional(request):
                             latitude=latitude,  # Adicionado
                             longitude=longitude,
                             profissional=user
-
                         )
 
                         estados.append(estado)
@@ -236,18 +235,29 @@ def registerProfissional(request):
                 user.enderecos.set(enderecos)
 
                 # Configurando o Stripe
-                stripe.api_key = 'sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs'
+                stripe.api_key = 'sk_test_51PHMq7CFqCCeinfhM7MDQ086AzXSszH5S6SbmHzNo2GnysN3AfZvJeVYzD8myLBvTHdCWqFQRfxTfFciwf2DFc3m00k6zHcMzu'
 
                 token = request.POST.get('stripeToken')
                 try:
                     customer = stripe.Customer.create(
-                        source=token,
                         email=request.POST.get('email'),  # substitua por seu campo de email
                     )
+                    payment_method = stripe.PaymentMethod.create(
+                        type="card",
+                        card={"token": token},
+                    )
+                    stripe.PaymentMethod.attach(
+                        payment_method.id,
+                        customer=customer.id,
+                    )
+                    stripe.Customer.modify(
+                        customer.id,
+                        invoice_settings={"default_payment_method": payment_method.id},
+                    )
                     subscription = stripe.Subscription.create(
-                    customer=customer.id,
-                    items=[{'plan': 'price_1O6bAWDVCQ3YDKzSh5AaoKKY'}],
-                                        )
+                        customer=customer.id,
+                        items=[{'plan': 'price_1O6bAWDVCQ3YDKzSh5AaoKKY'}],
+                    )
                 except stripe.error.StripeError as e:
                     # Trate os erros do Stripe aqui
                     print(e)
@@ -264,10 +274,7 @@ def registerProfissional(request):
                 )
                 profissional_subscription.save()
 
-
                 return redirect('sucessoCliente')
-
-
         else:
             print("Formulário inválido")
             messages.error(request, form.errors)
@@ -278,7 +285,7 @@ def registerProfissional(request):
         'idiomas': idiomas,
         'form': form,
         'tipo_profissionais': tipo_profissional,
-        'banners':banners
+        'banners': banners
     }
 
     return render(request, 'core/registroProfissionais.html', context)
