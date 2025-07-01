@@ -1,6 +1,4 @@
-
-
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 :root {
@@ -414,7 +412,6 @@ color: gold;
 
 .form-group
 {
-    border-bottom: solid #777777 1px !important;
     margin-bottom: 1.5rem;
     width:100%;
 }
@@ -2187,3 +2184,80 @@ font-size: 1rem !important;
     align-items: center;
 
   }
+
+/* Estilos para navbar - item ativo */
+.navbar-nav .nav-link,
+.nav-item .nav-link {
+  color: #333 !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Estilo para o link ativo/selecionado */
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover,
+.nav-item .nav-link.active,
+.nav-item .nav-link:hover {
+  color: #00ae9d !important;
+  background-color: rgba(0, 174, 157, 0.1) !important;
+  border-radius: 6px !important;
+}
+
+/* Para páginas específicas - adicionar classe active via JavaScript */
+.navbar-nav .nav-item.current-page .nav-link,
+.nav-item.current-page .nav-link {
+  color: #00ae9d !important;
+  background-color: rgba(0, 174, 157, 0.1) !important;
+  border-radius: 6px !important;
+}
+
+/* Hover effect mais suave */
+.navbar-nav .nav-link:hover,
+.nav-item .nav-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 174, 157, 0.2);
+}
+
+/* Estilos para botões menores na página de edição de perfil */
+.btn-small {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  min-width: auto !important;
+}
+
+/* Botões de adicionar menores */
+#addConvenio, 
+#addIdioma, 
+#addServico,
+#addEnderecoBtn {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  min-width: auto !important;
+}
+
+/* Botões de ação de endereço menores */
+.endereco-actions .btn-secondary,
+.endereco-actions .btn-danger {
+  padding: 0.4rem 0.8rem !important;
+  font-size: 0.85rem !important;
+  min-width: auto !important;
+}
+
+/* Botões do formulário de endereço menores */
+#cancelarEndereco {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  min-width: auto !important;
+}
+
+/* Botões das abas da sidebar menores */
+.sidebar-nav button {
+  padding: 0.7rem 1.2rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* Manter tamanho normal apenas para botões principais */
+button[name="action"][value="update_profile"],
+.edit-btn {
+  padding: 0.75rem 1.5rem !important;
+  font-size: 1rem !important;
+}

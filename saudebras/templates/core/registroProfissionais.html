@@ -541,33 +541,83 @@ document.getElementById('add-cep').addEventListener('click', function() {
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
+        
+        let clientSecret = null;
+        let elements = null;
+        let paymentElement = null;
+        
+        function initializePayment() {
+            // Obter email atual do formulário
+            const emailField = document.querySelector('input[name="email"]');
+            const email = emailField ? emailField.value : null;
+            
+            if (!email) {
+                console.warn('Email não encontrado, criando Payment Intent sem customer');
+            }
+            
+            fetch('/create-payment-intent/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify({ 
+                    items: [{ id: 'your-item-id' }],
+                    email: email 
+                })
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                console.log('Payment Intent criado:', data);
+                clientSecret = data.clientSecret;
+                
+                elements = stripe.elements({ clientSecret: clientSecret });
+                paymentElement = elements.create('payment');
+                paymentElement.mount('#payment-element');
+            }).catch(function (error) {
+                console.error('Erro ao criar Payment Intent:', error);
+                alert('Erro ao inicializar pagamento. Tente novamente.');
+            });
+        }
+        
+        // Inicializar o pagamento quando a página carrega
+        initializePayment();
+        
+        // Quando o email muda, recriar o Payment Intent
+        const emailField = document.querySelector('input[name="email"]');
+        if (emailField) {
+            emailField.addEventListener('blur', function() {
+                if (this.value && this.value.includes('@')) {
+                    console.log('Email alterado, recriando Payment Intent');
+                    // Remover o elemento de pagamento anterior
+                    if (paymentElement) {
+                        paymentElement.unmount();
+                    }
+                    // Criar novo Payment Intent com o email atualizado
+                    initializePayment();
+                }
+            });
+        }
     
-        fetch('/create-payment-intent/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // Adicione o token CSRF aqui, se necessário
-            },
-            body: JSON.stringify({ items: [{ id: 'your-item-id' }] })
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            const elements = stripe.elements({ clientSecret: data.clientSecret });
-            const paymentElement = elements.create('payment');
-            paymentElement.mount('#payment-element');
+        const form = document.getElementById('registration-form');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            if (!clientSecret) {
+                alert('Pagamento não foi inicializado. Recarregue a página.');
+                return;
+            }
     
-            const form = document.getElementById('registration-form');
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-    
-                stripe.confirmCardPayment(data.clientSecret).then(function (result) {
-                    if (result.error) {
-                        // Mostrar erro ao usuário
-                        console.error(result.error.message);
-                    } else {
-                        if (result.paymentIntent.status === 'succeeded') {
-                            // Pagamento bem-sucedido, envie os dados do formulário para o servidor
-                            submitRegistrationForm();
+            stripe.confirmCardPayment(clientSecret).then(function (result) {
+                if (result.error) {
+                    // Mostrar erro ao usuário
+                    console.error('Erro no pagamento:', result.error.message);
+                    alert('Erro no pagamento: ' + result.error.message);
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        console.log('Pagamento bem-sucedido:', result.paymentIntent);
+                        // Pagamento bem-sucedido, envie os dados do formulário para o servidor
+                        submitRegistrationForm(result.paymentIntent.id);
                         }
                     }
                 });
@@ -575,19 +625,37 @@ document.getElementById('add-cep').addEventListener('click', function() {
         });
     });
     
-    function submitRegistrationForm() {
+    function submitRegistrationForm(paymentIntentId) {
         var formData = new FormData(document.getElementById('registration-form'));
+        
+        // Adicionar o payment_intent_id ao formulário
+        if (paymentIntentId) {
+            formData.append('payment_intent_id', paymentIntentId);
+        }
     
-        fetch('/register-user/', {  // Substitua pela URL correta do seu endpoint de registro
+        fetch('/usuarios/registrarProfissional/', {  // URL correta para registro de profissional
             method: 'POST',
             body: formData,
-        }).then(response => response.json())
-        .then(data => {
-            // Trate a resposta do servidor aqui
-            if (data.success) {
-                window.location.href = '/success-page';  // Substitua pela sua página de sucesso
+        }).then(response => {
+            // Verifica se a resposta é JSON ou redirecionamento
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
             } else {
-                console.error('Erro no registro:', data.error);
+                // Se não for JSON, assume que é um redirecionamento de sucesso
+                window.location.href = '/sucessoCliente/';
+                return null;
+            }
+        })
+        .then(data => {
+            if (data) {
+                // Trate a resposta JSON aqui
+                if (data.success) {
+                    window.location.href = data.redirect_url || '/sucessoCliente/';
+                } else {
+                    console.error('Erro no registro:', data.error);
+                    alert('Erro no registro: ' + data.error);
+                }
             }
         })
         .catch(error => {

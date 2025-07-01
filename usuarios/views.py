@@ -208,9 +208,6 @@ def registerProfissional(request):
                         enderecos.append(endereco)
                         ceps_list.append(cep_obj)
 
-                # Salve o usuário antes de adicionar relações
-                user.save()
-
                 user.set_password(form.cleaned_data['password1'])
                 user.tipo_profissional = form.cleaned_data['tipo_profissional']
                 user.email = form.cleaned_data['email']
@@ -225,6 +222,9 @@ def registerProfissional(request):
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
 
+                # Salve o usuário antes de adicionar relações
+                user.save()
+
                 user.estado.set(estados)
                 user.cidade.set(cidades)
                 user.bairro.set(bairros)
@@ -235,37 +235,82 @@ def registerProfissional(request):
                 user.enderecos.set(enderecos)
 
                 # Configurando o Stripe
-                stripe.api_key = 'sk_test_51PHMq7CFqCCeinfhM7MDQ086AzXSszH5S6SbmHzNo2GnysN3AfZvJeVYzD8myLBvTHdCWqFQRfxTfFciwf2DFc3m00k6zHcMzu'
+                stripe.api_key = 'sk_test_51OUOvLK0evm2fcdGJpwO9LInadGfiwH2U0ftWu4DIQo32A6c5bTeUYwiKmvdSsdL3GhZyjw9p3d75sqzTKHQF0VR001NrAgjhZ'
 
-                token = request.POST.get('stripeToken')
+                # Abordagem simplificada - usar Payment Intent com setup_future_usage
+                
+                email = request.POST.get('email')
+                payment_intent_id = request.POST.get('payment_intent_id')
+                
+                if not email:
+                    print("Erro: Email não encontrado")
+                    messages.error(request, 'Email é obrigatório para o pagamento.')
+                    return redirect('registerProfissional')
+                
                 try:
-                    customer = stripe.Customer.create(
-                        email=request.POST.get('email'),  # substitua por seu campo de email
-                    )
-                    payment_method = stripe.PaymentMethod.create(
-                        type="card",
-                        card={"token": token},
-                    )
-                    stripe.PaymentMethod.attach(
-                        payment_method.id,
-                        customer=customer.id,
-                    )
-                    stripe.Customer.modify(
-                        customer.id,
-                        invoice_settings={"default_payment_method": payment_method.id},
-                    )
-                    subscription = stripe.Subscription.create(
-                        customer=customer.id,
-                        items=[{'plan': 'price_1O6bAWDVCQ3YDKzSh5AaoKKY'}],
-                    )
-                except stripe.error.StripeError as e:
-                    # Trate os erros do Stripe aqui
-                    print(e)
-                    return redirect('erro_stripe')  # Redirecione para uma página de erro ou algo assim
+                    customer = None
+                    payment_method_id = None
+                    
+                    if payment_intent_id:
+                        # Recuperar o Payment Intent
+                        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+                        
+                        # Verificar se o pagamento foi bem-sucedido
+                        if payment_intent.status != 'succeeded':
+                            raise Exception(f"Payment Intent não foi bem-sucedido: {payment_intent.status}")
+                        
+                        # Usar o customer do Payment Intent (criado na create_payment_intent)
+                        if payment_intent.customer:
+                            customer = stripe.Customer.retrieve(payment_intent.customer)
+                            
+                            # O payment method já deve estar anexado ao customer pelo setup_future_usage
+                            if payment_intent.payment_method:
+                                payment_method_id = payment_intent.payment_method
+                                
+                                # Verificar se já está anexado e definir como padrão
+                                payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
+                                if payment_method.customer == customer.id:
+                                    # Definir como método padrão
+                                    stripe.Customer.modify(
+                                        customer.id,
+                                        invoice_settings={
+                                            'default_payment_method': payment_method_id
+                                        }
+                                    )
+                    
+                    # Se ainda não temos customer, criar um
+                    if not customer:
+                        customer = stripe.Customer.create(email=email)
+                    
+                    # Criar subscription
+                    subscription_params = {
+                        'customer': customer.id,
+                        'items': [{'price': 'price_1Rf05cK0evm2fcdG13zQMKIN'}],
+                        'expand': ['latest_invoice.payment_intent']
+                    }
+                    
+                    # Se não temos payment method, usar trial
+                    if not payment_method_id:
+                        subscription_params['trial_period_days'] = 7
+                    else:
+                        subscription_params['default_payment_method'] = payment_method_id
+                    
+                    subscription = stripe.Subscription.create(**subscription_params)
+                    print(f"Subscription criada: {subscription.id}")
                 except Exception as e:
                     # Trate outros erros aqui
-                    print(e)
-                    return redirect('erro_generico')  # Redirecione para uma página de erro ou algo assim
+                    print(f"Erro genérico: {e}")
+                    if request.POST.get('payment_intent_id'):
+                        return JsonResponse({'success': False, 'error': str(e)})
+                    messages.error(request, f'Erro no processo de pagamento: {str(e)}')
+                    return redirect('registerProfissional')
+                except stripe.error.StripeError as e:
+                    # Trate os erros do Stripe aqui
+                    print(f"Erro do Stripe: {e}")
+                    if request.POST.get('payment_intent_id'):
+                        return JsonResponse({'success': False, 'error': str(e)})
+                    messages.error(request, f'Erro no pagamento: {str(e)}')
+                    return redirect('registerProfissional')
 
                 # Agora crie uma Subscription no seu banco de dados
                 profissional_subscription = Subscription(
@@ -274,7 +319,11 @@ def registerProfissional(request):
                 )
                 profissional_subscription.save()
 
-                return redirect('sucessoCliente')
+                # Verificar se é uma requisição AJAX através do content type ou header
+                if request.content_type == 'multipart/form-data' and request.POST.get('payment_intent_id'):
+                    return JsonResponse({'success': True, 'redirect_url': '/sucessoCliente/'})
+                else:
+                    return redirect('sucessoCliente')
         else:
             print("Formulário inválido")
             messages.error(request, form.errors)
@@ -378,26 +427,90 @@ def registerClinica(request):
                 user.idiomas.set(selected_idiomas)
                 user.enderecos.set(enderecos)
 
-                token = request.POST.get('stripeToken')  # Obtenção do Token do Stripe
+                # Implementação correta para Payment Intents + Subscriptions
+                
+                email = request.POST.get('email')
+                payment_intent_id = request.POST.get('payment_intent_id')
+
+                if not email:
+                    print("Erro: Email não encontrado")
+                    messages.error(request, 'Email é obrigatório para o pagamento.')
+                    return redirect('registerClinica')
 
                 try:
-                    customer = stripe.Customer.create(
-                        source=token,
-                        email=request.POST.get('email'),  # substitua por seu campo de email
-                    )
-                    subscription = stripe.Subscription.create(
-                        customer=customer.id,
-                        items=[{'plan': 'price_1O4ZsHDVCQ3YDKzSRnhIFsCi'}],
-                        trial_period_days=30,
-                    )
+                    customer = None
+                    payment_method_id = None
+                    
+                    if payment_intent_id:
+                        # Recuperar o Payment Intent
+                        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+                        print(f"Payment Intent: {payment_intent.id}, Status: {payment_intent.status}")
+                        
+                        # Verificar se o pagamento foi bem-sucedido
+                        if payment_intent.status != 'succeeded':
+                            raise Exception(f"Payment Intent não foi bem-sucedido: {payment_intent.status}")
+                        
+                        # Se o Payment Intent tem um customer, usar ele
+                        if payment_intent.customer:
+                            customer = stripe.Customer.retrieve(payment_intent.customer)
+                        
+                        # Obter o método de pagamento do Payment Intent
+                        if payment_intent.payment_method:
+                            payment_method_id = payment_intent.payment_method
+                    
+                    # Se não temos customer, criar um novo
+                    if not customer:
+                        customer = stripe.Customer.create(
+                            email=email,
+                        )
+                        print(f"Novo customer criado: {customer.id}")
+                    
+                    # Se temos um payment_method_id do Payment Intent, anexá-lo ao customer
+                    if payment_method_id:
+                        try:
+                            # Anexar o método de pagamento ao customer
+                            stripe.PaymentMethod.attach(
+                                payment_method_id,
+                                customer=customer.id
+                            )
+                            
+                            # Definir como método de pagamento padrão para faturas
+                            stripe.Customer.modify(
+                                customer.id,
+                                invoice_settings={
+                                    'default_payment_method': payment_method_id
+                                }
+                            )
+                            print(f"Payment method {payment_method_id} anexado e definido como padrão")
+                        except stripe.error.InvalidRequestError as e:
+                            # O payment method já pode estar anexado ao customer
+                            if "already attached" not in str(e):
+                                raise e
+                    
+                    # Criar subscription com trial e método de pagamento padrão
+                    subscription_params = {
+                        'customer': customer.id,
+                        'items': [{'plan': 'price_1O4ZsHDVCQ3YDKzSRnhIFsCi'}],
+                        'trial_period_days': 30,
+                        'expand': ['latest_invoice.payment_intent']
+                    }
+                    
+                    # Se temos um payment method, especificá-lo na subscription
+                    if payment_method_id:
+                        subscription_params['default_payment_method'] = payment_method_id
+                    
+                    subscription = stripe.Subscription.create(**subscription_params)
+                    print(f"Subscription criada: {subscription.id}")
                 except stripe.error.StripeError as e:
                     # Trate os erros do Stripe aqui
-                    print(e)
-                    return redirect('erro_stripe')  # Redirecione para uma página de erro ou algo assim
+                    print(f"Erro do Stripe: {e}")
+                    messages.error(request, f'Erro no pagamento: {str(e)}')
+                    return redirect('registerClinica')
                 except Exception as e:
                     # Trate outros erros aqui
-                    print(e)
-                    return redirect('erro_generico')  # Redirecione para uma página de erro ou algo assim
+                    print(f"Erro genérico: {e}")
+                    messages.error(request, f'Erro no processo de pagamento: {str(e)}')
+                    return redirect('registerClinica')
                 
                 # Agora crie uma Subscription no seu banco de dados
                 clinica_subscription = Subscription(
@@ -564,10 +677,12 @@ from .models import Foto
 import logging
 logging.basicConfig(level=logging.DEBUG)
 def alterar_Profissional(request):
+    logging.debug(f"Método da requisição: {request.method}")
     logging.debug("Iniciando alterar_Profissional")
-    logging.debug(f"Data do POST: {request.POST}")
-    logging.debug(f"Data dos FILES: {request.FILES}")
-
+    if request.method == 'POST':
+        logging.debug(f"Data do POST: {request.POST}")
+        logging.debug(f"Data dos FILES: {request.FILES}")
+    
     user = request.user.profissional
     has_active_subscription = Subscription.objects.filter(
         Q(profissional=user) & Q(active=True)
@@ -597,9 +712,23 @@ def alterar_Profissional(request):
                 user.preco = cleaned_data.get('preco', '')
                 user.save()
 
-                user.convenios.set(cleaned_data.get('convenios', []))
-                user.idiomas.set(cleaned_data.get('idiomas', []))
-                user.servicos.set(cleaned_data.get('servicos', []))
+                # Processar campos dinâmicos diretamente do request.POST
+                convenios_ids = request.POST.getlist('convenios')
+                idiomas_ids = request.POST.getlist('idiomas')  
+                servicos_ids = request.POST.getlist('servicos')
+                
+                logging.debug(f"Convênios IDs: {convenios_ids}")
+                logging.debug(f"Idiomas IDs: {idiomas_ids}")
+                logging.debug(f"Serviços IDs: {servicos_ids}")
+
+                # Converter para inteiros e filtrar valores vazios
+                convenios_ids = [int(id) for id in convenios_ids if id]
+                idiomas_ids = [int(id) for id in idiomas_ids if id]
+                servicos_ids = [int(id) for id in servicos_ids if id]
+
+                user.convenios.set(convenios_ids)
+                user.idiomas.set(idiomas_ids)
+                user.servicos.set(servicos_ids)
 
                 # Código novo começa aqui
                 new_galeria_ids = request.POST.getlist('galeria')  # IDs enviados do frontend
@@ -633,9 +762,50 @@ def alterar_Profissional(request):
 
                 messages.success(request, 'Perfil atualizado com sucesso!')
                 return redirect('editar_perfil')
+            else:
+                logging.debug(f"Formulário não é válido. Erros: {form.errors}")
+                messages.error(request, 'Erro ao atualizar perfil. Verifique os dados inseridos.')
             
         elif action == 'update_photo':
             logging.debug("Formulário iniciado para atualizar foto")
+            
+            # Verificar se um arquivo foi enviado
+            if 'foto' not in request.FILES or not request.FILES['foto']:
+                messages.error(request, 'Nenhum arquivo foi selecionado. Por favor, escolha uma imagem.')
+                return redirect('editar_perfil')
+            
+            uploaded_file = request.FILES['foto']
+            
+            # Validações adicionais
+            # Verificar tipo de arquivo
+            allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+            if uploaded_file.content_type not in allowed_types:
+                messages.error(request, 'Formato de arquivo não suportado. Use JPG, PNG ou GIF.')
+                return redirect('editar_perfil')
+            
+            # Verificar tamanho do arquivo (5MB máximo)
+            max_size = 5 * 1024 * 1024  # 5MB
+            if uploaded_file.size > max_size:
+                messages.error(request, 'Arquivo muito grande. O tamanho máximo é 5MB.')
+                return redirect('editar_perfil')
+            
+            # Verificar se é realmente uma imagem
+            try:
+                from PIL import Image  # type: ignore
+                import io
+                
+                # Tentar abrir como imagem
+                image = Image.open(io.BytesIO(uploaded_file.read()))
+                image.verify()
+                
+                # Resetar o ponteiro do arquivo
+                uploaded_file.seek(0)
+                
+            except Exception as e:
+                logging.error(f"Erro ao validar imagem: {e}")
+                messages.error(request, 'O arquivo selecionado não é uma imagem válida.')
+                return redirect('editar_perfil')
+            
             form = FotoProfForm(request.POST, request.FILES)
             if form.is_valid():
                 logging.debug("Formulário é válido.")
@@ -647,6 +817,110 @@ def alterar_Profissional(request):
 
                 messages.success(request, 'Foto de perfil atualizada com sucesso!')
                 return redirect('editar_perfil')
+            else:
+                logging.debug(f"Formulário não é válido. Erros: {form.errors}")
+                messages.error(request, 'Erro ao processar a foto. Tente novamente.')
+                return redirect('editar_perfil')
+        
+        elif action == 'update_address':
+            logging.debug("Processando atualização/criação de endereço")
+            
+            cep = request.POST.get('cep', '').replace('-', '')
+            rua = request.POST.get('rua', '')
+            numero = request.POST.get('numero', '')
+            complemento = request.POST.get('complemento', '')
+            bairro_nome = request.POST.get('bairro', '')
+            cidade_nome = request.POST.get('cidade', '')
+            estado_nome = request.POST.get('estado', '')
+            endereco_id = request.POST.get('endereco_id', '')
+            
+            logging.debug(f"Dados recebidos: CEP={cep}, Rua={rua}, Número={numero}")
+            
+            if not all([cep, rua, bairro_nome, cidade_nome, estado_nome]):
+                messages.error(request, 'Todos os campos obrigatórios devem ser preenchidos.')
+                return redirect('editar_perfil')
+            
+            try:
+                with transaction.atomic():
+                    # Buscar ou criar estado, cidade, bairro e CEP
+                    estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                    cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                    bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
+                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                    
+                    # Obter coordenadas (opcional)
+                    latitude, longitude = None, None
+                    try:
+                        endereco_completo = f"{rua}, {bairro_nome}, {cidade_nome}, {estado_nome}, {cep}"
+                        # latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
+                    except:
+                        pass
+                    
+                    # Criar ou atualizar endereço
+                    if endereco_id:
+                        # Atualizar endereço existente
+                        try:
+                            endereco = Endereco.objects.get(id=endereco_id, profissional=user)
+                            endereco.rua = rua
+                            endereco.numero = int(numero) if numero else None
+                            endereco.complemento = complemento
+                            endereco.bairro = bairro
+                            endereco.cidade = cidade
+                            endereco.estado = estado
+                            endereco.cep = cep_obj
+                            endereco.latitude = latitude
+                            endereco.longitude = longitude
+                            endereco.save()
+                            messages.success(request, 'Endereço atualizado com sucesso!')
+                        except Endereco.DoesNotExist:
+                            messages.error(request, 'Endereço não encontrado.')
+                            return redirect('editar_perfil')
+                    else:
+                        # Criar novo endereço
+                        endereco = Endereco.objects.create(
+                            rua=rua,
+                            numero=int(numero) if numero else None,
+                            complemento=complemento,
+                            bairro=bairro,
+                            cidade=cidade,
+                            estado=estado,
+                            cep=cep_obj,
+                            latitude=latitude,
+                            longitude=longitude,
+                            profissional=user
+                        )
+                        user.enderecos.add(endereco)
+                        messages.success(request, 'Endereço adicionado com sucesso!')
+                    
+                    return redirect('editar_perfil')
+                    
+            except Exception as e:
+                logging.error(f"Erro ao processar endereço: {e}")
+                messages.error(request, 'Erro ao processar endereço. Tente novamente.')
+                return redirect('editar_perfil')
+        
+        elif action == 'remove_address':
+            logging.debug(f"Removendo endereço - endereco_id: {request.POST.get('endereco_id')}")
+            endereco_id = request.POST.get('endereco_id')
+            
+            if endereco_id:
+                try:
+                    endereco = Endereco.objects.get(id=endereco_id, profissional=user)
+                    logging.debug(f"Endereço encontrado: {endereco}")
+                    endereco.delete()
+                    logging.debug("Endereço removido com sucesso")
+                    messages.success(request, 'Endereço removido com sucesso!')
+                except Endereco.DoesNotExist:
+                    logging.error(f"Endereço não encontrado - ID: {endereco_id}")
+                    messages.error(request, 'Endereço não encontrado.')
+                except Exception as e:
+                    logging.error(f"Erro ao remover endereço: {e}")
+                    messages.error(request, 'Erro ao remover endereço.')
+            else:
+                logging.error("ID do endereço não fornecido")
+                messages.error(request, 'ID do endereço não fornecido.')
+            
+            return redirect('editar_perfil')
         
         elif action == 'responder_pergunta':
             form = RespostaForm(request.POST)
@@ -663,76 +937,6 @@ def alterar_Profissional(request):
                 messages.error(request, 'Erro ao responder pergunta.')
                 
                 
-        elif action == 'update_address':
-            form = AddressUpdateForm(request.POST)  # ou outro formulário adequado
-            if form.is_valid():
-                # Inicia a transação atômica
-                with transaction.atomic():
-                    # Obtenha as listas de CEPs e Complementos
-                    ceps = request.POST.getlist('cep[]')
-                    complementos = request.POST.getlist('complemento[]')
-
-                    # Lista para armazenar os objetos criados/obtidos
-                    enderecos = []
-                    estados = []
-                    cidades = []
-                    bairros = []
-                    ceps_list = []
-
-                    # Itere sobre as listas
-                    for i, cep in enumerate(ceps):
-                        complemento = complementos[i]
-
-                        # Consulta a API ViaCEP para obter as informações do endereço
-                        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-                        data = response.json()
-
-                        if response.status_code == 200 and not data.get('erro'):
-                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-                            cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-
-                            # Obtenha as coordenadas
-                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
-
-                            # Cria o objeto Endereco
-                            endereco, _ = Endereco.objects.get_or_create(
-                                rua=data['logradouro'],
-                                complemento=complemento,
-                                bairro=bairro,
-                                cidade=cidade,
-                                estado=estado,
-                                cep=cep_obj,
-                                latitude=latitude,
-                                longitude=longitude,
-                                profissional=user  # Supondo que o usuário é um profissional
-                            )
-
-                            # Adiciona os objetos às listas
-                            estados.append(estado)
-                            cidades.append(cidade)
-                            bairros.append(bairro)
-                            enderecos.append(endereco)
-                            ceps_list.append(cep_obj)
-
-                    # Associa os objetos ao profissional
-                    user.estado.set(estados)
-                    user.cidade.set(cidades)
-                    user.bairro.set(bairros)
-                    user.ceps.set(ceps_list)
-                    user.enderecos.set(enderecos)
-
-                    # Salva o profissional
-                    user.save()
-
-                    messages.success(request, 'Endereço atualizado com sucesso!')
-                    return redirect('editar_perfil')
-    else:
-        logging.debug(f"Formulário não é válido. Erros: {form.errors}")
-        messages.error(request, 'Erro na atualização do endereço.')
-
     logging.debug("Finalizando alterar_Profissional")
 
     return render(request, 'core/editar_profissional.html', {

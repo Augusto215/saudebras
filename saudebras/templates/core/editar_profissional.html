@@ -1,567 +1,1712 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
+<style>
+  /* Reset de estilos para inputs */
+  .profile-settings-card input,
+  .profile-settings-card textarea {
+    text-decoration: none !important;
+    border-bottom: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+  }
+  
+  /* Estilos para mensagens de alerta */
+  .alert {
+    border-radius: 12px;
+    border: none;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  
+  .alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #059669;
+  }
+  
+  .alert-error,
+  .alert-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #dc2626;
+  }
+  
+  .alert-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .alert-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: inherit;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+  
+  .btn-close:hover {
+    opacity: 1;
+  }
+  
+  /* Botão verde personalizado */
+  .btn-success {
+    background: #00ae9d !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+  }
+  
+  .btn-success:hover:not(:disabled) {
+    background: #008e7a !important;
+  }
+  
+  .btn-success:disabled {
+    background: #a1a1aa !important;
+    cursor: not-allowed !important;
+  }
+  
+  .profile-settings-container {
+    background: #f8fafc;
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+  .profile-settings-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .profile-sidebar {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    padding: 2rem 1.5rem;
+    min-height: 600px;
+    width: 250px;
+  }
+  .sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-nav li {
+    margin-bottom: 0.5rem;
+  }
+  .sidebar-nav button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .sidebar-nav button:hover,
+  .sidebar-nav button.active {
+    background: #00ae9d;
+    color: #fff;
+  }
+  .profile-content {
+    padding: 2.5rem;
+    flex: 1;
+  }
+  .profile-section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #00ae9d;
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+  .profile-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: visible;
+  }
+  .profile-img-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .profile-img-section img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 4px solid #e2e8f0;
+  }
+  .profile-img-section .edit-btn {
+    background: #00ae9d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .profile-img-section .edit-btn:hover {
+    background: #008e7a;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    font-size: 0.9rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .form-group input,
+  .form-group textarea {
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    background: #f9fafb !important;
+    transition: all 0.2s;
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid #d1d5db !important;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: #00ae9d !important;
+    outline: none !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 174, 157, 0.1) !important;
+    border-bottom: 1px solid #00ae9d !important;
+  }
+  .btn-primary {
+    background: #00ae9d;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 1rem;
+  }
+  .btn-primary:hover {
+    background: #008e7a;
+  }
+  .btn-secondary {
+    background: #6b7280;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
+  
+  /* Botões menores para ações secundárias */
+  .btn-small {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    min-width: auto !important;
+  }
+  
+  /* Botões de adicionar menores */
+  #addConvenio, 
+  #addIdioma, 
+  #addServico {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    min-width: auto !important;
+  }
+  
+  /* Botão de adicionar endereço menor */
+  #addEnderecoBtn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    min-width: auto !important;
+  }
+  
+  /* Botões de ação de endereço menores */
+  .endereco-actions .btn-secondary,
+  .endereco-actions .btn-danger {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    min-width: auto !important;
+  }
+  
+  /* Botões do formulário de endereço menores */
+  #cancelarEndereco {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    min-width: auto !important;
+  }
+  
+  /* Botões das abas da sidebar menores */
+  .sidebar-nav button {
+    padding: 0.7rem 1.2rem !important;
+    font-size: 0.9rem !important;
+  }
+  /* Estilos para tags criadas dinamicamente */
+  #conveniosContainer, #idiomasContainer, #servicosContainer {
+    min-height: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    position: relative;
+    z-index: 1;
+  }
+  .tag-item {
+    display: inline-flex;
+    align-items: center;
+    background: #e8f4f8;
+    border: 1px solid #00ae9d;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #1e293b;
+    width: fit-content;
+    position: relative;
+  }
+  .tag-remove {
+    background: none !important;
+    border: none !important;
+    color: #dc2626 !important;
+    margin-left: 0.8rem !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Especificidade máxima para garantir que seja sempre vermelho */
+  #conveniosContainer .tag-remove,
+  #idiomasContainer .tag-remove,
+  #servicosContainer .tag-remove,
+  span.tag-item .tag-remove,
+  span .tag-remove {
+    background: none !important;
+    border: none !important;
+    color: #dc2626 !important;
+    margin-left: 0.8rem !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .tag-remove:hover,
+  #conveniosContainer .tag-remove:hover,
+  #idiomasContainer .tag-remove:hover,
+  #servicosContainer .tag-remove:hover,
+  span.tag-item .tag-remove:hover,
+  span .tag-remove:hover {
+    color: #b91c1c !important;
+    background: rgba(220, 38, 38, 0.1) !important;
+    border-radius: 50% !important;
+  }
+  /* Estilos para o formulário de adição */
+  .add-form-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 10;
+  }
+  .add-form-select {
+    appearance: none;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+    min-width: 200px;
+    position: relative;
+    z-index: 15;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+  }
+  .add-form-select:focus {
+    outline: none;
+    border-color: #00ae9d;
+    box-shadow: 0 0 0 3px rgba(0, 174, 157, 0.1);
+    z-index: 20;
+  }
+  .add-form-button {
+    background: #00ae9d;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .add-form-button:hover {
+    background: #008e7a;
+  }
+  /* Garante que o container principal não esconda o dropdown */
+  .profile-settings-container {
+    overflow: visible !important;
+  }
+  .profile-content {
+    overflow: visible !important;
+  }
+  .conteudo {
+    display: none;
+  }
+  .conteudo.active {
+    display: block;
+  }
+  .subscription-info {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #92400e;
+  }
+  .trial-text {
+    font-weight: 600;
+    color: #92400e;
+    margin-top: 1rem;
+  }
+  @media (max-width: 768px) {
+    .profile-settings-card {
+      margin: 0 1rem;
+      flex-direction: column;
+    }
+    .profile-sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .profile-content {
+      padding: 1.5rem;
+    }
+  }
+  
+  /* Estilos para mensagens de erro */
+  .error-message {
+    display: block;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    color: #dc2626 !important;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Estilos para modal de confirmação da foto */
+  .confirmation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1060;
+    opacity: 0;
+    animation: fadeInOverlay 0.3s ease-out forwards;
+  }
+  
+  .confirmation-modal {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    width: 90%;
+    max-height: 90vh;
+    margin: 2rem;
+    overflow: hidden;
+    transform: scale(0.9) translateY(20px);
+    animation: slideInModal 0.3s ease-out forwards;
+  }
+  
+  .confirmation-modal-header {
+    padding: 1.5rem 2rem 1rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .confirmation-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .confirmation-modal-body {
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+  
+  .confirmation-modal-body p {
+    margin: 0 0 1.5rem 0;
+    color: #6b7280;
+    font-size: 1rem;
+  }
+  
+  .preview-section {
+    margin: 1rem 0;
+  }
+  
+  .preview-section img {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+  }
+  
+  .confirmation-modal-footer {
+    padding: 1rem 2rem 1.5rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .confirmation-modal-footer .btn-secondary {
+    background: #6b7280;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .confirmation-modal-footer .btn-secondary:hover {
+    background: #4b5563;
+  }
+  
+  .confirmation-modal-footer .btn-primary {
+    background: #00ae9d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .confirmation-modal-footer .btn-primary:hover {
+    background: #008e7a;
+  }
+  
+  /* Estilos para seção de endereços */
+  .endereco-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background: #f9fafb;
+    transition: all 0.2s;
+  }
+  
+  .endereco-item:hover {
+    border-color: #00ae9d;
+    background: #f0fdfa;
+  }
+  
+  .endereco-info h6 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-weight: 600;
+  }
+  
+  .endereco-info p {
+    margin: 0.25rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+  
+  .endereco-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+  
+  .btn-danger {
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9ca3af;
+  }
+  
+  .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .loading-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+  }
+  
+  .loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #00ae9d;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Espaçamento melhorado para formulário de endereços */
+  #enderecoForm .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  #enderecoForm .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  #enderecoForm .form-control {
+    padding: 0.75rem 1.5rem;
+    padding-left: 1.5rem;
+    margin-left: 0.5rem;
+    width: calc(100% - 1rem);
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    text-indent: 0 !important;
+  }
+  
+  #enderecoForm input[type="text"] {
+    padding-left: 1.5rem !important;
+    text-indent: 0 !important;
+  }
+  
+  #enderecoForm .form-control:focus {
+    outline: none;
+    border-color: #00ae9d;
+    box-shadow: 0 0 0 3px rgba(0, 174, 157, 0.1);
+  }
+  
+  #enderecoForm .form-control[readonly] {
+    background-color: #f9fafb;
+    color: #6b7280;
+  }
+  
+  /* Estilos específicos para modal de exclusão de endereço */
+  .address-preview {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .address-preview h6 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-weight: 600;
+  }
+  
+  .address-preview p {
+    margin: 0.25rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+  
+  .confirmation-modal-header .text-warning {
+    color: #f59e0b !important;
+  }
+  
+  .confirmation-modal-footer .btn-danger {
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .confirmation-modal-footer .btn-danger:hover {
+    background: #b91c1c;
+  }
+  
+  .alert {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+  }
+  
+  .alert-warning {
+    background-color: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+  }
+  
+  /* Estilos para ícones Bootstrap */
+  .bi {
+    vertical-align: -0.125em;
+  }
+  
+  /* Responsividade para modais */
+  @media (max-width: 768px) {
+    .confirmation-modal {
+      margin: 1rem;
+      max-width: none;
+      width: calc(100% - 2rem);
+    }
+    
+    .confirmation-modal-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .confirmation-modal-footer button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* Estilos para modal de confirmação personalizada */
+  .custom-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeInOverlay 0.3s ease-in forwards;
+  }
+  
+  .custom-confirm-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: scale(0.9) translateY(-20px);
+    animation: slideInModal 0.3s ease-out forwards;
+  }
+  
+  .custom-confirm-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .custom-confirm-message {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  .custom-confirm-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .custom-confirm-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+  }
+  
+  .custom-confirm-btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  
+  .custom-confirm-btn-cancel:hover {
+    background: #e5e7eb;
+  }
+  
+  .custom-confirm-btn-confirm {
+    background: #dc2626;
+    color: white;
+  }
+  
+  .custom-confirm-btn-confirm:hover {
+    background: #b91c1c;
+  }
+  
+  @keyframes fadeInOverlay {
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideInModal {
+    to { 
+      transform: scale(1) translateY(0);
+    }
+  }
+</style>
+
+<!-- Modal para editar foto -->
 <div class="modal fade" id="editarFoto" tabindex="-1" aria-labelledby="editarFotoLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editarFoto">Editar Foto</h5>
+        <h5 class="modal-title" id="editarFoto">Editar Foto de Perfil</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="editarFoto" enctype="multipart/form-data" method="post" action="{%url 'alterar_Profissional' %}">
+        <form id="formEditarFoto" enctype="multipart/form-data" method="post" action="{% url 'alterar_Profissional' %}">
           {% csrf_token %}
-          <p><input type="file"  name="foto"></p>
-
-          <p><button name="action" value="update_photo" type="submit">Enviar</button></p>
-
-
+          <div class="form-group mb-3">
+            <label for="inputFoto" class="form-label">Selecionar nova foto</label>
+            <input type="file" id="inputFoto" name="foto" class="form-control" accept="image/*" required>
+            <div class="form-text text-muted">
+              Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+            </div>
+            <div id="preview-container" class="mt-3" style="display: none;">
+              <img id="preview-image" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+            </div>
+            <div id="error-message" class="text-danger mt-2" style="display: none;"></div>
+          </div>
         </form>
       </div>
-
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnSalvarFoto" class="btn-success" disabled>Salvar Foto</button>
+      </div>
     </div>
   </div>
 </div>
-<!-- Editar Perfil -->
-<div class="w-100 d-flex" style="background:#FAFAFA; flex-grow:1;">
-<div id="container"  class="editarContainer d-flex container mt-5" style="gap:5rem;" >
-  <div id="sidebar" class="d-flex flex-column editar_perfil" style="gap:2rem;">
-    <button onclick="alterarConteudo('conteudo1')">Editar Perfil</button>
-    <button onclick="alterarConteudo('conteudo2')">Endereços</button>
-    <button onclick="alterarConteudo('conteudo3')">Perguntas</button>
-    
-    {%if profissional.is_active == False%}
-    
 
-<button id="checkout-button">Assinar</button>
-
-<script type="text/javascript">
-    document.getElementById('checkout-button').addEventListener('click', () => {
-      fetch('https://saudebras.com.br/create-subscription/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        }
-    })
-    .then(response => {
-      if (!response.ok) {
-          return Promise.reject('Failed to create subscription');
-      }
-      return response.json();
-  })
-  .then((session) => {
-      window.location.href = session.url;
-  })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-
-
-            function getCookie(name) {
-              let cookieValue = null;
-              if (document.cookie && document.cookie !== '') {
-                  const cookies = document.cookie.split(';');
-                  for (let i = 0; i < cookies.length; i++) {
-                      const cookie = cookies[i].trim();
-                      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                          break;
-                      }
-                  }
-              }
-              return cookieValue;
-          }
-    });
-</script>
-
-    {%endif%}
-    {% if has_active_subscription and days_remaining is None %}
-    <form class="w-100" method="post" action="{% url 'cancel-subscription' %}">
-        {% csrf_token %}
-        <button class="w-100" type="submit">Cancelar</button>
-    </form>
-{% endif %}
-    <a  class="w-100" style="text-decoration:none;" href="{% url 'perfil_profissional' profissional.id %}"><button class="w-100">Ver Perfil</button></a>
-     {% if days_remaining is not None %}
-        <p class="trial-text" style="color:#000 !important;">Dias restantes no período de teste: {{ days_remaining }}</p>
-
-    {% endif %}
-
-   
-  </div>
-
-  <div id="main-content" class=" mb-5">
-    <div id="conteudo1" class="conteudo"> 
-
-      <form id="editarPerfil" enctype="multipart/form-data" method="post" action="{%url 'alterar_Profissional'%}">
-        {% csrf_token %}
-
-      <div class="d-flex mb-3 align-items-center justify-content-center w-100" style="gap:2rem; ">
-        <div class="d-flex flex-column w-100">
-          <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;"> 
-      <div  class="d-flex align-items-center mb-4 w-100 pic-box" style="gap:1rem;"><span class="p-3" style="border:solid 1px #BEBEBE; border-radius:4px; position:relative;"><a href="#" data-bs-toggle="modal" data-bs-target="#editarFoto" class="p-2 pencil" style="position:absolute;text-decoration:none; background:#fff; display:none; top:-15px; left:-15px; border-radius:50%; border:3px solid #04AA6D;"><img style="max-height:1.5rem;" src="{%static 'img/pencil.png' %}"></a><img style="height:7rem; width:7rem; object-fit:cover;" {%if profissional.foto%}src="{{profissional.foto.url}}" {%else%} src="#" {%endif%}></span>
-      <span style="font-size:1.3rem; font-weight:600;">{{profissional.nome}}&nbsp;{{profissional.sobrenome}}</span> </div>    
-      <div class="d-flex w-100 justify-content-start" style="gap:3rem;">
-      <span class="d-flex flex-column justify-content-center align-items-start" style="color:#000 !important; "><label style="font-weight:600" for="nome">Nome:</label><input style="width:100%; max-width:12rem;"  id="nome" name="nome" value="{{profissional.nome}}"></span> 
-      <span  class="d-flex flex-column justify-content-center align-items-start" style="color:#000 !important; "><label style="font-weight:600" for="sobrenome">Sobrenome:</label><input  style="width:100%; max-width:12rem;" name="sobrenome" id="sobrenome" value="{{profissional.sobrenome}}"></span> 
+<!-- Modal de confirmação para alteração de foto -->
+<div class="confirmation-modal-overlay" id="confirmPhotoModal" style="display: none;">
+  <div class="confirmation-modal">
+    <div class="confirmation-modal-header">
+      <h3>Confirmar Alteração de Foto</h3>
+    </div>
+    <div class="confirmation-modal-body">
+      <p>Tem certeza que deseja alterar sua foto de perfil?</p>
+      <div class="preview-section">
+        <img id="confirmPreviewImage" src="" alt="Nova foto" style="max-width: 150px; max-height: 150px; border-radius: 8px;">
       </div>
     </div>
-    <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-      <span class="d-flex flex-column justify-content-center align-items-start mb-3" style="color:#000 !important; gap:1rem;"><label style="font-weight:600" for="descricao">Experiência:</label><input style="width:100%;" name="descricao" id="descricao" value="{{profissional.descricao}}"></span>
+    <div class="confirmation-modal-footer">
+      <button type="button" id="cancelPhotoChange" class="btn-secondary">Cancelar</button>
+      <button type="button" id="confirmPhotoChange" class="btn-primary">Confirmar</button>
     </div>
-    <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-      <span class="d-flex flex-column justify-content-center align-items-start mb-3" style="color:#000 !important; gap:1rem;"><label for="descricao" style="font-weight:600">Telefone:</label><input style="width:100%;" id="telefone" name="telefone" value="{{profissional.telefone}}"></span>
-    </div>
-    <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-      <span class="d-flex flex-column justify-content-center align-items-start mb-3" style="color:#000 !important; gap:1rem;"><label style="font-weight:600" for="preco">Valor da Consulta:</label><input style="width:100%;" name="preco" id="preco" value="{{profissional.preco}}"></span>
-    </div>
-    
-    
-    
-  
-    
-    <div>
-      <div>
-      
+  </div>
+</div>
 
-          <div class="p-4 convenios-perfil mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-            <span style="font-weight:600">Convênios:<br></span>
-              <!-- Outros campos aqui... -->
+<!-- Modal de confirmação para exclusão de endereço -->
+<div class="confirmation-modal-overlay" id="confirmDeleteAddressModal" style="display: none;">
+  <div class="confirmation-modal">
+    <div class="confirmation-modal-header">
+      <h3><i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirmar Exclusão</h3>
+    </div>
+    <div class="confirmation-modal-body">
+      <p>Tem certeza que deseja <strong>remover permanentemente</strong> este endereço?</p>
+      <div class="address-preview" id="addressPreview">
+        <!-- Dados do endereço serão inseridos aqui -->
+      </div>
+      <div class="alert alert-warning mt-3" style="font-size: 0.9rem;">
+        <i class="bi bi-info-circle me-1"></i>
+        Esta ação não pode ser desfeita.
+      </div>
+    </div>
+    <div class="confirmation-modal-footer">
+      <button type="button" id="cancelDeleteAddress" class="btn-secondary">Cancelar</button>
+      <button type="button" id="confirmDeleteAddress" class="btn-danger">
+        <i class="bi bi-trash me-1"></i>Remover Endereço
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="profile-settings-container">
+  <!-- Mensagens de feedback -->
+  {% if messages %}
+    <div class="container mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <div class="profile-settings-card d-flex">
+    <!-- Sidebar -->
+    <div class="profile-sidebar">
+      <ul class="sidebar-nav">
+        <li><button onclick="alterarConteudo('conteudo1')" class="tab-btn active">Editar Perfil</button></li>
+        <li><button onclick="alterarConteudo('conteudo2')" class="tab-btn">Endereços</button></li>
+        <li><button onclick="alterarConteudo('conteudo3')" class="tab-btn">Perguntas</button></li>
+      </ul>
+      
+      {% if profissional.is_active == False %}
+      <div class="subscription-info">
+        <button id="checkout-button" class="btn-primary w-100">Assinar Plano</button>
+      </div>
+      {% endif %}
+      
+      <a href="{% url 'perfil_profissional' profissional.id %}" class="text-decoration-none">
+        <button class="btn-secondary w-100 mt-2">Ver Perfil Público</button>
+      </a>
+      
+      {% if days_remaining is not None %}
+      <div class="trial-text">
+        Dias restantes no período de teste: {{ days_remaining }}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Content Area -->
+    <div class="profile-content">
+      <!-- Conteúdo 1: Editar Perfil -->
+      <div id="conteudo1" class="conteudo active">
+        <div class="profile-section-title">Configurações da Conta</div>
+        
+        <form id="editarPerfil" enctype="multipart/form-data" method="post" action="{% url 'alterar_Profissional' %}">
+          {% csrf_token %}
           
-              <div id="conveniosContainer" class="d-flex flex-column mt-4 mb-3">
-                  <!-- Os convênios atuais seriam listados aqui -->
+          <!-- Seção da foto -->
+          <div class="profile-card">
+            <h6 class="mb-3">Meu Perfil</h6>
+            <div class="profile-img-section">
+              <img {% if profissional.foto %}src="{{profissional.foto.url}}"{% else %}src="https://via.placeholder.com/100"{% endif %} alt="Foto do perfil">
+              <div>
+                <h5>{{profissional.nome}} {{profissional.sobrenome}}</h5>
+                <button type="button" class="edit-btn" data-bs-toggle="modal" data-bs-target="#editarFoto">
+                  Alterar Imagem
+                </button>
               </div>
-          
-              <button type="button" id="addConvenio">Adicionar Convênio</button>
-          </div>
-
-
-        <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-          <span style="font-weight:600">Idiomas:<br></span>
-            <!-- Outros campos aqui... -->
-        
-            <div id="idiomasContainer" class="d-flex mt-4 flex-column mb-3">
-                <!-- Os idiomas atuais seriam listados aqui -->
             </div>
-        
-            <button type="button" id="addIdioma">Adicionar Idioma</button>
-        </div>
-        <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-          <span style="font-weight:600;">Serviços:<br></span>
-            <!-- Outros campos aqui... -->
-        
-            <div id="servicosContainer" class="d-flex flex-column mt-4 mb-3">
-                <!-- Os serviços atuais seriam listados aqui -->
+          </div>
+
+          <!-- Informações básicas -->
+          <div class="profile-card">
+            <h6 class="mb-3">Informações Básicas</h6>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" value="{{profissional.nome}}">
+              </div>
+              <div class="form-group">
+                <label for="sobrenome">Sobrenome</label>
+                <input type="text" id="sobrenome" name="sobrenome" value="{{profissional.sobrenome}}">
+              </div>
             </div>
-        
-            <button type="button" id="addServico">Adicionar Serviço</button>
-        </div>
-        <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-          <div>
-
+            <div class="form-row">
+              <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" name="telefone" value="{{profissional.telefone}}">
+              </div>
+              <div class="form-group">
+                <label for="preco">Valor da Consulta</label>
+                <input type="text" id="preco" name="preco" value="{{profissional.preco}}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="descricao">Experiência Profissional</label>
+              <textarea id="descricao" name="descricao" rows="4">{{profissional.descricao}}</textarea>
+            </div>
           </div>
-          <div id="fotosContainer"></div>
-          <div id="fileInputsContainer"></div>
-          <div class="d-flex mt-2" style="gap:.5rem;">
-          <button id="addFileInput" style="width:100%:" type="button">Adicionar mais fotos</button>
+
+          <!-- Convênios -->
+          <div class="profile-card">
+            <h6 class="mb-3">Convênios</h6>
+            <div id="conveniosContainer"></div>
+            <button type="button" id="addConvenio" class="btn-secondary">Adicionar Convênio</button>
+          </div>
+
+          <!-- Idiomas -->
+          <div class="profile-card">
+            <h6 class="mb-3">Idiomas</h6>
+            <div id="idiomasContainer"></div>
+            <button type="button" id="addIdioma" class="btn-secondary">Adicionar Idioma</button>
+          </div>
+
+          <!-- Serviços -->
+          <div class="profile-card">
+            <h6 class="mb-3">Serviços</h6>
+            <div id="servicosContainer"></div>
+            <button type="button" id="addServico" class="btn-secondary">Adicionar Serviço</button>
+          </div>
+
+          <button type="submit" name="action" value="update_profile" class="btn-primary">Salvar Alterações</button>
+        </form>
+      </div>
+
+      <!-- Conteúdo 2: Endereços -->
+      <div id="conteudo2" class="conteudo">
+        <div class="profile-section-title">Endereços</div>
+        
+        <!-- Lista de endereços existentes -->
+        <div class="profile-card">
+          <h6 class="mb-3">Meus Endereços</h6>
+          <div id="enderecosContainer">
+            {% for endereco in profissional.enderecos.all %}
+            <div class="endereco-item" data-id="{{ endereco.id }}"
+                 data-cep="{{ endereco.cep.codigo }}"
+                 data-rua="{{ endereco.rua }}"
+                 data-numero="{{ endereco.numero|default:'' }}"
+                 data-complemento="{{ endereco.complemento|default:'' }}"
+                 data-bairro="{{ endereco.bairro.nome }}"
+                 data-cidade="{{ endereco.cidade.nome }}"
+                 data-estado="{{ endereco.estado.nome }}">
+              <div class="endereco-info">
+                <h6>{{ endereco.rua }}{% if endereco.numero %}, {{ endereco.numero }}{% endif %}</h6>
+                <p>{{ endereco.bairro.nome }}, {{ endereco.cidade.nome }} - {{ endereco.estado.nome }}</p>
+                <p>CEP: {{ endereco.cep.codigo }}{% if endereco.complemento %} - {{ endereco.complemento }}{% endif %}</p>
+              </div>
+              <div class="endereco-actions">
+                <button type="button" class="btn-secondary btn-sm" onclick="editarEndereco({{ endereco.id }})">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
+                <button type="button" class="btn-danger btn-sm" onclick="removerEndereco({{ endereco.id }})">
+                  <i class="bi bi-trash"></i> Remover
+                </button>
+              </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+              <i class="bi bi-house-door"></i>
+              <p>Nenhum endereço cadastrado</p>
+            </div>
+            {% endfor %}
+          </div>
           
-      <button type="submit" name="action" value="update_profile" class="attButton" value="atualizar_profissional">Atualizar Perfil Profissional</button>
-          </div>
+          <button type="button" id="addEnderecoBtn" class="btn-primary mt-3">
+            <i class="bi bi-plus"></i> Adicionar Endereço
+          </button>
         </div>
-    <script>
-      
-      // Preenchidas pelo template do servidor
-      const allConvenios = [
-        {% for convenio in convenios %}
-          {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
-        {% endfor %}
-      ];
-      
-      const userConvenios = [
-        {% for convenio in profissional.convenios.all %}
-          {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
-        {% endfor %}
-      ];
-      
-      let selectedConvenios = userConvenios.map(c => c.id);
-      
-      // Função para atualizar a visibilidade do botão 'Adicionar Convênio'
-      function updateAddButtonVisibility() {
-        const addButton = document.getElementById("addConvenio");
-        addButton.addEventListener('click', function()
-        {
-          this.style.display = 'none'
-        })
-        const availableConvenios = allConvenios.filter(c => !selectedConvenios.includes(c.id));
-      
-        if (availableConvenios.length === 0) {
-          addButton.style.display = 'none';
-        } else {
-          addButton.style.display = 'inline-block';
-        }
-      }
-      
-      
-      // Função para criar elemento de convênio
-      function createConvenioElement(id) {
-        const convenio = allConvenios.find(c => c.id === id);
-        const span = document.createElement("span");
-        span.textContent = convenio.nome;
-      
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "X";
-        removeButton.addEventListener("click", () => removeConvenioFromList(id, span));
-      
-        const hiddenInput = document.createElement("input");
-        hiddenInput.type = "hidden";
-        hiddenInput.name = "convenios";
-        hiddenInput.value = id;
-      
-        span.appendChild(removeButton);
-        const container = document.getElementById("conveniosContainer");
-        container.appendChild(span);
-        container.appendChild(hiddenInput); 
-        
-        // Adiciona o input oculto
 
-      }
-      
-      
-      // Função para remover convênio da lista
-      function removeConvenioFromList(id, element) {
-        const index = selectedConvenios.indexOf(id);
-        if (index > -1) {
-          selectedConvenios.splice(index, 1);
-          element.remove();
-      
-          const container = document.getElementById("conveniosContainer");
-          const hiddenInput = container.querySelector(`input[value="${id}"]`);
-          if (hiddenInput) {
-            hiddenInput.remove();  // Remove o input oculto
-          }
-        }
-        updateAddButtonVisibility();
-      }
-      
-      
-      // Inicializa a lista de convênios que o usuário já tem
-     
-      
-      document.getElementById("addConvenio").addEventListener("click", () => {
-        const select = document.createElement("select");
-        select.style.width = 'fit-content';
-        allConvenios.forEach(convenio => {
-          if (!selectedConvenios.includes(convenio.id)) {
-            const option = document.createElement("option");
-            option.value = convenio.id;
-            option.text = convenio.nome;
-            select.appendChild(option);
-          }
-        });
-      
-        const addButton = document.createElement("button");
-        addButton.textContent = "Adicionar";
-        addButton.style.background = '#04AA6D';
-        addButton.style.color = '#fff';
-        addButton.style.border = 'none';
-        addButton.style.marginTop = '.5rem';
-        addButton.style.width = 'fit-content';
-        
+        <!-- Formulário de endereço (oculto inicialmente) -->
+        <div id="enderecoForm" class="profile-card" style="display: none;">
+          <h6 id="enderecoFormTitle" class="mb-3">Adicionar Endereço</h6>
+          <form id="formEndereco" method="post" action="{% url 'alterar_Profissional' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_address">
+            <input type="hidden" id="enderecoId" name="endereco_id" value="">
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cep">CEP *</label>
+                <input type="text" id="cep" name="cep" class="form-control" placeholder="00000-000" maxlength="9" required>
+                <div id="cepError" class="error-message" style="display: none;"></div>
+              </div>
+              <div class="form-group">
+                <label for="numero">Número</label>
+                <input type="number" id="numero" name="numero" class="form-control" placeholder="123">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="rua">Rua *</label>
+                <input type="text" id="rua" name="rua" class="form-control" readonly required>
+              </div>
+              <div class="form-group">
+                <label for="complemento">Complemento</label>
+                <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Apto 101, Bloco A">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="bairro">Bairro *</label>
+                <input type="text" id="bairro" name="bairro" class="form-control" readonly required>
+              </div>
+              <div class="form-group">
+                <label for="cidade">Cidade *</label>
+                <input type="text" id="cidade" name="cidade" class="form-control" readonly required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="estado">Estado *</label>
+                <input type="text" id="estado" name="estado" class="form-control" readonly required>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" id="cancelarEndereco" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">
+                <span id="saveEnderecoText">Salvar Endereço</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
-        addButton.addEventListener("click", () => {
-          selectedConvenios.push(Number(select.value));
-          createConvenioElement(Number(select.value));
-          select.remove();
-          addButton.remove();
-          updateAddButtonVisibility();
-          document.querySelector('#addConvenio').style.display = 'block';
-          updateAddButtonVisibility();
-        });
-      
-        document.getElementById("conveniosContainer").appendChild(select);
-        document.getElementById("conveniosContainer").appendChild(addButton);
-      });
+      <!-- Conteúdo 3: Perguntas -->
+      <div id="conteudo3" class="conteudo">
+        <div class="profile-section-title">Perguntas</div>
+        <div class="profile-card">
+          <p>Seção de perguntas será implementada aqui.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Função para criar modal de confirmação personalizada
+function createCustomConfirm(message, onConfirm, onCancel) {
+  // Gerar IDs únicos para evitar conflitos
+  const uniqueId = Date.now() + Math.random().toString(36).substr(2, 9);
+  const cancelId = `confirmCancel_${uniqueId}`;
+  const confirmId = `confirmOk_${uniqueId}`;
   
+  // Criar overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-confirm-overlay';
   
-      
-      </script>
-      <script>
-        window.onload = function() {
-          // Inicializa a galeria do usuário com fotos já existentes
-        
-   // O array de fotos do usuário; geralmente, isso viria do seu servidor
-const userFotos = [
-{% for fotoUser in profissional.galeria.all %}
-  {id: {{ fotoUser.id }}, url: "{{ fotoUser.imagem.url }}"},
-{% endfor %}
+  // Criar modal
+  const modal = document.createElement('div');
+  modal.className = 'custom-confirm-modal';
+  
+  // Criar conteúdo da modal
+  modal.innerHTML = `
+    <div class="custom-confirm-title">Confirmar Remoção</div>
+    <div class="custom-confirm-message">${message}</div>
+    <div class="custom-confirm-buttons">
+      <button type="button" class="custom-confirm-btn custom-confirm-btn-cancel" id="${cancelId}">Cancelar</button>
+      <button type="button" class="custom-confirm-btn custom-confirm-btn-confirm" id="${confirmId}">Confirmar</button>
+    </div>
+  `;
+  
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  
+  // Função para remover a modal
+  function removeModal() {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      if (overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    }, 300);
+  }
+  
+  // Event listeners com IDs únicos para evitar conflitos
+  const cancelBtn = document.getElementById(cancelId);
+  const confirmBtn = document.getElementById(confirmId);
+  
+  cancelBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeModal();
+    if (onCancel) onCancel();
+  });
+  
+  confirmBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeModal();
+    if (onConfirm) onConfirm();
+  });
+  
+  // Fechar ao clicar fora da modal
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      e.preventDefault();
+      e.stopPropagation();
+      removeModal();
+      if (onCancel) onCancel();
+    }
+  });
+  
+  // Fechar com ESC
+  function handleEscape(e) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      removeModal();
+      document.removeEventListener('keydown', handleEscape);
+      if (onCancel) onCancel();
+    }
+  }
+  document.addEventListener('keydown', handleEscape);
+  
+  // Prevenir propagação de eventos na modal
+  modal.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+  
+  // Prevenir submit em formulários
+  modal.addEventListener('submit', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+}
+
+// Dados dos convênios, idiomas e serviços - preenchidos pelo template
+const allConvenios = [
+  {% for convenio in convenios %}
+    {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
+  {% endfor %}
 ];
 
+const userConvenios = [
+  {% for convenio in profissional.convenios.all %}
+    {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
+  {% endfor %}
+];
 
-userFotos.forEach(foto => {
-  createFotoElement(foto.id, foto.url);
-});
+const allIdiomas = [
+  {% for idioma in idiomas %}
+    {id: {{ idioma.id }}, nome: "{{ idioma.nome }}"},
+  {% endfor %}
+];
 
+const userIdiomas = [
+  {% for idioma in profissional.idiomas.all %}
+    {id: {{ idioma.id }}, nome: "{{ idioma.nome }}"},
+  {% endfor %}
+];
 
-function createFotoElement(id, url) {
-  const container = document.createElement("div");
-
-  // Criando a imagem
-  const img = document.createElement("img");
-  img.src = url;
-  img.style.objectFit = 'cover';
-  img.style.margin = '.5rem';
-  img.style.borderRadius = '4px';
-  img.width = 100;
-  img.height = 100;
-  console.log("ativo")
-
-  // Criando o botão de remover
-  const removeButton = document.createElement("button");
-  removeButton.textContent = "X";
-  removeButton.addEventListener("click", () => {
-    removeFoto(id, container);
-  });
-
-  // Criando o input hidden
-  const hiddenInput = document.createElement("input");
-  hiddenInput.type = "hidden";
-  hiddenInput.name = "galeria";
-  hiddenInput.value = id;
-
-
-  // Adicionando elementos ao container
-  container.appendChild(img);
-  container.appendChild(removeButton);
-  container.appendChild(hiddenInput);
-
-  // Adicionando o container ao DOM
-  document.getElementById("fotosContainer").appendChild(container);
-}
-
-// Função para remover foto e o input oculto associado
-function removeFoto(id, container) {
-  const index = userFotos.findIndex(foto => foto.id === id);
-  if (index > -1) {
-    userFotos.splice(index, 1);
-    container.remove();
-  }
-}
-
-function addNewFileInput() {
-  const newInputDiv = document.createElement("div");
-  
-  const newInput = document.createElement("input");
-  newInput.type = "file";
-  newInput.name = "galeria";
-  newInput.accept = "image/*";
-  
-  const removeButton = document.createElement("button");
-  removeButton.textContent = "Excluir";
-  removeButton.type = "button";
-  removeButton.addEventListener("click", () => {
-    newInputDiv.remove();
-  });
-  
-  newInputDiv.appendChild(newInput);
-  newInputDiv.appendChild(removeButton);
-  
-  document.getElementById("fileInputsContainer").appendChild(newInputDiv);
-}
-
-document.getElementById("addFileInput").addEventListener("click", addNewFileInput);
-
-// Inicializa um input do tipo "file" na primeira carga
-addNewFileInput();
-        }
-
-      </script>
-        
-        <script>
-        // Preenchidas pelo template do servidor
-        const allIdiomas = [
-          {% for idioma in idiomas %}
-            {id: {{ idioma.id }}, nome: "{{ idioma.nome }}"},
-          {% endfor %}
-        ];
-        
-        const userIdiomas = [
-          {% for idioma in profissional.idiomas.all %}
-            {id: {{ idioma.id }}, nome: "{{ idioma.nome }}"},
-          {% endfor %}
-        ];
-        
-        let selectedIdiomas = userIdiomas.map(i => i.id);
-        
-        // Função para atualizar a visibilidade do botão 'Adicionar Idioma'
-        function updateAddIdiomaButtonVisibility() {
-          const addButton = document.getElementById("addIdioma");
-          
-          addButton.addEventListener('click', function() 
-          {
-            this.style.display = 'none';
-          })
-          const availableIdiomas = allIdiomas.filter(i => !selectedIdiomas.includes(i.id));
-        
-          if (availableIdiomas.length === 0) {
-            addButton.style.display = 'none';
-          } else {
-            addButton.style.display = 'inline-block';
-          }
-        }
-        
-        function createIdiomaElement(id) {
-          // Cria um container div para encapsular o span e o input hidden
-          const container = document.createElement("div");
-        
-          const idioma = allIdiomas.find(i => i.id === id);
-          const span = document.createElement("span");
-          span.textContent = idioma.nome;
-        
-          // Criação do input oculto
-          const hiddenInput = document.createElement("input");
-          hiddenInput.type = "hidden";
-          hiddenInput.name = "idiomas";
-          hiddenInput.value = id;
-        
-          const removeButton = document.createElement("button");
-          removeButton.textContent = "X";
-          removeButton.addEventListener("click", () => {
-            removeIdiomaFromList(id, container); // Agora passamos o container ao invés do span
-          });
-        
-          span.appendChild(removeButton);
-        
-          // Adiciona o span e o input hidden ao container
-          container.appendChild(span);
-          container.appendChild(hiddenInput);
-          
-          // Anexa o container à div principal
-          document.getElementById("idiomasContainer").appendChild(container);
-        }
-        
-        // Função para remover idioma da lista e o input oculto associado
-        function removeIdiomaFromList(id, container) {
-          const index = selectedIdiomas.indexOf(id);
-          if (index > -1) {
-            selectedIdiomas.splice(index, 1);
-            container.remove(); // Remove o contêiner inteiro, que inclui o span e o input oculto
-          }
-          updateAddIdiomaButtonVisibility();
-        }
-        
-       
-        
-        document.getElementById("addIdioma").addEventListener("click", () => {
-          const select = document.createElement("select");
-          select.style.width = 'fit-content';
-        
-          allIdiomas.forEach(idioma => {
-            if (!selectedIdiomas.includes(idioma.id)) {
-              const option = document.createElement("option");
-              option.value = idioma.id;
-              option.text = idioma.nome;
-              select.appendChild(option);
-            }
-          });
-        
-          const addButton = document.createElement("button");
-          addButton.textContent = "Adicionar";
-          addButton.style.background = '#04AA6D';
-          addButton.style.color = '#fff';
-          addButton.style.border = 'none';
-          addButton.style.marginTop = '.5rem';
-          addButton.style.width = 'fit-content'
-          addButton.addEventListener("click", () => {
-            selectedIdiomas.push(Number(select.value));
-            createIdiomaElement(Number(select.value));
-            select.remove();
-            addButton.remove();
-            updateAddIdiomaButtonVisibility();
-          });
-        
-          document.getElementById("idiomasContainer").appendChild(select);
-          document.getElementById("idiomasContainer").appendChild(addButton);
-        });
-        
-        // Preenchidas pelo template do servidor
 const allServicos = [
-{%for servico in servicos%}
-{id: {{ servico.id }}, nome: "{{ servico.nome }}"},
-{%endfor%}
+  {% for servico in servicos %}
+    {id: {{ servico.id }}, nome: "{{ servico.nome }}"},
+  {% endfor %}
 ];
 
 const userServicos = [
-{% for servicoProf in profissional.servicos.all %}
-            {id: {{ servicoProf.id }}, nome: "{{ servicoProf.nome }}"},
-          {% endfor %}];
+  {% for servico in profissional.servicos.all %}
+    {id: {{ servico.id }}, nome: "{{ servico.nome }}"},
+  {% endfor %}
+];
 
+let selectedConvenios = userConvenios.map(c => c.id);
+let selectedIdiomas = userIdiomas.map(i => i.id);
 let selectedServicos = userServicos.map(s => s.id);
 
-// Função para atualizar a visibilidade do botão 'Adicionar Serviço'
+// Funções para navegação das abas
+function alterarConteudo(conteudoId) {
+  // Esconder todos os conteúdos
+  const conteudos = document.querySelectorAll('.conteudo');
+  conteudos.forEach(c => c.classList.remove('active'));
+  
+  // Remover classe active de todos os botões
+  const botoes = document.querySelectorAll('.tab-btn');
+  botoes.forEach(b => b.classList.remove('active'));
+  
+  // Mostrar o conteúdo selecionado
+  document.getElementById(conteudoId).classList.add('active');
+  
+  // Adicionar classe active ao botão clicado
+  event.target.classList.add('active');
+}
+
+// ======================== CONVÊNIOS ========================
+function updateAddConvenioButtonVisibility() {
+  const addButton = document.getElementById("addConvenio");
+  const availableConvenios = allConvenios.filter(c => !selectedConvenios.includes(c.id));
+  
+  if (availableConvenios.length === 0) {
+    addButton.style.display = 'none';
+  } else {
+    addButton.style.display = 'inline-block';
+  }
+}
+
+function createConvenioElement(id) {
+  const convenio = allConvenios.find(c => c.id === id);
+  const span = document.createElement("span");
+  span.className = "tag-item";
+  span.textContent = convenio.nome;
+
+  const removeButton = document.createElement("button");
+  removeButton.className = "tag-remove";
+  removeButton.textContent = "×";
+  removeButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeConvenioFromList(id, span);
+  });
+
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+  hiddenInput.name = "convenios";
+  hiddenInput.value = id;
+
+  span.appendChild(removeButton);
+  const container = document.getElementById("conveniosContainer");
+  container.appendChild(span);
+  container.appendChild(hiddenInput);
+}
+
+function removeConvenioFromList(id, element) {
+  // Buscar o nome do convênio para a confirmação
+  const convenio = allConvenios.find(c => c.id === id);
+  const nomeConvenio = convenio ? convenio.nome : 'este convênio';
+  
+  // Mostrar confirmação personalizada
+  createCustomConfirm(
+    `Tem certeza que deseja remover "<strong>${nomeConvenio}</strong>"?`,
+    () => {
+      // Callback de confirmação
+      const index = selectedConvenios.indexOf(id);
+      if (index > -1) {
+        selectedConvenios.splice(index, 1);
+        element.remove();
+
+        const container = document.getElementById("conveniosContainer");
+        const hiddenInput = container.querySelector(`input[value="${id}"]`);
+        if (hiddenInput) {
+          hiddenInput.remove();
+        }
+      }
+      updateAddConvenioButtonVisibility();
+    },
+    () => {
+      // Callback de cancelamento (não faz nada, apenas mantém a página)
+    }
+  );
+}
+
+document.getElementById("addConvenio").addEventListener("click", (event) => {
+  event.preventDefault(); // Prevenir comportamento padrão
+  // Verificar se já existe um formulário aberto
+  const existingForm = document.querySelector("#conveniosContainer .add-form-container");
+  if (existingForm) {
+    return; // Não criar novo formulário se já existe um
+  }
+  
+  // Criar container para o formulário
+  const formContainer = document.createElement("div");
+  formContainer.className = "add-form-container";
+  
+  const select = document.createElement("select");
+  select.className = "add-form-select";
+  
+  // Adicionar opção padrão
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Selecione um convênio...";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+  
+  allConvenios.forEach(convenio => {
+    if (!selectedConvenios.includes(convenio.id)) {
+      const option = document.createElement("option");
+      option.value = convenio.id;
+      option.text = convenio.nome;
+      select.appendChild(option);
+    }
+  });
+  
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "add-form-button";
+  addButton.textContent = "Adicionar";
+
+  addButton.addEventListener("click", (event) => {
+    event.preventDefault(); // Prevenir qualquer comportamento padrão
+    if (select.value) {
+      const selectedId = Number(select.value);
+      selectedConvenios.push(selectedId);
+      createConvenioElement(selectedId);
+      formContainer.remove();
+      updateAddConvenioButtonVisibility();
+    } else {
+      // Mostrar mensagem de erro
+      const existingError = formContainer.querySelector('.error-message');
+      if (!existingError) {
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "error-message";
+        errorMsg.textContent = "Por favor, selecione um convênio antes de adicionar.";
+        errorMsg.style.color = "#dc2626";
+        errorMsg.style.fontSize = "0.8rem";
+        errorMsg.style.marginTop = "0.5rem";
+        formContainer.appendChild(errorMsg);
+        
+        // Remover a mensagem após 3 segundos
+        setTimeout(() => {
+          if (errorMsg.parentNode) {
+            errorMsg.remove();
+          }
+        }, 3000);
+      }
+    }
+  });
+
+  // Remover mensagem de erro quando algo for selecionado
+  select.addEventListener("change", () => {
+    const existingError = formContainer.querySelector('.error-message');
+    if (existingError && select.value) {
+      existingError.remove();
+    }
+  });
+
+  formContainer.appendChild(select);
+  formContainer.appendChild(addButton);
+  
+  const container = document.getElementById("conveniosContainer");
+  container.appendChild(formContainer);
+});
+
+// ======================== IDIOMAS ========================
+function updateAddIdiomaButtonVisibility() {
+  const addButton = document.getElementById("addIdioma");
+  const availableIdiomas = allIdiomas.filter(i => !selectedIdiomas.includes(i.id));
+  
+  if (availableIdiomas.length === 0) {
+    addButton.style.display = 'none';
+  } else {
+    addButton.style.display = 'inline-block';
+  }
+}
+
+function createIdiomaElement(id) {
+  const idioma = allIdiomas.find(i => i.id === id);
+  const span = document.createElement("span");
+  span.className = "tag-item";
+  span.textContent = idioma.nome;
+
+  const removeButton = document.createElement("button");
+  removeButton.className = "tag-remove";
+  removeButton.textContent = "×";
+  removeButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeIdiomaFromList(id, span);
+  });
+
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+  hiddenInput.name = "idiomas";
+  hiddenInput.value = id;
+
+  span.appendChild(removeButton);
+  const container = document.getElementById("idiomasContainer");
+  container.appendChild(span);
+  container.appendChild(hiddenInput);
+}
+
+function removeIdiomaFromList(id, element) {
+  // Buscar o nome do idioma para a confirmação
+  const idioma = allIdiomas.find(i => i.id === id);
+  const nomeIdioma = idioma ? idioma.nome : 'este idioma';
+  
+  // Mostrar confirmação personalizada
+  createCustomConfirm(
+    `Tem certeza que deseja remover "<strong>${nomeIdioma}</strong>"?`,
+    () => {
+      // Callback de confirmação
+      const index = selectedIdiomas.indexOf(id);
+      if (index > -1) {
+        selectedIdiomas.splice(index, 1);
+        element.remove();
+
+        const container = document.getElementById("idiomasContainer");
+        const hiddenInput = container.querySelector(`input[value="${id}"]`);
+        if (hiddenInput) {
+          hiddenInput.remove();
+        }
+      }
+      updateAddIdiomaButtonVisibility();
+    },
+    () => {
+      // Callback de cancelamento (não faz nada, apenas mantém a página)
+    }
+  );
+}
+
+document.getElementById("addIdioma").addEventListener("click", (event) => {
+  event.preventDefault(); // Prevenir comportamento padrão
+  // Verificar se já existe um formulário aberto
+  const existingForm = document.querySelector("#idiomasContainer .add-form-container");
+  if (existingForm) {
+    return; // Não criar novo formulário se já existe um
+  }
+  
+  // Criar container para o formulário
+  const formContainer = document.createElement("div");
+  formContainer.className = "add-form-container";
+  
+  const select = document.createElement("select");
+  select.className = "add-form-select";
+  
+  // Adicionar opção padrão
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Selecione um idioma...";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+  
+  allIdiomas.forEach(idioma => {
+    if (!selectedIdiomas.includes(idioma.id)) {
+      const option = document.createElement("option");
+      option.value = idioma.id;
+      option.text = idioma.nome;
+      select.appendChild(option);
+    }
+  });
+  
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "add-form-button";
+  addButton.textContent = "Adicionar";
+
+  addButton.addEventListener("click", (event) => {
+    event.preventDefault(); // Prevenir qualquer comportamento padrão
+    if (select.value) {
+      const selectedId = Number(select.value);
+      selectedIdiomas.push(selectedId);
+      createIdiomaElement(selectedId);
+      formContainer.remove();
+      updateAddIdiomaButtonVisibility();
+    } else {
+      // Mostrar mensagem de erro
+      const existingError = formContainer.querySelector('.error-message');
+      if (!existingError) {
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "error-message";
+        errorMsg.textContent = "Por favor, selecione um idioma antes de adicionar.";
+        errorMsg.style.color = "#dc2626";
+        errorMsg.style.fontSize = "0.8rem";
+        errorMsg.style.marginTop = "0.5rem";
+        formContainer.appendChild(errorMsg);
+        
+        // Remover a mensagem após 3 segundos
+        setTimeout(() => {
+          if (errorMsg.parentNode) {
+            errorMsg.remove();
+          }
+        }, 3000);
+      }
+    }
+  });
+
+  // Remover mensagem de erro quando algo for selecionado
+  select.addEventListener("change", () => {
+    const existingError = formContainer.querySelector('.error-message');
+    if (existingError && select.value) {
+      existingError.remove();
+    }
+  });
+
+  formContainer.appendChild(select);
+  formContainer.appendChild(addButton);
+  
+  const container = document.getElementById("idiomasContainer");
+  container.appendChild(formContainer);
+});
+
+// ======================== SERVIÇOS ========================
 function updateAddServicoButtonVisibility() {
   const addButton = document.getElementById("addServico");
-  addButton.addEventListener('click', function()
-  {
-    document.querySelector('#addServico').style.display = 'none'
-  })
-
   const availableServicos = allServicos.filter(s => !selectedServicos.includes(s.id));
-
+  
   if (availableServicos.length === 0) {
     addButton.style.display = 'none';
   } else {
     addButton.style.display = 'inline-block';
   }
 }
-// Função para criar elemento de serviço
-function createServicoElement(id) {
-  // Cria um container div para encapsular o span e o input hidden
-  const container = document.createElement("div");
 
+function createServicoElement(id) {
   const servico = allServicos.find(s => s.id === id);
   const span = document.createElement("span");
+  span.className = "tag-item";
   span.textContent = servico.nome;
 
-  // Criação do input oculto
+  const removeButton = document.createElement("button");
+  removeButton.className = "tag-remove";
+  removeButton.textContent = "×";
+  removeButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeServicoFromList(id, span);
+  });
+
   const hiddenInput = document.createElement("input");
   hiddenInput.type = "hidden";
   hiddenInput.name = "servicos";
   hiddenInput.value = id;
 
-  const removeButton = document.createElement("button");
-  removeButton.textContent = "X";
-  removeButton.addEventListener("click", () => {
-    removeServicoFromList(id, container); // Agora passamos o container ao invés do span
-  });
-
   span.appendChild(removeButton);
-
-  // Adiciona o span e o input hidden ao container
+  const container = document.getElementById("servicosContainer");
   container.appendChild(span);
   container.appendChild(hiddenInput);
+}
+
+function removeServicoFromList(id, element) {
+  // Buscar o nome do serviço para a confirmação
+  const servico = allServicos.find(s => s.id === id);
+  const nomeServico = servico ? servico.nome : 'este serviço';
   
-  // Anexa o container à div principal
-  document.getElementById("servicosContainer").appendChild(container);
+  // Mostrar confirmação personalizada
+  createCustomConfirm(
+    `Tem certeza que deseja remover "<strong>${nomeServico}</strong>"?`,
+    () => {
+      // Callback de confirmação
+      const index = selectedServicos.indexOf(id);
+      if (index > -1) {
+        selectedServicos.splice(index, 1);
+        element.remove();
+
+        const container = document.getElementById("servicosContainer");
+        const hiddenInput = container.querySelector(`input[value="${id}"]`);
+        if (hiddenInput) {
+          hiddenInput.remove();
+        }
+      }
+      updateAddServicoButtonVisibility();
+    },
+    () => {
+      // Callback de cancelamento (não faz nada, apenas mantém a página)
+    }
+  );
 }
 
-// Função para remover serviço da lista e o input oculto associado
-function removeServicoFromList(id, container) {
-  const index = selectedServicos.indexOf(id);
-  if (index > -1) {
-    selectedServicos.splice(index, 1);
-    container.remove(); // Remove o contêiner inteiro, que inclui o span e o input oculto
+document.getElementById("addServico").addEventListener("click", (event) => {
+  event.preventDefault(); // Prevenir comportamento padrão
+  // Verificar se já existe um formulário aberto
+  const existingForm = document.querySelector("#servicosContainer .add-form-container");
+  if (existingForm) {
+    return; // Não criar novo formulário se já existe um
   }
-  updateAddServicoButtonVisibility();
-}
-
-
-// Inicializa a lista de serviços que o usuário já tem
-
-document.getElementById("addServico").addEventListener("click", () => {
+  
+  // Criar container para o formulário
+  const formContainer = document.createElement("div");
+  formContainer.className = "add-form-container";
+  
   const select = document.createElement("select");
-  select.style.width = 'fit-content'
-
+  select.className = "add-form-select";
+  
+  // Adicionar opção padrão
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Selecione um serviço...";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+  
   allServicos.forEach(servico => {
     if (!selectedServicos.includes(servico.id)) {
       const option = document.createElement("option");
@@ -570,297 +1715,581 @@ document.getElementById("addServico").addEventListener("click", () => {
       select.appendChild(option);
     }
   });
-
+  
   const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "add-form-button";
   addButton.textContent = "Adicionar";
-  addButton.style.background = '#04AA6D';
-  addButton.style.color = '#fff';
-  addButton.style.border = 'none';
-  addButton.style.marginTop = '.5rem';
-  addButton.style.width = 'fit-content'
-  addButton.addEventListener("click", () => {
-    selectedServicos.push(Number(select.value));
-    createServicoElement(Number(select.value));
-    select.remove();
-    addButton.remove();
-    updateAddServicoButtonVisibility();
-    addButton.addEventListener('click', function()
-  {
-    document.querySelector('#addServico').style.display = 'block'
-  })
+
+  addButton.addEventListener("click", (event) => {
+    event.preventDefault(); // Prevenir qualquer comportamento padrão
+    if (select.value) {
+      const selectedId = Number(select.value);
+      selectedServicos.push(selectedId);
+      createServicoElement(selectedId);
+      formContainer.remove();
+      updateAddServicoButtonVisibility();
+    } else {
+      // Mostrar mensagem de erro
+      const existingError = formContainer.querySelector('.error-message');
+      if (!existingError) {
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "error-message";
+        errorMsg.textContent = "Por favor, selecione um serviço antes de adicionar.";
+        errorMsg.style.color = "#dc2626";
+        errorMsg.style.fontSize = "0.8rem";
+        errorMsg.style.marginTop = "0.5rem";
+        formContainer.appendChild(errorMsg);
+        
+        // Remover a mensagem após 3 segundos
+        setTimeout(() => {
+          if (errorMsg.parentNode) {
+            errorMsg.remove();
+          }
+        }, 3000);
+      }
+    }
   });
 
-  document.getElementById("servicosContainer").appendChild(select);
-  document.getElementById("servicosContainer").appendChild(addButton);
+  // Remover mensagem de erro quando algo for selecionado
+  select.addEventListener("change", () => {
+    const existingError = formContainer.querySelector('.error-message');
+    if (existingError && select.value) {
+      existingError.remove();
+    }
+  });
+
+  formContainer.appendChild(select);
+  formContainer.appendChild(addButton);
+  
+  const container = document.getElementById("servicosContainer");
+  container.appendChild(formContainer);
 });
-        </script>
-    
-        <script>
-          // Função para inicializar tanto Convênios quanto Idiomas
-          window.addEventListener('load', function() {
-            // Inicializa convênios
-            userConvenios.forEach(c => createConvenioElement(c.id));
-            updateAddButtonVisibility();
-            
-            // Inicializa idiomas
-            userIdiomas.forEach(i => createIdiomaElement(i.id));
-            updateAddIdiomaButtonVisibility();
-          });
-          userServicos.forEach(s => createServicoElement(s.id));
+
+// ======================== INICIALIZAÇÃO ========================
+window.addEventListener('load', function() {
+  // Inicializa convênios
+  userConvenios.forEach(c => createConvenioElement(c.id));
+  updateAddConvenioButtonVisibility();
+  
+  // Inicializa idiomas
+  userIdiomas.forEach(i => createIdiomaElement(i.id));
+  updateAddIdiomaButtonVisibility();
+  
+  // Inicializa serviços
+  userServicos.forEach(s => createServicoElement(s.id));
   updateAddServicoButtonVisibility();
-        </script>
+});
 
-        <script>
-          document.getElementById("editarPerfil").addEventListener("submit", function(event) {
-            const galeriaInputs = document.querySelectorAll('input[name="galeria"]');
-            let galeriaValues = [];
-            
-            galeriaInputs.forEach((input) => {
-              if(input.value === '') {
-                  input.remove();
-              }
-            });
-            
-            // Removendo todos os inputs de galeria
-            
-  
-          
-            // Adicionando apenas os inputs válidos
-            galeriaValues.forEach((value) => {
-              const hiddenInput = document.createElement("input");
-              hiddenInput.type = "hidden";
-              hiddenInput.name = "galeria";
-              hiddenInput.value = value;
-              this.appendChild(hiddenInput);
-            });
-          });
-        </script>
-        
-        
-        
-        
-        
-      </div>
+// Script para assinatura
+{% if profissional.is_active == False %}
+document.getElementById('checkout-button').addEventListener('click', () => {
+  fetch('https://saudebras.com.br/create-subscription/', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+        return Promise.reject('Failed to create subscription');
+    }
+    return response.json();
+  })
+  .then((session) => {
+      window.location.href = session.url;
+  })
+  .catch((error) => {
+      console.error('Error:', error);
+  });
+});
 
-   
-  </div>
-
-  
-
-  
-        </div>
-
-      </div>
-    </form>
-
-     </div>
-
-    <div id="conteudo2" class="conteudo">
-      <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-        <form class="enderecoForm" method="POST" action="{% url 'alterar_Profissional' %}" enctype="multipart/form-data">
-          {% csrf_token %}
-        <div id="enderecosContainer" class="d-flex flex-column">
-        
-      </div>
-      
-      <button type="button" id="addEndereco">Adicionar Endereço</button>
-      <button  type="submit" name="action" value="update_address"> Enviar</button>
-    </form>
-    </div>
-
-  </div>
-      <script>  
-        document.getElementById('addEndereco').addEventListener('click', () => {
-          const enderecoContainer = document.createElement('div');
-          enderecoContainer.classList.add('endereco-item');
-          const dadosDiv = document.createElement('div');
-          const cepInput = document.createElement('input');
-          cepInput.type = 'text';
-          cepInput.name = 'cep[]';
-          cepInput.placeholder = 'CEP';
-      
-          const complementoInput = document.createElement('input');
-          complementoInput.type = 'text';
-          complementoInput.name = 'complemento[]';
-          complementoInput.placeholder = 'Complemento';
-      
-          const removeButton = document.createElement('button');
-          removeButton.textContent = 'Remover';
-          removeButton.addEventListener('click', () => {
-              enderecoContainer.remove();
-          });
-      
-          enderecoContainer.appendChild(cepInput);
-          enderecoContainer.appendChild(complementoInput);
-          enderecoContainer.appendChild(removeButton);
-      
-          document.getElementById('enderecosContainer').appendChild(enderecoContainer);
-      });
-      
-      document.querySelectorAll('.remove-endereco').forEach(button => {
-          button.addEventListener('click', (event) => {
-              const enderecoContainer = event.target.closest('.endereco-item');
-              enderecoContainer.remove();
-          });
-      });
-      
-      </script>
-
-
-    <div id="conteudo3" class="conteudo">
-      <div class="p-4 mb-4" style="border-radius:4px; background:#fff; border-radius:12px; box-shadow: 2px 2px 3px 0px #BEBEBE;">
-        <div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
-<div>
-  <span class="mb-3"> Perguntas a responder: </span>
-        {% for pergunta in profissional.perguntas.all %}
-        {%if pergunta.resposta == blank %}
-    <div class="d-flex flex-column justify-content-center">
-        <div class="d-flex mb-3">
-          <img style="max-height:2rem;" src="{{pergunta.cliente.foto.url}}"><span>{{pergunta.cliente.nome}}</span>
-        </div>
-          <span>{{pergunta.pergunta}}</span>
-          
-          <form method="post" action="{%url 'alterar_Profissional' %}">
-            {%csrf_token%}
-            <input type="hidden" name="pergunta_id" value="{{pergunta.id}}">
-        <input name="resposta" placeholder:"Resposta...">
-        <button style="
-        background: #18B696;
-        color: #fff;
-        border:none;
-        outline:none;
-        border-radius: 4px;
-        font-weight: 600; width:100%;" type="submit" name="action" value="responder_pergunta">Enviar</button>
-          </form>
-    
-  </div>
-
-    {%endif%}
-{% endfor %}
-</div>
-<div>
-  
-<span class="mb-3"> Perguntas Respondidas: </span>
-{%for pergunta in profissional.perguntas.all%}
-{%if pergunta.resposta != blank%}
-
-<div class="d-flex flex-column mb-3" style="max-height:20rem; overflow-y:scroll;">
-    <span>Pergunta: {{pergunta.pergunta}}</span>
-    <span>Resposta: {{pergunta.resposta}}</span>
-
-</div>
-
-{%endif%}
-{%endfor%}
-</div>
-</div>
-  
-      </div>
-    </div>
-      
-    <script>
-      // Array de endereços existentes; isso normalmente viria do seu servidor
-      const userEnderecos = [
-          {% for endereco in profissional.enderecos.all %}
-          {id: {{ endereco.id }}, cep: "{{ endereco.cep }}", complemento: "{{ endereco.complemento }}"},
-          {% endfor %}
-      ];
-  
-      // Função para criar um elemento de endereço
-      function createEnderecoElement(id, cep, complemento) {
-          const container = document.createElement("div");
-          container.classList.add('d-flex', 'mb-2')
-          container.style.gap = '.5rem'
-          const dadosContainer = document.createElement("div");
-          dadosContainer.classList.add("d-flex", "flex-column")
-          const cepElement = document.createElement("span");
-          cepElement.textContent = `CEP: ${cep}`;
-          const complementoElement = document.createElement("span");
-          complementoElement.textContent = `Complemento: ${complemento}`;
-  
-          const removeButton = document.createElement("button");
-          removeButton.textContent = "X";
-          removeButton.addEventListener("click", () => {
-              const index = userEnderecos.findIndex(endereco => endereco.id === id);
-              if (index > -1) {
-                  userEnderecos.splice(index, 1);
-                  container.remove();
-              }
-          });
-  
-          // Campos ocultos para enviar dados com o formulário
-          const cepInputHidden = document.createElement("input");
-          cepInputHidden.type = "hidden";
-          cepInputHidden.name = "cep[]";
-          cepInputHidden.value = cep;
-  
-          const complementoInputHidden = document.createElement("input");
-          complementoInputHidden.type = "hidden";
-          complementoInputHidden.name = "complemento[]";
-          complementoInputHidden.value = complemento;
-          
-          dadosContainer.appendChild(cepElement);
-          dadosContainer.appendChild(complementoElement);
-          container.appendChild(dadosContainer);
-          container.appendChild(cepInputHidden);
-          container.appendChild(complementoInputHidden);
-          container.appendChild(removeButton);
-          document.getElementById("enderecosContainer").appendChild(container);
-      }
-  
-      // Função para adicionar novos campos de input para endereço
-      function addNewEnderecoInput() {
-          const container = document.createElement("div");
-          container.style.gap = '.5rem';
-          const cepInput = document.createElement("input");
-          cepInput.placeholder = "Insira o CEP";
-          cepInput.name = "cep[]";  // Adicionado atributo name
-  
-          const complementoInput = document.createElement("input");
-          complementoInput.placeholder = "Insira o Complemento";
-          complementoInput.name = "complemento[]";  // Adicionado atributo name
-  
-          container.appendChild(cepInput);
-          container.appendChild(complementoInput);
-          document.getElementById("enderecosInputsContainer").appendChild(container);
-      }
-  
-      window.addEventListener('DOMContentLoaded', (event) => {
-          // Inicializa os endereços que já estão associados ao profissional
-          userEnderecos.forEach(endereco => {
-              createEnderecoElement(endereco.id, endereco.cep, endereco.complemento);
-          });
-  
-          // Adiciona um novo conjunto de inputs para endereço quando o botão é clicado
-          document.getElementById("addEnderecoInput").addEventListener("click", addNewEnderecoInput);
-  
-          // Inicializa um conjunto de inputs para endereço na primeira carga
-          addNewEnderecoInput();
-      });
-  </script>
-</div>
-</div>
-</div>
-<script>
-  // Definindo a função que altera o conteúdo
-function alterarConteudo(conteudoId) {
-  // Ocultar todos os conteúdos
-  const todosConteudos = document.getElementsByClassName('conteudo');
-  for (let i = 0; i < todosConteudos.length; i++) {
-    todosConteudos[i].style.display = 'none';
-  }
-
-  // Exibir o conteúdo selecionado
-  const conteudoSelecionado = document.getElementById(conteudoId);
-  if (conteudoSelecionado) {
-    conteudoSelecionado.style.display = 'block';
-  }
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
-
-// Exibindo o primeiro conteúdo por padrão
-alterarConteudo('conteudo1');
-
+{% endif %}
 </script>
 
+<!-- CSS final para garantir que os botões x sejam vermelhos -->
+<style>
+/* Força todos os botões de remoção a serem vermelhos com máxima especificidade */
+body #conveniosContainer .tag-item .tag-remove,
+body #idiomasContainer .tag-item .tag-remove,
+body #servicosContainer .tag-item .tag-remove,
+body .tag-item .tag-remove,
+body .tag-remove,
+#conveniosContainer span button.tag-remove,
+#idiomasContainer span button.tag-remove,
+#servicosContainer span button.tag-remove,
+span.tag-item button.tag-remove {
+    background: none !important;
+    border: none !important;
+    color: #dc2626 !important;
+    margin-left: 0.8rem !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+body #conveniosContainer .tag-item .tag-remove:hover,
+body #idiomasContainer .tag-item .tag-remove:hover,
+body #servicosContainer .tag-item .tag-remove:hover,
+body .tag-item .tag-remove:hover,
+body .tag-remove:hover,
+#conveniosContainer span button.tag-remove:hover,
+#idiomasContainer span button.tag-remove:hover,
+#servicosContainer span button.tag-remove:hover,
+span.tag-item button.tag-remove:hover {
+    color: #b91c1c !important;
+    background: rgba(220, 38, 38, 0.1) !important;
+    border-radius: 50% !important;
+}
+</style>
+
+<script>
+// Variável global com a URL correta
+const ALTERAR_PROFISSIONAL_URL = "{% url 'alterar_Profissional' %}";
+
+// Validação e controle de modais para foto
+document.addEventListener('DOMContentLoaded', function() {
+    const inputFoto = document.getElementById('inputFoto');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const errorMessage = document.getElementById('error-message');
+    const btnSalvarFoto = document.getElementById('btnSalvarFoto');
+    const confirmPhotoModal = document.getElementById('confirmPhotoModal');
+    const confirmPreviewImage = document.getElementById('confirmPreviewImage');
+    const cancelPhotoChange = document.getElementById('cancelPhotoChange');
+    const confirmPhotoChange = document.getElementById('confirmPhotoChange');
+    const formEditarFoto = document.getElementById('formEditarFoto');
+    
+    let selectedFile = null;
+    
+    // Validação de arquivo
+    function validateFile(file) {
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!allowedTypes.includes(file.type)) {
+            return 'Formato de arquivo não suportado. Use JPG, PNG ou GIF.';
+        }
+        
+        if (file.size > maxSize) {
+            return 'Arquivo muito grande. O tamanho máximo é 5MB.';
+        }
+        
+        return null;
+    }
+    
+    // Preview da imagem
+    function showPreview(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            confirmPreviewImage.src = e.target.result;
+            previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    // Event listener para seleção de arquivo
+    inputFoto.addEventListener('change', function(e) {
+        console.log('Arquivo selecionado:', e.target.files[0]); // Debug
+        const file = e.target.files[0];
+        
+        if (!file) {
+            previewContainer.style.display = 'none';
+            errorMessage.style.display = 'none';
+            btnSalvarFoto.disabled = true;
+            selectedFile = null;
+            return;
+        }
+        
+        const error = validateFile(file);
+        console.log('Erro de validação:', error); // Debug
+        
+        if (error) {
+            errorMessage.textContent = error;
+            errorMessage.style.display = 'block';
+            previewContainer.style.display = 'none';
+            btnSalvarFoto.disabled = true;
+            selectedFile = null;
+        } else {
+            errorMessage.style.display = 'none';
+            showPreview(file);
+            btnSalvarFoto.disabled = false;
+            selectedFile = file;
+            console.log('Arquivo válido, botão habilitado'); // Debug
+        }
+    });
+    
+    // Event listener para botão "Salvar Foto"
+    btnSalvarFoto.addEventListener('click', function() {
+        console.log('Botão Salvar Foto clicado'); // Debug
+        if (selectedFile) {
+            // Fechar modal de edição usando jQuery se Bootstrap JS não estiver disponível
+            try {
+                const editModal = document.getElementById('editarFoto');
+                const bsModal = bootstrap.Modal.getInstance(editModal);
+                if (bsModal) {
+                    bsModal.hide();
+                } else {
+                    // Fallback usando jQuery
+                    $('#editarFoto').modal('hide');
+                }
+            } catch (e) {
+                console.log('Erro ao fechar modal, usando jQuery:', e);
+                $('#editarFoto').modal('hide');
+            }
+            
+            setTimeout(() => {
+                confirmPhotoModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }, 300);
+        } else {
+            console.log('Nenhum arquivo selecionado'); // Debug
+        }
+    });
+    
+    // Event listener para cancelar alteração
+    cancelPhotoChange.addEventListener('click', function() {
+        confirmPhotoModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Reabrir modal de edição usando jQuery
+        setTimeout(() => {
+            $('#editarFoto').modal('show');
+        }, 100);
+    });
+    
+    // Event listener para confirmar alteração
+    confirmPhotoChange.addEventListener('click', function() {
+        if (selectedFile) {
+            // Adicionar campo action ao formulário
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'update_photo';
+            formEditarFoto.appendChild(actionInput);
+            
+            // Submeter formulário
+            formEditarFoto.submit();
+        }
+    });
+    
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && confirmPhotoModal.style.display === 'flex') {
+            cancelPhotoChange.click();
+        }
+    });
+    
+    // Fechar modal clicando fora
+    confirmPhotoModal.addEventListener('click', function(e) {
+        if (e.target === confirmPhotoModal) {
+            cancelPhotoChange.click();
+        }
+    });
+    
+    // Reset do formulário quando modal de edição for fechado
+    document.getElementById('editarFoto').addEventListener('hidden.bs.modal', function() {
+        if (confirmPhotoModal.style.display !== 'flex') {
+            inputFoto.value = '';
+            previewContainer.style.display = 'none';
+            errorMessage.style.display = 'none';
+            btnSalvarFoto.disabled = true;
+            selectedFile = null;
+        }
+    });
+    
+    // Auto-hide mensagens de sucesso após 5 segundos
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        if (alert.classList.contains('alert-success')) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 500);
+            }, 5000); // 5 segundos
+        }
+    });
+    
+    // Gerenciamento de endereços
+    initEnderecoManagement();
+});
+
+// Funções para gerenciamento de endereços
+function initEnderecoManagement() {
+    const addEnderecoBtn = document.getElementById('addEnderecoBtn');
+    const enderecoForm = document.getElementById('enderecoForm');
+    const cancelarEndereco = document.getElementById('cancelarEndereco');
+    const cepInput = document.getElementById('cep');
+    const formEndereco = document.getElementById('formEndereco');
+    
+    if (!addEnderecoBtn) return; // Se não estiver na página de endereços, sair
+    
+    // Máscara para CEP
+    cepInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+        e.target.value = value;
+        
+        // Se CEP completo, buscar endereço
+        if (value.length === 9) {
+            buscarEnderecoPorCEP(value);
+        } else {
+            limparCamposEndereco();
+        }
+    });
+    
+    // Mostrar formulário de adicionar
+    addEnderecoBtn.addEventListener('click', function() {
+        mostrarFormularioEndereco('Adicionar Endereço');
+        limparFormularioEndereco();
+    });
+    
+    // Cancelar edição/adição
+    cancelarEndereco.addEventListener('click', function() {
+        esconderFormularioEndereco();
+    });
+    
+    // Submit do formulário
+    formEndereco.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const cep = document.getElementById('cep').value;
+        if (cep.length !== 9) {
+            mostrarErro('CEP deve ter 8 dígitos');
+            return;
+        }
+        
+        if (!document.getElementById('rua').value || 
+            !document.getElementById('bairro').value || 
+            !document.getElementById('cidade').value) {
+            mostrarErro('CEP inválido ou campos obrigatórios não preenchidos');
+            return;
+        }
+        
+        // Submit do formulário
+        this.submit();
+    });
+}
+
+function buscarEnderecoPorCEP(cep) {
+    const cepLimpo = cep.replace(/\D/g, '');
+    const cepError = document.getElementById('cepError');
+    const ruaInput = document.getElementById('rua');
+    const bairroInput = document.getElementById('bairro');
+    const cidadeInput = document.getElementById('cidade');
+    const estadoInput = document.getElementById('estado');
+    
+    if (cepLimpo.length !== 8) {
+        limparCamposEndereco();
+        return;
+    }
+    
+    // Mostrar loading
+    ruaInput.value = 'Buscando...';
+    bairroInput.value = 'Buscando...';
+    cidadeInput.value = 'Buscando...';
+    estadoInput.value = 'Buscando...';
+    cepError.style.display = 'none';
+    
+    fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                throw new Error('CEP não encontrado');
+            }
+            
+            ruaInput.value = data.logradouro || '';
+            bairroInput.value = data.bairro || '';
+            cidadeInput.value = data.localidade || '';
+            estadoInput.value = data.uf || '';
+            
+        })
+        .catch(error => {
+            console.error('Erro ao buscar CEP:', error);
+            mostrarErro('CEP não encontrado ou inválido');
+            limparCamposEndereco();
+        });
+}
+
+function limparCamposEndereco() {
+    document.getElementById('rua').value = '';
+    document.getElementById('bairro').value = '';
+    document.getElementById('cidade').value = '';
+    document.getElementById('estado').value = '';
+}
+
+function mostrarFormularioEndereco(titulo) {
+    document.getElementById('enderecoFormTitle').textContent = titulo;
+    document.getElementById('enderecoForm').style.display = 'block';
+    document.getElementById('cep').focus();
+}
+
+function esconderFormularioEndereco() {
+    document.getElementById('enderecoForm').style.display = 'none';
+    limparFormularioEndereco();
+}
+
+function limparFormularioEndereco() {
+    document.getElementById('formEndereco').reset();
+    document.getElementById('enderecoId').value = '';
+    document.getElementById('saveEnderecoText').textContent = 'Salvar Endereço';
+    limparCamposEndereco();
+    document.getElementById('cepError').style.display = 'none';
+}
+
+function editarEndereco(enderecoId) {
+    // Buscar o elemento do endereço para obter os dados
+    const enderecoElement = document.querySelector(`[data-id="${enderecoId}"]`);
+    
+    if (enderecoElement) {
+        // Preencher formulário com dados do endereço
+        document.getElementById('enderecoId').value = enderecoId;
+        document.getElementById('cep').value = enderecoElement.dataset.cep;
+        document.getElementById('rua').value = enderecoElement.dataset.rua;
+        document.getElementById('numero').value = enderecoElement.dataset.numero || '';
+        document.getElementById('complemento').value = enderecoElement.dataset.complemento || '';
+        document.getElementById('bairro').value = enderecoElement.dataset.bairro;
+        document.getElementById('cidade').value = enderecoElement.dataset.cidade;
+        document.getElementById('estado').value = enderecoElement.dataset.estado;
+        
+        mostrarFormularioEndereco('Editar Endereço');
+        document.getElementById('saveEnderecoText').textContent = 'Atualizar Endereço';
+    } else {
+        mostrarErro('Endereço não encontrado');
+    }
+}
+
+function removerEndereco(enderecoId) {
+    // Buscar dados do endereço para mostrar no modal
+    const enderecoElement = document.querySelector(`[data-id="${enderecoId}"]`);
+    
+    if (enderecoElement) {
+        const rua = enderecoElement.dataset.rua;
+        const numero = enderecoElement.dataset.numero;
+        const bairro = enderecoElement.dataset.bairro;
+        const cidade = enderecoElement.dataset.cidade;
+        const estado = enderecoElement.dataset.estado;
+        const cep = enderecoElement.dataset.cep;
+        const complemento = enderecoElement.dataset.complemento;
+        
+        // Atualizar preview do endereço no modal
+        const addressPreview = document.getElementById('addressPreview');
+        addressPreview.innerHTML = `
+            <h6>${rua}${numero ? ', ' + numero : ''}</h6>
+            <p>${bairro}, ${cidade} - ${estado}</p>
+            <p>CEP: ${cep}${complemento ? ' - ' + complemento : ''}</p>
+        `;
+        
+        // Mostrar modal de confirmação
+        const confirmModal = document.getElementById('confirmDeleteAddressModal');
+        confirmModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Configurar botão de confirmação
+        const confirmBtn = document.getElementById('confirmDeleteAddress');
+        const cancelBtn = document.getElementById('cancelDeleteAddress');
+        
+        // Remover event listeners anteriores
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        
+        // Adicionar novos event listeners
+        newConfirmBtn.addEventListener('click', function() {
+            executeRemoveAddress(enderecoId);
+        });
+        
+        newCancelBtn.addEventListener('click', function() {
+            closeDeleteModal();
+        });
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', handleEscKey);
+        
+        // Fechar modal clicando fora
+        confirmModal.addEventListener('click', handleOutsideClick);
+    }
+}
+
+function executeRemoveAddress(enderecoId) {
+    console.log('Removendo endereço:', enderecoId); // Debug
+    
+    // Criar formulário temporário para remoção
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "alterar_Profissional" %}'; // URL fixa diretamente do Django
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    form.innerHTML = `
+        <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+        <input type="hidden" name="action" value="remove_address">
+        <input type="hidden" name="endereco_id" value="${enderecoId}">
+    `;
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function closeDeleteModal() {
+    const confirmModal = document.getElementById('confirmDeleteAddressModal');
+    confirmModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Remover event listeners
+    document.removeEventListener('keydown', handleEscKey);
+    confirmModal.removeEventListener('click', handleOutsideClick);
+}
+
+function handleEscKey(e) {
+    if (e.key === 'Escape') {
+        closeDeleteModal();
+    }
+}
+
+function handleOutsideClick(e) {
+    const confirmModal = document.getElementById('confirmDeleteAddressModal');
+    if (e.target === confirmModal) {
+        closeDeleteModal();
+    }
+}
+
+function mostrarErro(mensagem) {
+    const cepError = document.getElementById('cepError');
+    cepError.textContent = mensagem;
+    cepError.style.display = 'block';
+    
+    setTimeout(() => {
+        cepError.style.display = 'none';
+    }, 5000);
+}
+</script>
 
 {% endblock %}

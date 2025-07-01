@@ -1,60 +1,200 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
-<div class="container d-flex" style="flex-grow:1;">
-    <div class="div-parte1 w-100">
-
-        
-
-        <!-- Formulário para atualizar a foto -->
-        <form id="fotoForm" class="pb-0" method="post" action="{% url 'editar_cliente' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" name="fotoForm" value="true">
-            <div class="d-flex flex-column align-items-start">
-                <img id="profileImage" class="mb-2" style="border-radius:12px; height:8rem; width:8rem; object-fit:cover;" src="{{ user.cliente.foto.url }}">
-                <a id="editPhotoLink" class="mb-4" style="color:#6D6875 !important; font-size:1.2rem; cursor: pointer;">
-                    <small style="text-decoration:underline">Editar foto de perfil</small>
-                </a>
-                <input type="file" id="inputImage" name="foto" accept="image/*" style="display:none;">
-            </div>
-        </form>
-
-        <!-- Formulário para atualizar os dados do cliente -->
-        <form class="pt-0 mt-0 mb-4" method="post" id="regForm" action="{% url 'editar_cliente' %}">
-            {% csrf_token %}
-            <input type="hidden" name="clienteForm" value="true">
-            <div>
-                <p class="mb-0" style="color:#6D6875 !important; font-size:1rem !important;">Conta do Paciente</p>
-                <p style="color:#000 !important; font-size:1rem !important;">{{ user.cliente.nome }}</p>
-                <p class="mb-0" style="color:#6D6875 !important; font-size:1rem !important;">C.P.F</p>
-                <p style="color:#000 !important; font-size:1rem !important;">{{ user.username }}</p>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail" value="{{ cliente_form.initial.email }}" name="email"></p>
-                <div style="display: flex; align-items: center; gap: 2rem;">
-                    <input class="d-flex justify-content-center text-center" type="text" placeholder="DDD" name="ddd" maxlength="2" value="{{ cliente_form.initial.ddd }}" style="border-radius: 4px; border: solid 1px #000; padding: 10px; font-size: 17px; width: 60px; margin-right: 10px;">
-                    <input type="text" placeholder="Celular/Whatsapp" name="telefone" value="{{ cliente_form.initial.telefone }}" style="border-radius: 4px; border: solid 1px #000; padding: 10px; font-size: 17px; flex: 1;">
-                </div>
-            </div>
-
-            <h3 class="mb-4 mt-4 text-start" style="color:#00ae9d !important;">Endereço</h3>
-            <div>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cep" placeholder="CEP" name="cep" value="{{ user.cliente.cep|default_if_none:'' }}" oninput="buscarCEP(this.value)"></p>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="estado" placeholder="Estado" name="estado" value="{{ user.cliente.estado|default_if_none:'' }}" disabled></p>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cidade" placeholder="Cidade" name="cidade" value="{{ user.cliente.cidade|default_if_none:'' }}" disabled></p>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="bairro" placeholder="Bairro" name="bairro" value="{{ user.cliente.bairro|default_if_none:'' }}" disabled></p>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="logradouro" placeholder="Rua" name="logradouro" value="{{ user.cliente.rua|default_if_none:'' }}" disabled></p>
-                <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="complemento" placeholder="Número" name="numero" value="{{ user.cliente.numero|default_if_none:'' }}"></p>
-            </div>
-
-            <div class="form-group" style="border:none !important;">
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
-            <span style="color:#6D6875 !important; text-decoration:underline; cursor: pointer; font-size:1rem" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
-                Editar senha
-            </span>
-        </form>
+<style>
+  .profile-settings-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2.5rem 2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .profile-section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #00ae9d;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.5px;
+  }
+  .profile-img-edit {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .profile-img-edit img {
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 3px solid #e9ecef;
+  }
+  .profile-img-edit .btn {
+    background: #00ae9d;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    transition: background 0.2s;
+  }
+  .profile-img-edit .btn:hover {
+    background: #008e7a;
+  }
+  .profile-form label {
+    font-size: 0.98rem;
+    color: #6D6875;
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+  }
+  .profile-form input {
+    border-radius: 8px !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    margin-bottom: 1.1rem;
+    width: 100%;
+    background: #f8fafc;
+    color: #222;
+    transition: border 0.2s;
+  }
+  .profile-form input:focus {
+    border: 1.5px solid #00ae9d !important;
+    outline: none;
+    background: #fff;
+  }
+  .profile-form .form-row {
+    display: flex;
+    gap: 1rem;
+  }
+  .profile-form .form-row > * {
+    flex: 1;
+  }
+  .profile-form .btn-primary {
+    background: #00ae9d;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 0.7rem 2.2rem;
+    margin-top: 0.5rem;
+    float: right;
+    transition: background 0.2s;
+  }
+  .profile-form .btn-primary:hover {
+    background: #008e7a;
+  }
+  .profile-form .edit-password-link {
+    color: #6D6875;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    display: inline-block;
+  }
+  @media (max-width: 700px) {
+    .profile-settings-card {
+      padding: 1.2rem 0.5rem;
+    }
+  }
+</style>
+<div class="profile-settings-card">
+  <!-- Seção de foto e nome -->
+  <form id="fotoForm" method="post" action="{% url 'editar_cliente' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="fotoForm" value="true">
+    <div class="profile-img-edit">
+      <img id="profileImage" src="{{ user.cliente.foto.url }}">
+      <div>
+        <label for="inputImage" class="btn">Alterar Imagem</label>
+        <input type="file" id="inputImage" name="foto" accept="image/*" style="display:none;">
+      </div>
     </div>
-</div>
+  </form>
 
+  <!-- Formulário principal -->
+  <form class="profile-form" method="post" id="regForm" action="{% url 'editar_cliente' %}">
+    {% csrf_token %}
+    <input type="hidden" name="clienteForm" value="true">
+    <div>
+      <div class="profile-section-title">Meu Perfil</div>
+      <div class="form-row">
+        <div>
+          <label>Nome</label>
+          <input type="text" value="{{ user.cliente.nome }}" disabled>
+        </div>
+        <div>
+          <label>CPF</label>
+          <input type="text" value="{{ user.username }}" disabled>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label for="emailId">E-mail</label>
+          <input type="email" id="emailId" placeholder="E-mail" value="{{ cliente_form.initial.email }}" name="email">
+        </div>
+        <div>
+          <label for="ddd">DDD</label>
+          <input type="text" id="ddd" placeholder="DDD" name="ddd" maxlength="2" value="{{ cliente_form.initial.ddd }}">
+        </div>
+        <div>
+          <label for="telefone">Celular/Whatsapp</label>
+          <input type="text" id="telefone" placeholder="Celular/Whatsapp" name="telefone" value="{{ cliente_form.initial.telefone }}">
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="profile-section-title">Endereço</div>
+      <div class="form-row">
+        <div>
+          <label for="cep">CEP</label>
+          <input type="text" id="cep" placeholder="CEP" name="cep" value="{{ user.cliente.cep|default_if_none:'' }}" oninput="buscarCEP(this.value)">
+        </div>
+        <div>
+          <label for="complemento">Número</label>
+          <input type="text" id="complemento" placeholder="Número" name="numero" value="{{ user.cliente.numero|default_if_none:'' }}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label for="estado">Estado</label>
+          <input type="text" id="estado" placeholder="Estado" name="estado" value="{{ user.cliente.estado|default_if_none:'' }}" disabled>
+        </div>
+        <div>
+          <label for="cidade">Cidade</label>
+          <input type="text" id="cidade" placeholder="Cidade" name="cidade" value="{{ user.cliente.cidade|default_if_none:'' }}" disabled>
+        </div>
+        <div>
+          <label for="bairro">Bairro</label>
+          <input type="text" id="bairro" placeholder="Bairro" name="bairro" value="{{ user.cliente.bairro|default_if_none:'' }}" disabled>
+        </div>
+      </div>
+      <div>
+        <label for="logradouro">Rua</label>
+        <input type="text" id="logradouro" placeholder="Rua" name="logradouro" value="{{ user.cliente.rua|default_if_none:'' }}" disabled>
+      </div>
+    </div>
+    <div style="margin-top:2.5rem;">
+      <div class="profile-section-title">Segurança</div>
+      <div class="form-row">
+        <div>
+          <label>Senha</label>
+          <input type="password" value="********" disabled>
+        </div>
+        <div style="display:flex; align-items:end;">
+          <span class="edit-password-link" data-bs-toggle="modal" data-bs-target="#editPasswordModal">Editar senha</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group" style="border:none !important; margin-top:2.5rem;">
+      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+    </div>
+  </form>
+</div>
 <!-- Modal para editar a senha -->
 <div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">

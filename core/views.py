@@ -135,14 +135,47 @@ YOUR_DOMAIN = "https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.ap
 @csrf_exempt
 def create_payment_intent(request):
     try:
-        # Substitua 1000 pela quantidade correta que você deseja cobrar, em centavos
-        payment_intent = stripe.PaymentIntent.create(
-            amount=1000,
-            currency='usd',
-            # Você pode passar informações adicionais aqui, como 'metadata'
-        )
-        return JsonResponse({'clientSecret': payment_intent.client_secret})
+        # Para subscriptions, é melhor usar Setup Intent + off_session payment
+        # Mas vamos manter Payment Intent com setup_future_usage
+        
+        # Obter dados do request se disponíveis
+        email = None
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            email = data.get('email')
+        
+        # Criar customer primeiro se temos email
+        customer = None
+        if email:
+            customer = stripe.Customer.create(
+                email=email,
+            )
+            print(f"Customer criado para Payment Intent: {customer.id}")
+        
+        # Criar Payment Intent com setup_future_usage para subscriptions
+        payment_intent_params = {
+            'amount': 1000,  # Valor em centavos
+            'currency': 'usd',
+            'setup_future_usage': 'off_session',  # Permite reutilizar o payment method
+            'automatic_payment_methods': {
+                'enabled': True,
+            },
+        }
+        
+        # Se temos customer, associá-lo ao Payment Intent
+        if customer:
+            payment_intent_params['customer'] = customer.id
+        
+        payment_intent = stripe.PaymentIntent.create(**payment_intent_params)
+        print(f"Payment Intent criado: {payment_intent.id} para customer: {customer.id if customer else 'None'}")
+        
+        response_data = {'clientSecret': payment_intent.client_secret}
+        if customer:
+            response_data['customerId'] = customer.id
+            
+        return JsonResponse(response_data)
     except Exception as e:
+        print(f"Erro ao criar Payment Intent: {e}")
         return JsonResponse({'error': str(e)}, status=400)
 
         

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" />
+    <html lang="en"></html>
     <script src="https://js.stripe.com/v3/"></script>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -25,6 +26,102 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" href="/assets/image/Logo-Leonardo-Senem-Contabilidade-_1_.ico" sizes="64x64" type="image/x-icon">
     <title>{% block title %}SaudeBras{% endblock %}</title>
+    
+    <!-- Custom navbar styles -->
+    <style>
+      /* Remove linhas pretas (underlines) de todos os inputs */
+      input, 
+      textarea, 
+      select,
+      .form-control {
+        text-decoration: none !important;
+        border-bottom: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+      }
+      
+      input:focus, 
+      textarea:focus, 
+      select:focus,
+      .form-control:focus {
+        text-decoration: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        border-bottom: none !important;
+      }
+      
+      /* Remove underlines de links também */
+      a {
+        text-decoration: none !important;
+      }
+      
+      /* Garante que form-groups não tenham bordas inferiores */
+      .form-group {
+        border-bottom: none !important;
+      }
+      
+      .navbar-nav {
+        flex-wrap: nowrap !important;
+      }
+      
+      .navbar-nav .nav-link {
+        padding: 0.7rem 1rem !important;
+        font-size: 16px !important;
+        white-space: nowrap !important;
+        font-weight: 800 !important;
+        color: #333 !important;
+        transition: all 0.3s ease !important;
+      }
+      
+      /* Estilo para o link ativo/selecionado */
+      .navbar-nav .nav-link.active,
+      .navbar-nav .nav-link:hover,
+      .nav-item .nav-link.active,
+      .nav-item .nav-link:hover {
+        color: #00ae9d !important;
+        background-color: rgba(0, 174, 157, 0.1) !important;
+        border-radius: 6px !important;
+      }
+      
+      /* Para páginas específicas - adicionar classe active via JavaScript */
+      .navbar-nav .nav-item.current-page .nav-link,
+      .nav-item.current-page .nav-link {
+        color: #00ae9d !important;
+        background-color: rgba(0, 174, 157, 0.1) !important;
+        border-radius: 6px !important;
+      }
+      
+      .navbar-brand img {
+        max-height: 2.5rem !important;
+      }
+      
+      .mobile-nav {
+        padding: 0 !important;
+      }
+      
+      @media (min-width: 992px) {
+        .navbar-expand-lg .navbar-nav {
+          gap: 0.5rem !important;
+        }
+        
+        .container-fluid.mobile-nav {
+          max-width: 100% !important;
+          padding-left: 1rem !important;
+          padding-right: 1rem !important;
+        }
+      }
+      
+      @media (max-width: 1200px) {
+        .navbar-nav .nav-link {
+          font-size: 14px !important;
+          padding: 0.6rem 0.8rem !important;
+        }
+      }
+    </style>
+
 </head>
 
    <body>
@@ -60,9 +157,6 @@
     </li>
 
       {% else %}
-      <li class="nav-item">
-        <a href="{% url 'editar_cliente' %}" class="nav-link">Editar Conta</a>
-      </li>
       <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
         <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
         </li>
@@ -91,15 +185,15 @@
         {% if request.is_profissional %}
 
         <li class="nav-item">
-          <a href="{%url 'editar_perfil' %}" class="nav-link">Editar Perfil</a>
+          <a href="{%url 'editar_perfil' %}" class="nav-link">Meu Perfil</a>
         </li>
         {%elif request.is_clinica%}
         <li class="nav-item">
-          <a href="{%url 'editar_clinica' %}" class="nav-link">Editar Perfil</a>
+          <a href="{%url 'editar_clinica' %}" class="nav-link">Meu Perfil</a>
         </li>
         {%elif user_cliente%}
         <li class="nav-item">
-          <a href="{%url 'editar_cliente' %}" class="nav-link">Editar Perfil</a>
+          <a href="{%url 'editar_cliente' %}" class="nav-link">Meu Perfil</a>
         </li>
       {% endif %}
         
@@ -148,17 +242,19 @@
 
 
       </div>
-        <nav class="navbar navbar-expand-lg p-4 " >
-            <div class="container mobile-nav">
+        <nav class="navbar navbar-expand-lg p-2" >
+            <div class="container-fluid mobile-nav">
               
               <button style="border:none;" class="navbar-toggler" type="button" data-bs-toggle="collapse"  aria-controls="navbarNavDropdown" data-bs-target="#navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <img style="height:1.5rem;" src="{%static 'img/menu-button-of-three-horizontal-lines.png'%}" alt="toggle icon"> <!-- Imagem personalizada -->
             </button>
-              <a class="navbar-brand" href="{%url 'home'%}"><img style="max-height: 3.5rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
-              <div class="collapse navbar-collapse"  id="navbarNavDropdown2">
-                <ul class="navbar-nav" style="gap:1.5rem;">
+              <a class="navbar-brand" href="{%url 'home'%}"><img style="max-height: 3rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
+              <div class="collapse navbar-collapse justify-content-end"  id="navbarNavDropdown2">
+                <ul class="navbar-nav" style="gap:1rem; flex-wrap: nowrap;">
          
-                
+                <li class="nav-item">
+                  <a href="{% url 'home' %}" class="nav-link">Início</a>
+                </li>
 
             
                  
@@ -168,11 +264,11 @@
                 {% if request.is_profissional %}
 
                 <li class="nav-item">
-                  <a href="{%url 'editar_perfil' %}" class="nav-link">Editar Perfil</a>
+                  <a href="{%url 'editar_perfil' %}" class="nav-link">Meu Perfil</a>
                 </li>
                 {%elif request.is_clinica%}
                 <li class="nav-item">
-                  <a href="{%url 'editar_clinica' %}" class="nav-link">Editar Perfil</a>
+                  <a href="{%url 'editar_clinica' %}" class="nav-link">Meu Perfil</a>
                 </li>
               {% endif %}
                 
@@ -184,9 +280,6 @@
             </li>
 
               {% else %}
-              <li class="nav-item">
-                <a href="{% url 'contato' %}" class="nav-link">Contato</a>
-              </li>
 
               <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
                 <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
@@ -195,7 +288,7 @@
               {%endif%}
                 
               <li class="nav-item">
-                <a href="{%url 'sobre' %}"  class="nav-link">Quem Somos</a>
+                <a href="{%url 'sobre' %}"  class="nav-link">Sobre</a>
               </li>
 
               <li class="nav-item">
@@ -207,18 +300,19 @@
               </li>
 
               <li class="nav-item">
-                <a href="{%url 'assistencia' %}" class="nav-link">Assistência</a>
+                <a href="{%url 'assistencia' %}" class="nav-link">Suporte</a>
               </li>
 
               <li class="nav-item">
                 <a href="{% url 'contato' %}" class="nav-link">Contato</a>
               </li>
+
               {% if user.is_authenticated == False %}
 
               <li class="nav-item">
                 <div class="dropdown">
                   <a class="nav-link dropdown-toggle" style="color:#00ae9d;" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                  Criar conta
+                  Cadastro
                   </a>
                   <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
@@ -236,13 +330,10 @@
               {% if user.is_authenticated == False %}
 
               <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
-                <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
+                <a  href="{%url 'login' %}" class="nav-link">Login&nbsp;<img style="height:1.2rem;" src="{% static 'img/log-in.png' %}"></a>
         </li>
 
           {% else %}
-          <li class="nav-item">
-            <a href="{% url 'editar_cliente' %}" class="nav-link">Editar Conta</a>
-          </li>
           <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
             <a  class="nav-link" href="{% url 'logout' %}">Sair</a>
             </li>
@@ -424,6 +515,43 @@
                   document.getElementById('navbarNavDropdown').classList.remove('show');
                   backdrop.classList.remove('block'); // Mostra o fundo sombreado
                   document.body.classList.remove('menu-active'); // Adiciona classe para impedir rolagem da página
+                });
+              });
+            </script>
+
+            <script>
+              // Script para destacar o item ativo da navbar
+              document.addEventListener('DOMContentLoaded', function () {
+                const currentPath = window.location.pathname;
+                // Buscar links em ambas as estruturas de navbar
+                const navLinks = document.querySelectorAll('.navbar-nav .nav-link, .nav-item .nav-link');
+                
+                navLinks.forEach(link => {
+                  if (!link.href) return; // Pular links sem href
+                  
+                  const linkPath = new URL(link.href).pathname;
+                  
+                  // Remove classe active de todos os links
+                  link.classList.remove('active');
+                  if (link.parentElement) {
+                    link.parentElement.classList.remove('current-page');
+                  }
+                  
+                  // Adiciona classe active ao link correspondente à página atual
+                  if (currentPath === linkPath || 
+                      (currentPath === '/' && linkPath === '/') ||
+                      (currentPath.includes('/editar_perfil') && linkPath.includes('/editar_perfil')) ||
+                      (currentPath.includes('/editar_clinica') && linkPath.includes('/editar_clinica')) ||
+                      (currentPath.includes('/contato') && linkPath.includes('/contato')) ||
+                      (currentPath.includes('/sobre') && linkPath.includes('/sobre')) ||
+                      (currentPath.includes('/vantagens') && linkPath.includes('/vantagens')) ||
+                      (currentPath.includes('/artigos') && linkPath.includes('/artigos')) ||
+                      (currentPath.includes('/assistencia') && linkPath.includes('/assistencia'))) {
+                    link.classList.add('active');
+                    if (link.parentElement) {
+                      link.parentElement.classList.add('current-page');
+                    }
+                  }
                 });
               });
             </script>
