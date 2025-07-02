@@ -8,8 +8,8 @@
    <h3 class="mb-4 text-left" style="color:#00ae9d !important;">Cadastro do Profissional:</h3>
    <!-- One "tab" for each step in the form: -->
    <div class="tab">
-      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome Completo" oninput="this.className = ''" name="nome"></p>
-      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" oninput="maskCPF(this)" id="cpfId" placeholder="C.P.F" oninput="this.className = ''" name="username"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" placeholder="Nome Completo" name="nome" required></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" name="username" required></p>
       <script>
         function maskCPF(cpfField) {
             var cpfValue = cpfField.value;
@@ -34,8 +34,8 @@
       
    </div>
    <div class="tab">
-      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel"  style="padding-left:3rem;" id="phone1" placeholder="Celular/Whatsapp" oninput="this.className = ''" name="telefone"></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail..." name="email" required></p>
+      <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel" id="phone1" placeholder="Celular/Whatsapp" name="telefone" required></p>
       
    </div>
 
@@ -388,13 +388,6 @@ document.getElementById('add-cep').addEventListener('click', function() {
 </div>
 
 <div class="tab">
-    <div id="payment-element">
-        <!-- Stripe Payment Element será anexado aqui -->
-      </div>
-      <div id="payment-message"></div>
-</div>
-
-<div class="tab">
     <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
    
      
@@ -433,11 +426,14 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
         
         
-        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Termos e Condições:</span>
+        <span style="color:#6D6875 !important;" class="fw-bold mb-2">Termos e Condições:</span>
         
-        <div class="d-flex">
-        <label for="termos">Eu aceito e declaro que:</label>
-        <p><input type="checkbox" id="termos"></p>
+        <div class="form-check" style="display: flex;
+                    align-items: center;
+                    justify-content: start;
+                    padding-left: 0 !important;">
+            <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check" id="termos" name="termos" value="aceito" required>
+            <label class="form-check-label" for="termos">Eu aceito e declaro que li e concordo com os termos e condições</label>
         </div>
 
     </div>
@@ -531,140 +527,117 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
     function nextPrev(n) {
         var x = document.getElementsByClassName("tab");
+        
+        // Se estiver indo para frente, validar campos obrigatórios
+        if (n == 1 && !validateForm()) return false;
+        
         x[currentTab].style.display = "none";  // Esconder a aba atual
         currentTab = currentTab + n;  // Atualizar a aba atual
+        
+        // Se chegou na última tab e clicou em próximo, enviar formulário
+        if (currentTab >= x.length) {
+            document.getElementById("regForm").submit();
+            return false;
+        }
+        
         showTab(currentTab);  // Exibir a nova aba
     }
-</script>
-
-
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        const stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
+    
+    function validateForm() {
+        var x, y, i, valid = true;
+        x = document.getElementsByClassName("tab");
+        y = x[currentTab].getElementsByTagName("input");
         
-        let clientSecret = null;
-        let elements = null;
-        let paymentElement = null;
-        
-        function initializePayment() {
-            // Obter email atual do formulário
-            const emailField = document.querySelector('input[name="email"]');
-            const email = emailField ? emailField.value : null;
-            
-            if (!email) {
-                console.warn('Email não encontrado, criando Payment Intent sem customer');
+        // Verificar campos obrigatórios
+        for (i = 0; i < y.length; i++) {
+            if (y[i].hasAttribute("required") && y[i].value == "") {
+                y[i].className += " invalid";
+                valid = false;
             }
-            
-            fetch('/create-payment-intent/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                },
-                body: JSON.stringify({ 
-                    items: [{ id: 'your-item-id' }],
-                    email: email 
-                })
-            }).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                console.log('Payment Intent criado:', data);
-                clientSecret = data.clientSecret;
-                
-                elements = stripe.elements({ clientSecret: clientSecret });
-                paymentElement = elements.create('payment');
-                paymentElement.mount('#payment-element');
-            }).catch(function (error) {
-                console.error('Erro ao criar Payment Intent:', error);
-                alert('Erro ao inicializar pagamento. Tente novamente.');
-            });
         }
         
-        // Inicializar o pagamento quando a página carrega
-        initializePayment();
+        // Validações específicas por tab
+        if (currentTab == 1) { // Email
+            var email = document.querySelector('input[name="email"]');
+            if (email && email.value && !email.value.includes('@')) {
+                email.className += " invalid";
+                valid = false;
+            }
+        }
         
-        // Quando o email muda, recriar o Payment Intent
-        const emailField = document.querySelector('input[name="email"]');
-        if (emailField) {
-            emailField.addEventListener('blur', function() {
-                if (this.value && this.value.includes('@')) {
-                    console.log('Email alterado, recriando Payment Intent');
-                    // Remover o elemento de pagamento anterior
-                    if (paymentElement) {
-                        paymentElement.unmount();
-                    }
-                    // Criar novo Payment Intent com o email atualizado
-                    initializePayment();
+        if (currentTab == 8) { // Senhas (última tab)
+            var password1 = document.querySelector('input[name="password1"]');
+            var password2 = document.querySelector('input[name="password2"]');
+            if (password1 && password2) {
+                if (password1.value.length < 8) {
+                    password1.className += " invalid";
+                    valid = false;
                 }
+                if (password1.value !== password2.value) {
+                    password2.className += " invalid";
+                    valid = false;
+                }
+            }
+        }
+        
+        return valid;
+    }
+    
+    // Remover classe invalid quando começar a digitar
+    document.addEventListener('input', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            e.target.className = e.target.className.replace(" invalid", "");
+        }
+    });
+    
+    // Máscara para CPF
+    function maskCPF(cpfField) {
+        var cpfValue = cpfField.value;
+        cpfValue = cpfValue.slice(0, 14);
+        cpfValue = cpfValue.replace(/\D/g, '');
+        cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+        cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+        cpfValue = cpfValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        cpfField.value = cpfValue;
+    }
+    
+    // Aplicar máscara ao CPF
+    document.addEventListener('DOMContentLoaded', function() {
+        var cpfField = document.getElementById('cpfId');
+        if (cpfField) {
+            cpfField.addEventListener('input', function() {
+                maskCPF(this);
             });
         }
-    
-        const form = document.getElementById('registration-form');
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
+        
+        // Adicionar funcionalidade de seleção automática para todos os inputs
+        var inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="password"], textarea');
+        inputs.forEach(function(input) {
+            input.addEventListener('click', function() {
+                this.select();
+            });
             
-            if (!clientSecret) {
-                alert('Pagamento não foi inicializado. Recarregue a página.');
-                return;
-            }
-    
-            stripe.confirmCardPayment(clientSecret).then(function (result) {
-                if (result.error) {
-                    // Mostrar erro ao usuário
-                    console.error('Erro no pagamento:', result.error.message);
-                    alert('Erro no pagamento: ' + result.error.message);
-                } else {
-                    if (result.paymentIntent.status === 'succeeded') {
-                        console.log('Pagamento bem-sucedido:', result.paymentIntent);
-                        // Pagamento bem-sucedido, envie os dados do formulário para o servidor
-                        submitRegistrationForm(result.paymentIntent.id);
-                        }
-                    }
-                });
+            input.addEventListener('focus', function() {
+                this.select();
             });
         });
     });
-    
-    function submitRegistrationForm(paymentIntentId) {
-        var formData = new FormData(document.getElementById('registration-form'));
-        
-        // Adicionar o payment_intent_id ao formulário
-        if (paymentIntentId) {
-            formData.append('payment_intent_id', paymentIntentId);
-        }
-    
-        fetch('/usuarios/registrarProfissional/', {  // URL correta para registro de profissional
-            method: 'POST',
-            body: formData,
-        }).then(response => {
-            // Verifica se a resposta é JSON ou redirecionamento
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                return response.json();
-            } else {
-                // Se não for JSON, assume que é um redirecionamento de sucesso
-                window.location.href = '/sucessoCliente/';
-                return null;
-            }
-        })
-        .then(data => {
-            if (data) {
-                // Trate a resposta JSON aqui
-                if (data.success) {
-                    window.location.href = data.redirect_url || '/sucessoCliente/';
-                } else {
-                    console.error('Erro no registro:', data.error);
-                    alert('Erro no registro: ' + data.error);
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Erro na requisição:', error);
-        });
-    }
-
 </script>
 
+<style>
+.invalid {
+    border: 2px solid red !important;
+    background-color: #ffe6e6 !important;
+}
+
+.tab {
+    display: none;
+}
+
+.tab:first-child {
+    display: block;
+}
+</style>
 
 <script src="{%static 'js/form.js' %}"> </script>
 {%endblock%}

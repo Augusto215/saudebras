@@ -805,7 +805,7 @@
       {% endif %}
       
       {% if has_active_subscription and days_remaining is None %}
-      <form method="post" action="{% url 'cancel-subscription' %}" style="margin: 0;">
+      <form method="post" action="{% url 'cancel-subscription' %}" style="display: none; margin: 0;">
         {% csrf_token %}
         <button type="submit" class="btn-secondary w-100 mt-2" style="background: #dc3545;">Cancelar Assinatura</button>
       </form>
