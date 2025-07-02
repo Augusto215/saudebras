@@ -20,7 +20,7 @@
     margin-bottom: 1rem;
     font-weight: 500;
   }
-  
+
   .alert-success {
     background-color: #d1fae5;
     color: #065f46;
@@ -682,7 +682,8 @@
     text-indent: 0 !important;
   }
   
-  #enderecoForm input[type="text"] {
+  #enderecoForm input[type="text"],
+  #enderecoForm input[type="number"] {
     padding-left: 1.5rem !important;
     text-indent: 0 !important;
   }
@@ -855,6 +856,10 @@
   
   @keyframes fadeInOverlay {
     to { opacity: 1; }
+  }
+  
+  @keyframes fadeOutOverlay {
+    to { opacity: 0; }
   }
   
   @keyframes slideInModal {
@@ -1054,6 +1059,51 @@
 
           <button type="submit" name="action" value="update_profile" class="btn-primary">Salvar Alterações</button>
         </form>
+
+        <!-- Seção de Gerenciar Assinatura -->
+        {% if profissional.is_active %}
+          <!-- Assinatura Ativa - Mostrar opção de cancelar -->
+          <div id="cancelarAssinaturaSection" class="profile-card mt-5" style="border-left: 2px solid #dc2626; background-color: #fefefe; padding: 0.75rem; opacity: 0.8;">
+            <div class="d-flex align-items-center justify-content-between" style="gap: 2rem;">
+              <div style="flex: 1;">
+                <h6 class="mb-1" style="color: #dc2626; font-weight: 500; font-size: 0.7rem;">
+                  <i class="bi bi-exclamation-triangle-fill me-1" style="font-size: 0.65rem;"></i>Cancelar Assinatura
+                </h6>
+                <p class="text-muted mb-0" style="font-size: 0.55rem !important; line-height: 1.3 !important; color: #dc2626 !important;">
+                  Cancelar sua assinatura resultará na perda de acesso a todos os recursos premium. 
+                  Esta ação não pode ser desfeita.
+                </p>
+              </div>
+              <div style="flex-shrink: 0; margin-left: 2rem;">
+                <button type="button" class="btn btn-outline-danger" onclick="confirmarCancelamentoAssinatura()" 
+                        style="min-width: 100px; padding: 0.35rem 0.7rem; font-size: 0.65rem; border-radius: 4px; border-width: 1px;">
+                  <i class="bi bi-x-circle me-1" style="font-size: 0.6rem;"></i>Cancelar Assinatura
+                </button>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <!-- Assinatura Cancelada - Mostrar opção de renovar -->
+          <div id="renovarAssinaturaSection" class="profile-card mt-5" style="border-left: 2px solid #059669; background-color: #f0fdf4; padding: 0.75rem; opacity: 0.8;">
+            <div class="d-flex align-items-center justify-content-between" style="gap: 2rem;">
+              <div style="flex: 1;">
+                <h6 class="mb-1" style="color: #059669; font-weight: 500; font-size: 0.7rem;">
+                  <i class="bi bi-info-circle-fill me-1" style="font-size: 0.65rem;"></i>Assinatura Inativa
+                </h6>
+                <p class="text-muted mb-0" style="font-size: 0.55rem !important; line-height: 1.3 !important; color: #059669 !important;">
+                  Sua assinatura está inativa. Renove para ter acesso completo a todos os recursos premium 
+                  e aparecer nos resultados de busca.
+                </p>
+              </div>
+              <div style="flex-shrink: 0; margin-left: 2rem;">
+                <button type="button" class="btn btn-outline-success" onclick="renovarAssinatura()" 
+                        style="min-width: 100px; padding: 0.35rem 0.7rem; font-size: 0.65rem; border-radius: 4px; border-width: 1px;">
+                  <i class="bi bi-arrow-clockwise me-1" style="font-size: 0.6rem;"></i>Renovar Assinatura
+                </button>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
       <!-- Conteúdo 2: Endereços -->
@@ -1122,19 +1172,19 @@
             
             <div class="form-row">
               <div class="form-group">
-                <label for="rua">Rua *</label>
-                <input type="text" id="rua" name="rua" class="form-control" readonly required>
+                <label for="rua">Logradouro *</label>
+                <input type="text" id="rua" name="rua" class="form-control" placeholder="Digite o logradouro (rua, avenida, travessa, etc.)" required>
               </div>
               <div class="form-group">
                 <label for="complemento">Complemento</label>
-                <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Apto 101, Bloco A">
+                <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Ex: Apto 101, Bloco A, Casa 2">
               </div>
             </div>
             
             <div class="form-row">
               <div class="form-group">
                 <label for="bairro">Bairro *</label>
-                <input type="text" id="bairro" name="bairro" class="form-control" readonly required>
+                <input type="text" id="bairro" name="bairro" class="form-control" required>
               </div>
               <div class="form-group">
                 <label for="cidade">Cidade *</label>
@@ -2139,8 +2189,7 @@ function buscarEnderecoPorCEP(cep) {
 }
 
 function limparCamposEndereco() {
-    document.getElementById('rua').value = '';
-    document.getElementById('bairro').value = '';
+    // Só limpar cidade e estado, permitindo que logradouro e bairro sejam editados manualmente
     document.getElementById('cidade').value = '';
     document.getElementById('estado').value = '';
 }
@@ -2160,7 +2209,11 @@ function limparFormularioEndereco() {
     document.getElementById('formEndereco').reset();
     document.getElementById('enderecoId').value = '';
     document.getElementById('saveEnderecoText').textContent = 'Salvar Endereço';
-    limparCamposEndereco();
+    // Limpar todos os campos ao resetar o formulário
+    document.getElementById('rua').value = '';
+    document.getElementById('bairro').value = '';
+    document.getElementById('cidade').value = '';
+    document.getElementById('estado').value = '';
     document.getElementById('cepError').style.display = 'none';
 }
 
@@ -2289,6 +2342,734 @@ function mostrarErro(mensagem) {
     setTimeout(() => {
         cepError.style.display = 'none';
     }, 5000);
+}
+
+function confirmarCancelamentoAssinatura() {
+    // Criar modal de confirmação customizado
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-confirm-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        animation: fadeInOverlay 0.3s ease-in forwards;
+    `;
+    
+    const modal = document.createElement('div');
+    modal.className = 'custom-confirm-modal';
+    modal.style.cssText = `
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: scale(0.9) translateY(-20px);
+        animation: slideInModal 0.3s ease-out forwards;
+    `;
+    
+    modal.innerHTML = `
+        <div class="text-center mb-4">
+            <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem; color: #dc2626; margin-bottom: 1rem;"></i>
+            <h3 style="color: #dc2626; font-weight: 600; margin-bottom: 1rem;">Cancelar Assinatura</h3>
+            <p style="color: #6b7280; margin-bottom: 0;">
+                Tem certeza que deseja cancelar sua assinatura? Você perderá acesso a todos os recursos premium 
+                e esta ação não poderá ser desfeita.
+            </p>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button id="cancelarCancelamento" style="
+                background: #6b7280;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.65rem 1.3rem;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 110px;
+                transition: background 0.2s;
+            ">Voltar</button>
+            <button id="confirmarCancelamento" style="
+                background: #dc2626;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.65rem 1.3rem;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 110px;
+                transition: background 0.2s;
+            ">Confirmar Cancelamento</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    
+    // Event listeners
+    document.getElementById('cancelarCancelamento').addEventListener('click', function() {
+        fecharModalCancelamento(overlay);
+    });
+    
+    document.getElementById('confirmarCancelamento').addEventListener('click', function() {
+        executarCancelamentoAssinatura();
+        fecharModalCancelamento(overlay);
+    });
+    
+    // Fechar com ESC ou clique fora
+    function handleEsc(e) {
+        if (e.key === 'Escape') {
+            fecharModalCancelamento(overlay);
+        }
+    }
+    
+    function handleClickFora(e) {
+        if (e.target === overlay) {
+            fecharModalCancelamento(overlay);
+        }
+    }
+    
+    document.addEventListener('keydown', handleEsc);
+    overlay.addEventListener('click', handleClickFora);
+    
+    // Limpar event listeners ao fechar
+    overlay.removeEscListener = () => document.removeEventListener('keydown', handleEsc);
+    overlay.removeClickListener = () => overlay.removeEventListener('click', handleClickFora);
+}
+
+function fecharModalCancelamento(overlay) {
+    overlay.style.animation = 'fadeOutOverlay 0.3s ease-out forwards';
+    setTimeout(() => {
+        document.body.removeChild(overlay);
+        document.body.style.overflow = 'auto';
+        // Limpar event listeners
+        if (overlay.removeEscListener) overlay.removeEscListener();
+        if (overlay.removeClickListener) overlay.removeClickListener();
+    }, 300);
+}
+
+function executarCancelamentoAssinatura() {
+    // Primeiro, fazer a mudança visual imediatamente
+    const cancelarSection = document.getElementById('cancelarAssinaturaSection');
+    
+    if (cancelarSection) {
+        // Substituir todo o conteúdo por ele de assinatura inativa
+        cancelarSection.id = 'renovarAssinaturaSection';
+        cancelarSection.style.borderLeft = '2px solid #059669';
+        cancelarSection.style.backgroundColor = '#f0fdf4';
+        
+        cancelarSection.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between" style="gap: 2rem;">
+              <div style="flex: 1;">
+                <h6 class="mb-1" style="color: #059669; font-weight: 500; font-size: 0.7rem;">
+                  <i class="bi bi-info-circle-fill me-1" style="font-size: 0.65rem;"></i>Assinatura Inativa
+                </h6>
+                <p class="text-muted mb-0" style="font-size: 0.55rem !important; line-height: 1.3 !important; color: #059669 !important;">
+                  Sua assinatura foi cancelada com sucesso. Renove para ter acesso completo a todos os recursos premium 
+                  e aparecer nos resultados de busca.
+                </p>
+              </div>
+              <div style="flex-shrink: 0; margin-left: 2rem;">
+                <button type="button" class="btn btn-outline-success" onclick="renovarAssinatura()" 
+                        style="min-width: 100px; padding: 0.35rem 0.7rem; font-size: 0.65rem; border-radius: 4px; border-width: 1px;">
+                  <i class="bi bi-arrow-clockwise me-1" style="font-size: 0.6rem;"></i>Renovar Assinatura
+                </button>
+              </div>
+            </div>
+        `;
+    }
+    
+    // Depois, enviar requisição para o backend em background
+    enviarCancelamentoParaBackend();
+}
+
+function enviarCancelamentoParaBackend() {
+    // Enviar requisição AJAX para não recarregar a página
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch('{% url "alterar_Profissional" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+        },
+        body: 'action=cancel_subscription'
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Assinatura cancelada com sucesso no backend');
+        } else {
+            console.error('Erro ao cancelar assinatura no backend');
+        }
+    })
+    .catch(error => {
+        console.error('Erro de rede ao cancelar assinatura:', error);
+    });
+}
+
+function renovarAssinatura() {
+    // Criar modal de pagamento
+    const overlay = document.createElement('div');
+    overlay.className = 'payment-modal-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        animation: fadeInOverlay 0.3s ease-in forwards;
+    `;
+    
+    const modal = document.createElement('div');
+    modal.className = 'payment-modal';
+    modal.style.cssText = `
+        background: white;
+        color: #065f46;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9) translateY(-20px);
+        animation: slideInModal 0.3s ease-out forwards;
+        border: 1px solid #d1fae5;
+    `;
+    
+    modal.innerHTML = `
+        <div class="payment-header" style="margin-bottom: 2rem; border-bottom: 1px solid #d1fae5; padding-bottom: 1rem;">
+            <h3 style="color: #065f46; font-weight: 600; margin: 0; font-size: 1.5rem;">Renovar Assinatura</h3>
+            <p style="color: #059669; margin: 0.5rem 0 0 0; font-size: 0.9rem;">Adicione um método de pagamento para renovar sua assinatura</p>
+        </div>
+        
+        <div class="payment-form">
+            <form id="paymentForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <!-- Número do Cartão -->
+                <div class="form-group">
+                    <label style="color: #065f46; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 500;">Número do Cartão</label>
+                    <div style="position: relative;">
+                        <input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••" maxlength="19"
+                               style="width: 100%; padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #065f46; font-size: 1rem; box-sizing: border-box;">
+                        <div id="cardBrand" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.2rem;"></div>
+                    </div>
+                </div>
+                
+                <!-- Linha com Validade e CVV -->
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label style="color: #065f46; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 500;">Validade</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5"
+                               style="width: 100%; padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #065f46; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label style="color: #065f46; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 500;">CVV</label>
+                        <input type="text" id="cardCvv" placeholder="•••" maxlength="4"
+                               style="width: 100%; padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #065f46; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                </div>
+                
+                <!-- Nome no Cartão -->
+                <div class="form-group">
+                    <label style="color: #065f46; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 500;">Nome no Cartão</label>
+                    <input type="text" id="cardName" placeholder="João Silva"
+                           style="width: 100%; padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #065f46; font-size: 1rem; box-sizing: border-box;">
+                </div>
+                
+                <!-- Preview do Cartão -->
+                <div class="card-preview" style="background: linear-gradient(135deg, #059669 0%, #065f46 100%); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; color: white; position: relative; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                        <div style="font-size: 1.2rem; font-weight: bold;">CARTÃO</div>
+                        <div id="previewBrand" style="font-size: 1.2rem;">💳</div>
+                    </div>
+                    <div id="previewNumber" style="font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 1rem; font-family: monospace;">•••• •••• •••• ••••</div>
+                    <div style="display: flex; justify-content: space-between; align-items: end;">
+                        <div>
+                            <div style="font-size: 0.7rem; opacity: 0.8; margin-bottom: 0.2rem;">NOME</div>
+                            <div id="previewName" style="font-size: 0.9rem;">NOME DO TITULAR</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; opacity: 0.8; margin-bottom: 0.2rem;">VALIDADE</div>
+                            <div id="previewExpiry" style="font-size: 0.9rem;">MM/AA</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumo do Plano -->
+                <div style="background: #f0fdf4; border-radius: 8px; padding: 1.5rem; border: 1px solid #bbf7d0;">
+                    <h4 style="margin: 0 0 1rem 0; color: #065f46; font-size: 1.1rem; font-weight: 600;">Resumo do Pagamento</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #059669;">Plano Premium - Mensal</span>
+                        <span style="color: #065f46; font-weight: 600;">R$ 29,90</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #bbf7d0;">
+                        <span style="color: #059669;">Impostos</span>
+                        <span style="color: #065f46;">Inclusos</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 600;">
+                        <span style="color: #065f46;">Total</span>
+                        <span style="color: #16a34a;">R$ 29,90</span>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+        
+        <!-- Botões -->
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; border-top: 1px solid #d1fae5; padding-top: 1.5rem;">
+            <button type="button" id="cancelPayment" style="
+                background: transparent;
+                color: #6b7280;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 100px;
+                transition: all 0.2s;
+            ">Cancelar</button>
+            <button type="button" id="confirmPayment" style="
+                background: #16a34a;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 120px;
+                font-weight: 600;
+                transition: all 0.2s;
+            ">Confirmar Pagamento</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    
+    // Configurar event listeners
+    setupPaymentModalEvents(overlay);
+}
+
+function setupPaymentModalEvents(overlay) {
+    const modal = overlay.querySelector('.payment-modal');
+    
+    // Botão cancelar
+    document.getElementById('cancelPayment').addEventListener('click', () => {
+        closePaymentModal(overlay);
+    });
+    
+    // Botão confirmar
+    document.getElementById('confirmPayment').addEventListener('click', () => {
+        processPayment();
+        closePaymentModal(overlay);
+    });
+    
+    // Fechar com ESC
+    function handleEsc(e) {
+        if (e.key === 'Escape') {
+            closePaymentModal(overlay);
+        }
+    }
+    
+    // Fechar clicando fora
+    function handleClickFora(e) {
+        if (e.target === overlay) {
+            closePaymentModal(overlay);
+        }
+    }
+    
+    document.addEventListener('keydown', handleEsc);
+    overlay.addEventListener('click', handleClickFora);
+    
+    // Salvar funções para remover depois
+    overlay.removeEscListener = () => document.removeEventListener('keydown', handleEsc);
+    overlay.removeClickListener = () => overlay.removeEventListener('click', handleClickFora);
+    
+    // Configurar máscaras e validações dos campos
+    setupCardInputs();
+}
+
+function setupCardInputs() {
+    const cardNumber = document.getElementById('cardNumber');
+    const cardExpiry = document.getElementById('cardExpiry');
+    const cardCvv = document.getElementById('cardCvv');
+    const cardName = document.getElementById('cardName');
+    
+    const previewNumber = document.getElementById('previewNumber');
+    const previewExpiry = document.getElementById('previewExpiry');
+    const previewName = document.getElementById('previewName');
+    const previewBrand = document.getElementById('previewBrand');
+    const cardBrand = document.getElementById('cardBrand');
+    
+    // Máscara do número do cartão com validação em tempo real
+    cardNumber.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        let formattedValue = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = formattedValue;
+        
+        // Atualizar preview
+        if (value.length > 0) {
+            let preview = formattedValue.padEnd(19, '•');
+            previewNumber.textContent = preview;
+        } else {
+            previewNumber.textContent = '•••• •••• •••• ••••';
+        }
+        
+        // Detectar bandeira
+        const brand = detectCardBrand(value);
+        cardBrand.textContent = brand.icon;
+        previewBrand.textContent = brand.icon;
+        
+        // Validação visual em tempo real
+        if (value.length >= 13) {
+            if (isValidCardNumber(value)) {
+                e.target.style.borderColor = '#bbf7d0';
+                e.target.style.backgroundColor = '#f0fdf4';
+            } else {
+                e.target.style.borderColor = '#fecaca';
+                e.target.style.backgroundColor = '#fef2f2';
+            }
+        } else {
+            e.target.style.borderColor = '#bbf7d0';
+            e.target.style.backgroundColor = '#f0fdf4';
+        }
+    });
+    
+    // Máscara da validade com validação em tempo real
+    cardExpiry.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+        previewExpiry.textContent = value || 'MM/AA';
+        
+        // Validação visual em tempo real
+        if (value.length === 5) {
+            if (isValidExpiry(value)) {
+                e.target.style.borderColor = '#bbf7d0';
+                e.target.style.backgroundColor = '#f0fdf4';
+            } else {
+                e.target.style.borderColor = '#fecaca';
+                e.target.style.backgroundColor = '#fef2f2';
+            }
+        } else {
+            e.target.style.borderColor = '#bbf7d0';
+            e.target.style.backgroundColor = '#f0fdf4';
+        }
+    });
+    
+    // Máscara do CVV com validação em tempo real
+    cardCvv.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '');
+        
+        // Validação visual em tempo real
+        if (e.target.value.length >= 3) {
+            e.target.style.borderColor = '#bbf7d0';
+            e.target.style.backgroundColor = '#f0fdf4';
+        } else {
+            e.target.style.borderColor = '#bbf7d0';
+            e.target.style.backgroundColor = '#f0fdf4';
+        }
+    });
+    
+    // Nome no cartão com validação em tempo real
+    cardName.addEventListener('input', (e) => {
+        previewName.textContent = e.target.value.toUpperCase() || 'NOME DO TITULAR';
+        
+        // Validação visual em tempo real
+        if (e.target.value.trim().length >= 2) {
+            e.target.style.borderColor = '#bbf7d0';
+            e.target.style.backgroundColor = '#f0fdf4';
+        } else {
+            e.target.style.borderColor = '#bbf7d0';
+            e.target.style.backgroundColor = '#f0fdf4';
+        }
+    });
+}
+
+function detectCardBrand(number) {
+    const brands = {
+        visa: { pattern: /^4/, icon: '💳' },
+        mastercard: { pattern: /^5[1-5]/, icon: '💳' },
+        amex: { pattern: /^3[47]/, icon: '💳' },
+        discover: { pattern: /^6/, icon: '💳' }
+    };
+    
+    for (const [name, brand] of Object.entries(brands)) {
+        if (brand.pattern.test(number)) {
+            return brand;
+        }
+    }
+    
+    return { icon: '💳' };
+}
+
+function validateCard() {
+    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+    const cardExpiry = document.getElementById('cardExpiry').value;
+    const cardCvv = document.getElementById('cardCvv').value;
+    const cardName = document.getElementById('cardName').value.trim();
+    
+    const errors = [];
+    
+    // Validar número do cartão (algoritmo de Luhn)
+    if (!cardNumber || !isValidCardNumber(cardNumber)) {
+        errors.push('Número do cartão inválido');
+    }
+    
+    // Validar validade
+    if (!cardExpiry || !isValidExpiry(cardExpiry)) {
+        errors.push('Data de validade inválida');
+    }
+    
+    // Validar CVV
+    if (!cardCvv || cardCvv.length < 3) {
+        errors.push('CVV inválido');
+    }
+    
+    // Validar nome
+    if (!cardName || cardName.length < 2) {
+        errors.push('Nome no cartão é obrigatório');
+    }
+    
+    return {
+        isValid: errors.length === 0,
+        errors: errors
+    };
+}
+
+function isValidCardNumber(number) {
+    // Verificar se contém apenas dígitos e tem comprimento válido
+    if (!/^\d{13,19}$/.test(number)) {
+        return false;
+    }
+    
+    // Algoritmo de Luhn
+    let sum = 0;
+    let alternate = false;
+    
+    for (let i = number.length - 1; i >= 0; i--) {
+        let digit = parseInt(number.charAt(i), 10);
+        
+        if (alternate) {
+            digit *= 2;
+            if (digit > 9) {
+                digit = (digit % 10) + 1;
+            }
+        }
+        
+        sum += digit;
+        alternate = !alternate;
+    }
+    
+    return (sum % 10) === 0;
+}
+
+function isValidExpiry(expiry) {
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+        return false;
+    }
+    
+    const [month, year] = expiry.split('/').map(Number);
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
+    
+    // Verificar mês válido
+    if (month < 1 || month > 12) {
+        return false;
+    }
+    
+    // Verificar se não é uma data passada
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        return false;
+    }
+    
+    return true;
+}
+
+function processPayment() {
+    const validation = validateCard();
+    
+    if (!validation.isValid) {
+        showErrorModal(validation.errors);
+        return;
+    }
+    
+    // Simular processamento
+    console.log('Processando pagamento...');
+    
+    // Simular processamento
+    alert('Pagamento processado com sucesso! Sua assinatura foi renovada.');
+    
+    // Fechar modal de pagamento
+    const paymentModal = document.querySelector('.payment-modal-overlay');
+    if (paymentModal) {
+        closePaymentModal(paymentModal);
+    }
+    
+    // Atualizar interface para mostrar assinatura ativa
+    const renovarSection = document.getElementById('renovarAssinaturaSection');
+    if (renovarSection) {
+        renovarSection.id = 'cancelarAssinaturaSection';
+        renovarSection.style.borderLeft = '2px solid #dc2626';
+        renovarSection.style.backgroundColor = '#fefefe';
+        
+        renovarSection.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between" style="gap: 2rem;">
+              <div style="flex: 1;">
+                <h6 class="mb-1" style="color: #dc2626; font-weight: 500; font-size: 0.7rem;">
+                  <i class="bi bi-exclamation-triangle-fill me-1" style="font-size: 0.65rem;"></i>Cancelar Assinatura
+                </h6>
+                <p class="text-muted mb-0" style="font-size: 0.55rem !important; line-height: 1.3 !important; color: #dc2626 !important;">
+                  Cancelar sua assinatura resultará na perda de acesso a todos os recursos premium. 
+                  Esta ação não pode ser desfeita.
+                </p>
+              </div>
+              <div style="flex-shrink: 0; margin-left: 2rem;">
+                <button type="button" class="btn btn-outline-danger" onclick="confirmarCancelamentoAssinatura()" 
+                        style="min-width: 100px; padding: 0.35rem 0.7rem; font-size: 0.65rem; border-radius: 4px; border-width: 1px;">
+                  <i class="bi bi-x-circle me-1" style="font-size: 0.6rem;"></i>Cancelar Assinatura
+                </button>
+              </div>
+            </div>
+        `;
+    }
+}
+
+function showErrorModal(errors) {
+    const overlay = document.createElement('div');
+    overlay.className = 'confirmation-modal-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        opacity: 0;
+        animation: fadeInOverlay 0.3s ease-in forwards;
+    `;
+    
+    const modal = document.createElement('div');
+    modal.className = 'confirmation-modal';
+    modal.style.cssText = `
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9) translateY(-20px);
+        animation: slideInModal 0.3s ease-out forwards;
+        border: 1px solid #fecaca;
+    `;
+    
+    modal.innerHTML = `
+        <div class="confirmation-modal-header" style="margin-bottom: 1.5rem; text-align: center;">
+            <div style="width: 60px; height: 60px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                <i class="bi bi-exclamation-triangle-fill" style="font-size: 24px; color: #dc2626;"></i>
+            </div>
+            <h3 style="color: #dc2626; font-weight: 600; margin: 0; font-size: 1.3rem;">Dados do Cartão Inválidos</h3>
+        </div>
+        
+        <div class="confirmation-modal-body" style="margin-bottom: 2rem;">
+            <p style="color: #6b7280; margin-bottom: 1rem; text-align: center;">Por favor, corrija os seguintes erros:</p>
+            <ul style="color: #dc2626; margin: 0; padding-left: 1.5rem;">
+                ${errors.map(error => `<li style="margin-bottom: 0.5rem;">${error}</li>`).join('')}
+            </ul>
+        </div>
+        
+        <div class="confirmation-modal-footer" style="display: flex; justify-content: center;">
+            <button type="button" id="closeErrorModal" style="
+                background: #dc2626;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.75rem 2rem;
+                font-size: 0.9rem;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.2s;
+            ">Entendi</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    
+    // Event listeners
+    document.getElementById('closeErrorModal').addEventListener('click', () => {
+        closeConfirmationModal(overlay);
+    });
+    
+    // Fechar com ESC
+    function handleEsc(e) {
+        if (e.key === 'Escape') {
+            closeConfirmationModal(overlay);
+        }
+    }
+    
+    // Fechar clicando fora
+    function handleClickFora(e) {
+        if (e.target === overlay) {
+            closeConfirmationModal(overlay);
+        }
+    }
+    
+    document.addEventListener('keydown', handleEsc);
+    overlay.addEventListener('click', handleClickFora);
+    
+    // Salvar funções para remover depois
+    overlay.removeEscListener = () => document.removeEventListener('keydown', handleEsc);
+    overlay.removeClickListener = () => overlay.removeEventListener('click', handleClickFora);
+}
+
+function closeConfirmationModal(overlay) {
+    overlay.style.animation = 'fadeOutOverlay 0.3s ease-out forwards';
+    setTimeout(() => {
+        if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+            document.body.style.overflow = 'auto';
+        }
+        // Limpar event listeners
+        if (overlay.removeEscListener) overlay.removeEscListener();
+        if (overlay.removeClickListener) overlay.removeClickListener();
+    }, 300);
+}
+
+function closePaymentModal(overlay) {
+    overlay.style.animation = 'fadeOutOverlay 0.3s ease-out forwards';
+    setTimeout(() => {
+        document.body.removeChild(overlay);
+        document.body.style.overflow = 'auto';
+        // Limpar event listeners
+        if (overlay.removeEscListener) overlay.removeEscListener();
+        if (overlay.removeClickListener) overlay.removeClickListener();
+    }, 300);
 }
 </script>
 
