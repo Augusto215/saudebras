@@ -565,7 +565,7 @@ def user_login(request):
         
         if user is not None:
             auth_login(request, user)
-            messages.success(request, "Usuário logado com sucesso!")
+            messages.success(request, "Login realizado com sucesso")
             next_page = request.POST.get('next', 'home')
             return redirect(next_page)
         else:
@@ -1129,74 +1129,112 @@ def alterar_Clinica(request):
             else:
                 messages.error(request, 'Erro ao responder pergunta.')
         elif action == 'update_address':
-            form = AddressUpdateForm(request.POST)  # ou outro formulário adequado
-            if form.is_valid():
-                # Inicia a transação atômica
+            logging.debug("Processando atualização/criação de endereço")
+            
+            cep = request.POST.get('cep', '').replace('-', '')
+            rua = request.POST.get('rua', '')
+            numero = request.POST.get('numero', '')
+            complemento = request.POST.get('complemento', '')
+            bairro_nome = request.POST.get('bairro', '')
+            cidade_nome = request.POST.get('cidade', '')
+            estado_nome = request.POST.get('estado', '')
+            endereco_id = request.POST.get('endereco_id', '')
+            
+            logging.debug(f"Dados recebidos: CEP={cep}, Rua={rua}, Número={numero}")
+            
+            if not all([cep, rua, bairro_nome, cidade_nome, estado_nome]):
+                messages.error(request, 'Todos os campos obrigatórios devem ser preenchidos.')
+                return redirect('editar_clinica')
+            
+            try:
                 with transaction.atomic():
-                    # Obtenha as listas de CEPs e Complementos
-                    ceps = request.POST.getlist('cep[]')
-                    complementos = request.POST.getlist('complemento[]')
-
-                    # Lista para armazenar os objetos criados/obtidos
-                    enderecos = []
-                    estados = []
-                    cidades = []
-                    bairros = []
-                    ceps_list = []
-
-                    # Itere sobre as listas
-                    for i, cep in enumerate(ceps):
-                        complemento = complementos[i]
-
-                        # Consulta a API ViaCEP para obter as informações do endereço
-                        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-                        data = response.json()
-
-                        if response.status_code == 200 and not data.get('erro'):
-                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-                            cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-
-                            # Obtenha as coordenadas
-                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
-
-                            # Cria o objeto Endereco
-                            endereco, _ = Endereco.objects.get_or_create(
-                                rua=data['logradouro'],
-                                complemento=complemento,
-                                bairro=bairro,
-                                cidade=cidade,
-                                estado=estado,
-                                cep=cep_obj,
-                                latitude=latitude,
-                                longitude=longitude,
-                                clinica=user  # Supondo que o usuário é um profissional
-                            )
-
-                            # Adiciona os objetos às listas
-                            estados.append(estado)
-                            cidades.append(cidade)
-                            bairros.append(bairro)
-                            enderecos.append(endereco)
-                            ceps_list.append(cep_obj)
-
-                    # Associa os objetos ao profissional
-                    user.estados.set(estados)
-                    user.cidades.set(cidades)
-                    user.bairros.set(bairros)
-                    user.ceps.set(ceps_list)
-                    user.enderecos.set(enderecos)
-
-                    # Salva o profissional
-                    user.save()
-
-                    messages.success(request, 'Endereço atualizado com sucesso!')
-                    return redirect('editar_clinica')            
+                    # Buscar ou criar estado, cidade, bairro e CEP
+                    estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                    cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                    bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
+                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                    
+                    # Obter coordenadas (opcional)
+                    latitude, longitude = None, None
+                    try:
+                        endereco_completo = f"{rua}, {bairro_nome}, {cidade_nome}, {estado_nome}, {cep}"
+                        # latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
+                    except:
+                        pass
+                    
+                    # Criar ou atualizar endereço
+                    if endereco_id:
+                        # Atualizar endereço existente
+                        try:
+                            endereco = Endereco.objects.get(id=endereco_id, clinica=user)
+                            endereco.rua = rua
+                            endereco.numero = int(numero) if numero else None
+                            endereco.complemento = complemento
+                            endereco.bairro = bairro
+                            endereco.cidade = cidade
+                            endereco.estado = estado
+                            endereco.cep = cep_obj
+                            endereco.latitude = latitude
+                            endereco.longitude = longitude
+                            endereco.save()
+                            messages.success(request, 'Endereço atualizado com sucesso!')
+                        except Endereco.DoesNotExist:
+                            messages.error(request, 'Endereço não encontrado.')
+                            return redirect('editar_clinica')
+                    else:
+                        # Criar novo endereço
+                        endereco = Endereco.objects.create(
+                            rua=rua,
+                            numero=int(numero) if numero else None,
+                            complemento=complemento,
+                            bairro=bairro,
+                            cidade=cidade,
+                            estado=estado,
+                            cep=cep_obj,
+                            latitude=latitude,
+                            longitude=longitude,
+                            clinica=user
+                        )
+                        user.enderecos.add(endereco)
+                        messages.success(request, 'Endereço adicionado com sucesso!')
+                    
+                    return redirect('editar_clinica')
+                    
+            except Exception as e:
+                logging.error(f"Erro ao processar endereço: {e}")
+                messages.error(request, 'Erro ao processar endereço. Tente novamente.')
+                return redirect('editar_clinica')
+        
+        elif action == 'remove_address':
+            logging.debug(f"Removendo endereço - endereco_id: {request.POST.get('endereco_id')}")
+            endereco_id = request.POST.get('endereco_id')
+            
+            if endereco_id:
+                try:
+                    endereco = Endereco.objects.get(id=endereco_id, clinica=user)
+                    logging.debug(f"Endereço encontrado: {endereco}")
+                    endereco.delete()
+                    logging.debug("Endereço removido com sucesso")
+                    messages.success(request, 'Endereço removido com sucesso!')
+                except Endereco.DoesNotExist:
+                    logging.error(f"Endereço não encontrado - ID: {endereco_id}")
+                    messages.error(request, 'Endereço não encontrado.')
+                except Exception as e:
+                    logging.error(f"Erro ao remover endereço: {e}")
+                    messages.error(request, 'Erro ao remover endereço.')
+            else:
+                logging.error("ID do endereço não fornecido")
+                messages.error(request, 'ID do endereço não fornecido.')
+            
+            return redirect('editar_clinica')            
         else:
+            # Apenas logar erro se form não for None (ações que usam formulário)
+            if form is not None:
                 logging.debug(f"Formulário não é válido. Erros: {form.errors}")
                 messages.error(request, 'Erro na atualização do perfil.')
+            else:
+                logging.debug("Ação não reconhecida ou formulário não inicializado")
+                messages.error(request, 'Ação não reconhecida.')
 
     logging.debug("Finalizando alterar_Clinica")
 
@@ -1325,3 +1363,54 @@ def validate_password(request):
         else:
             return JsonResponse({'valid': False})
     return JsonResponse({'valid': False}, status=400)
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+@staff_member_required
+@require_http_methods(["POST"])
+def cleanup_invalid_subscriptions(request):
+    """
+    View administrativa para limpar assinaturas inválidas
+    Apenas usuários staff podem executar esta ação
+    """
+    try:
+        from usuarios.models import Subscription
+        count_cleaned = Subscription.cleanup_invalid_subscriptions()
+        return JsonResponse({
+            'success': True,
+            'message': f'{count_cleaned} assinaturas inválidas foram limpas'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+def check_subscription_health(request):
+    """
+    View para verificar a saúde das assinaturas
+    Pode ser usada por administradores para monitoramento
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Acesso negado'}, status=403)
+    
+    try:
+        from usuarios.models import Subscription
+        total_subscriptions = Subscription.objects.filter(active=True).count()
+        invalid_count = 0
+        
+        for subscription in Subscription.objects.filter(active=True):
+            if not subscription.validate_stripe_subscription():
+                invalid_count += 1
+        
+        return JsonResponse({
+            'total_active_subscriptions': total_subscriptions,
+            'invalid_subscriptions_found': invalid_count,
+            'health_status': 'healthy' if invalid_count == 0 else 'needs_attention'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)

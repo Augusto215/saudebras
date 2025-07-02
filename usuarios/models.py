@@ -265,6 +265,34 @@ class Subscription(models.Model):
             return self.clinica.email
         else:
             return None
+    
+    def validate_stripe_subscription(self):
+        """
+        Valida se a assinatura ainda existe no Stripe
+        Retorna True se válida, False caso contrário
+        """
+        try:
+            stripe_subscription = stripe.Subscription.retrieve(self.stripe_subscription_id)
+            return True
+        except stripe.error.InvalidRequestError:
+            # Assinatura não existe mais no Stripe, marcar como inativa
+            self.active = False
+            self.save()
+            return False
+        except Exception as e:
+            print(f"Erro ao validar assinatura {self.stripe_subscription_id}: {e}")
+            return False
+    
+    @classmethod
+    def cleanup_invalid_subscriptions(cls):
+        """
+        Limpa todas as assinaturas que não existem mais no Stripe
+        """
+        count_cleaned = 0
+        for subscription in cls.objects.filter(active=True):
+            if not subscription.validate_stripe_subscription():
+                count_cleaned += 1
+        return count_cleaned
 
 
 class Profissional(CustomUser):
@@ -289,9 +317,9 @@ class Profissional(CustomUser):
     preco = models.CharField(max_length=30, blank=True)
     
     def get_trial_days_remaining(self):
-        subscription = self.subscription
-        if subscription and subscription.stripe_subscription_id:
-            try:
+        try:
+            subscription = self.subscription
+            if subscription and subscription.stripe_subscription_id:
                 stripe_subscription = stripe.Subscription.retrieve(
                     subscription.stripe_subscription_id)
                 trial_end_timestamp = stripe_subscription.get('trial_end')
@@ -300,9 +328,16 @@ class Profissional(CustomUser):
                     today = datetime.utcnow().date()
                     days_remaining = (trial_end_date.date() - today).days
                     return days_remaining
-            except stripe.error.InvalidRequestError as e:
-                # Logar o erro para revisão posterior
-                return None  # ou 0, dependendo de como você quer lidar com isso
+        except stripe.error.InvalidRequestError as e:
+            # Log the error for debugging
+            print(f"Erro ao recuperar assinatura do Stripe: {e}")
+            # Optionally, mark the subscription as inactive or handle the cleanup
+            if hasattr(self, 'subscription') and self.subscription:
+                self.subscription.active = False
+                self.subscription.save()
+        except Exception as e:
+            print(f"Erro inesperado ao verificar período de teste: {e}")
+        return None  # ou 0, dependendo de como você quer lidar com isso
 
 
 class Clinica(CustomUser):
@@ -325,16 +360,26 @@ class Clinica(CustomUser):
     galeria = models.ManyToManyField(Foto, blank=True, related_name='clinicas')
     
     def get_trial_days_remaining(self):
-        subscription = self.subscription
-        if subscription:
-            stripe_subscription = stripe.Subscription.retrieve(
-                subscription.stripe_subscription_id)
-            trial_end_timestamp = stripe_subscription.get('trial_end')
-            if trial_end_timestamp is not None:
-                trial_end_date = datetime.utcfromtimestamp(trial_end_timestamp)
-                today = datetime.utcnow().date()
-                days_remaining = (trial_end_date.date() - today).days
-                return days_remaining
+        try:
+            subscription = self.subscription
+            if subscription:
+                stripe_subscription = stripe.Subscription.retrieve(
+                    subscription.stripe_subscription_id)
+                trial_end_timestamp = stripe_subscription.get('trial_end')
+                if trial_end_timestamp is not None:
+                    trial_end_date = datetime.utcfromtimestamp(trial_end_timestamp)
+                    today = datetime.utcnow().date()
+                    days_remaining = (trial_end_date.date() - today).days
+                    return days_remaining
+        except stripe.error.InvalidRequestError as e:
+            # Log the error for debugging
+            print(f"Erro ao recuperar assinatura do Stripe: {e}")
+            # Optionally, mark the subscription as inactive or handle the cleanup
+            if hasattr(self, 'subscription') and self.subscription:
+                self.subscription.active = False
+                self.subscription.save()
+        except Exception as e:
+            print(f"Erro inesperado ao verificar período de teste: {e}")
         return None  # ou 0, dependendo de como você quer lidar com isso
     
 

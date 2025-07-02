@@ -76,26 +76,106 @@
         transition: all 0.3s ease !important;
       }
       
-      /* Estilo para o link ativo/selecionado */
-      .navbar-nav .nav-link.active,
-      .navbar-nav .nav-link:hover,
-      .nav-item .nav-link.active,
-      .nav-item .nav-link:hover {
+      /* Estilo para o link ativo/selecionado - EXCETO para links de logout */
+      .navbar-nav .nav-link.active:not(.logout-link),
+      .navbar-nav .nav-link:hover:not(.logout-link),
+      .nav-item .nav-link.active:not(.logout-link),
+      .nav-item .nav-link:hover:not(.logout-link) {
         color: #00ae9d !important;
         background-color: rgba(0, 174, 157, 0.1) !important;
         border-radius: 6px !important;
       }
       
-      /* Para páginas específicas - adicionar classe active via JavaScript */
-      .navbar-nav .nav-item.current-page .nav-link,
-      .nav-item.current-page .nav-link {
+      /* Para páginas específicas - adicionar classe active via JavaScript - EXCETO para links de logout */
+      .navbar-nav .nav-item.current-page .nav-link:not(.logout-link),
+      .nav-item.current-page .nav-link:not(.logout-link) {
         color: #00ae9d !important;
         background-color: rgba(0, 174, 157, 0.1) !important;
+        border-radius: 6px !important;
+      }
+      
+      /* Estilo específico para links de logout - apenas hover */
+      .nav-link.logout-link:hover {
+        color: #dc2626 !important;
+        background-color: rgba(220, 38, 38, 0.1) !important;
         border-radius: 6px !important;
       }
       
       .navbar-brand img {
         max-height: 2.5rem !important;
+      }
+      
+      /* Estilos para mensagens de alerta */
+      .alert {
+        border-radius: 12px !important;
+        border: none !important;
+        padding: 1rem 1.5rem !important;
+        margin-bottom: 1rem !important;
+        font-weight: 500 !important;
+      }
+
+      .alert-success {
+        background-color: #d1fae5 !important;
+        color: #065f46 !important;
+        border-left: 4px solid #059669 !important;
+      }
+      
+      .alert-error,
+      .alert-danger {
+        background-color: #fee2e2 !important;
+        color: #7f1d1d !important;
+        border-left: 4px solid #dc2626 !important;
+      }
+      
+      .alert-warning {
+        background-color: #fef3c7 !important;
+        color: #78350f !important;
+        border-left: 4px solid #f59e0b !important;
+      }
+      
+      .alert-info {
+        background-color: #dbeafe !important;
+        color: #1e3a8a !important;
+        border-left: 4px solid #3b82f6 !important;
+      }
+      
+      /* Estilos para modal de logout */
+      #logoutModal {
+        z-index: 9999 !important;
+      }
+      
+      #logoutModal .modal-backdrop {
+        z-index: 9998 !important;
+      }
+      
+      #logoutModal .modal-content {
+        animation: modalSlideIn 0.3s ease-out;
+        z-index: 10000 !important;
+      }
+      
+      @keyframes modalSlideIn {
+        from {
+          transform: scale(0.7);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      
+      #logoutModal .btn-danger:hover {
+        background-color: #b91c1c !important;
+        border-color: #b91c1c !important;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+      }
+      
+      #logoutModal .btn-secondary:hover {
+        background-color: #4b5563 !important;
+        border-color: #4b5563 !important;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
       }
       
       .mobile-nav {
@@ -145,10 +225,6 @@
       <div class="collapse navbar-collapse"  id="navbarNavDropdown">
         <ul class="navbar-nav" >
  
-        
-
-    
-         
           {% if user.is_authenticated == False %}
 
           <li class="contato-li-ul nav-item" style="list-style: none; display: none; align-items: center;">
@@ -158,7 +234,7 @@
 
       {% else %}
       <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-        <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
+        <a class="nav-link logout-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Sair <img src=""></a>
         </li>
 
       {%endif%}
@@ -282,7 +358,7 @@
               {% else %}
 
               <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-                <a  class="nav-link" href="{% url 'logout' %}">Sair <img src=""></a>
+                <a class="nav-link logout-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Sair <img src=""></a>
                 </li>
 
               {%endif%}
@@ -335,7 +411,7 @@
 
           {% else %}
           <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
-            <a  class="nav-link" href="{% url 'logout' %}">Sair</a>
+            <a class="nav-link logout-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Sair</a>
             </li>
 
           {%endif%}
@@ -358,61 +434,30 @@
     </header>
 
     
-    <!-- Success Modal -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- ... rest of modal content ... -->
-        <div class="modal-body">
-          <div class="d-flex flex-column align-items-center" style="gap:1rem;">
-            <img style="max-height:5rem;" src="{%static 'img/verify.png'%}">
-          {% if messages %}
-            <div class="messages">
-              {% for message in messages %}
-                {% if message.tags == 'success' %}
-                  <span>{{ message }}</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Error Modal -->
-  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- ... rest of modal content ... -->
-        <div class="modal-body">
-
-            <div class="d-flex flex-column align-items-center" style="gap:1rem;">
-              <img style="max-height:5rem;" src="{%static 'img/cancel.png'%}">
-            {% if messages %}
-            <div class="messages">
-              {% for message in messages %}
-                {% if message.tags == 'error' %}
-            <span>{{ message }}</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', (event) => {
+      // Auto-hide alert messages after 3 seconds
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(function(alert) {
+        setTimeout(function() {
+          if (alert && alert.parentNode) {
+            // Fade out animation
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.style.opacity = '0';
+            
+            // Remove from DOM after fade out
+            setTimeout(function() {
+              if (alert && alert.parentNode) {
+                alert.parentNode.removeChild(alert);
+              }
+            }, 500);
+          }
+        }, 3000); // 3 seconds
+      });
+      
       {% if messages %}
         {% for message in messages %}
-          {% if message.tags == 'success' %}
-            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-            successModal.show();
-          {% elif message.tags == 'error' %}
+          {% if message.tags == 'error' %}
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             errorModal.show();
           {% endif %}
@@ -452,6 +497,16 @@
   </div>
 </div>
    
+    <!-- Global Messages -->
+    {% if messages %}
+      <div class="container-fluid">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} fade show" role="alert" style="margin: 1rem auto; max-width: 1200px;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
     {% block  'conteudo' %}{% endblock  %}
 
@@ -523,8 +578,8 @@
               // Script para destacar o item ativo da navbar
               document.addEventListener('DOMContentLoaded', function () {
                 const currentPath = window.location.pathname;
-                // Buscar links em ambas as estruturas de navbar
-                const navLinks = document.querySelectorAll('.navbar-nav .nav-link, .nav-item .nav-link');
+                // Buscar links em ambas as estruturas de navbar - EXCLUINDO links de logout
+                const navLinks = document.querySelectorAll('.navbar-nav .nav-link:not(.logout-link), .nav-item .nav-link:not(.logout-link)');
                 
                 navLinks.forEach(link => {
                   if (!link.href) return; // Pular links sem href
@@ -556,7 +611,41 @@
               });
             </script>
 
+<script>
+  // Controla o botão de confirmação de logout
+  document.addEventListener('DOMContentLoaded', function() {
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    if (confirmLogoutBtn) {
+      confirmLogoutBtn.addEventListener('click', function() {
+        window.location.href = '{% url "logout" %}';
+      });
+    }
+  });
+</script>
 
+<!-- Modal de Confirmação de Logout -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" style="z-index: 9999;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); z-index: 10000;">
+      <div class="modal-header" style="border-bottom: none; padding: 2rem 2rem 1rem 2rem;">
+        <h5 class="modal-title" id="logoutModalLabel" style="font-weight: 600; color: #374151;">Confirmar Saída</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="padding: 1rem 2rem;">
+        <div class="d-flex flex-column align-items-center text-center" style="gap: 1rem;">
+          <div style="width: 64px; height: 64px; background-color: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-sign-out-alt" style="font-size: 24px; color: #dc2626;"></i>
+          </div>
+          <p style="margin: 0; font-size: 16px; color: #6b7280;">Tem certeza de que deseja sair da sua conta?</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: none; padding: 1rem 2rem 2rem 2rem; gap: 1rem;">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 500;">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmLogoutBtn" style="border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 500;">Sair</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     </body>
 </html>

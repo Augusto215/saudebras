@@ -21,6 +21,10 @@ urlpatterns = [
     path('editar_cliente', editar_cliente, name='editar_cliente'),
     path('editar_senha/', editar_senha, name='editar_senha'),
     path('validate_password/', validate_password, name='validate_password'),
+    
+    # URLs administrativas para gestão de assinaturas
+    path('admin/cleanup-subscriptions/', cleanup_invalid_subscriptions, name='cleanup_subscriptions'),
+    path('admin/subscription-health/', check_subscription_health, name='subscription_health'),
 
 
 

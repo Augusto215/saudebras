@@ -225,17 +225,6 @@
   .btn-primary:hover {
     background: #008e7a;
   }
-  .btn-secondary {
-    background: #6b7280;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 0.5rem;
-  }
   .btn-secondary:hover {
     background: #4b5563;
   }
@@ -723,10 +712,18 @@
   .confirmation-modal-header .text-warning {
     color: #f59e0b !important;
   }
+
+  .btn-secondary {
+    background: #6b7280;
+    color: #fff;
+  }
   
   .confirmation-modal-footer .btn-danger {
     background: #dc2626;
     color: #fff;
+  }
+  
+  .confirmation-modal-footer .btn-danger, .btn-secondary {
     border: none;
     border-radius: 8px;
     padding: 0.6rem 1.2rem;
@@ -946,18 +943,6 @@
 </div>
 
 <div class="profile-settings-container">
-  <!-- Mensagens de feedback -->
-  {% if messages %}
-    <div class="container mb-4">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-  
   <div class="profile-settings-card d-flex">
     <!-- Sidebar -->
     <div class="profile-sidebar">
@@ -1161,12 +1146,12 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="cep">CEP *</label>
-                <input type="text" id="cep" name="cep" class="form-control" placeholder="00000-000" maxlength="9" required>
+                <input type="text" id="cep" name="cep" class="form-control" placeholder="ex: 00000-000" maxlength="9" required>
                 <div id="cepError" class="error-message" style="display: none;"></div>
               </div>
               <div class="form-group">
                 <label for="numero">Número</label>
-                <input type="number" id="numero" name="numero" class="form-control" placeholder="123">
+                <input type="number" id="numero" name="numero" class="form-control" placeholder="ex: 123">
               </div>
             </div>
             
@@ -1177,7 +1162,7 @@
               </div>
               <div class="form-group">
                 <label for="complemento">Complemento</label>
-                <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Ex: Apto 101, Bloco A, Casa 2">
+                <input type="text" id="complemento" name="complemento" class="form-control" placeholder="ex: Apto 101, Bloco A, Casa 2">
               </div>
             </div>
             
@@ -1200,7 +1185,7 @@
             </div>
             
             <div class="form-actions">
-              <button type="button" id="cancelarEndereco" class="btn-secondary">Cancelar</button>
+              <button type="button" id="cancelarEndereco" style="background: #6b7280 !important;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';" class="btn-primary">Cancelar</button>
               <button type="submit" class="btn-primary">
                 <span id="saveEnderecoText">Salvar Endereço</span>
               </button>
@@ -2131,7 +2116,8 @@ function initEnderecoManagement() {
         e.preventDefault();
         
         const cep = document.getElementById('cep').value;
-        if (cep.length !== 9) {
+        const cepLimpo = cep.replace(/\D/g, '');
+        if (cepLimpo.length !== 8) {
             mostrarErro('CEP deve ter 8 dígitos');
             return;
         }
