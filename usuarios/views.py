@@ -11,6 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 import logging
 import json
 import requests
+import re
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash, authenticate
@@ -84,25 +85,22 @@ def registerCliente(request):
                 cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
                 bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
 
-                user = Cliente.objects.create_user(
-                    nome = form.cleaned_data['nome'],
-                    username = form.cleaned_data['username'],
-                    telefone = form.cleaned_data['telefone'],
+                user = Cliente(
+                    nome=form.cleaned_data['nome'],
+                    sobrenome=form.cleaned_data['sobrenome'],
+                    username = re.sub(r'\D', '', form.cleaned_data['username']),
+                    telefone=form.cleaned_data['telefone'],
                     email=form.cleaned_data['email'],
-                    foto = form.cleaned_data['foto'],
-                    password=form.cleaned_data['password1'],
+                    foto=form.cleaned_data['foto'],
                     estado=estado,
                     cidade=cidade,
                     bairro=bairro,
                     cep=cep,
-                 
-                  
                 )
+
+                user.set_password(form.cleaned_data['password1'])
                 user.save()
 
-             
-               
-               
                     
                 return redirect('sucessoCliente')
                
@@ -213,7 +211,7 @@ def registerProfissional(request):
                 user.email = form.cleaned_data['email']
                 user.telefone = form.cleaned_data['telefone']
                 user.nome = form.cleaned_data['nome']
-                user.username = form.cleaned_data['username']
+                user.username = re.sub(r'\D', '', form.cleaned_data['username']) 
                 user.descricao = form.cleaned_data['descricao']
                 user.codigo = form.cleaned_data['codigo']
                 user.foto = form.cleaned_data['foto']
@@ -406,7 +404,7 @@ def registerClinica(request):
                 user.email = form.cleaned_data['email']
                 user.telefone = form.cleaned_data['telefone']
                 user.nome = form.cleaned_data['nome']
-                user.username = form.cleaned_data['username']
+                user.username = re.sub(r'\D', '', form.cleaned_data['username'])
                 user.descricao = form.cleaned_data['descricao']
                 user.foto = form.cleaned_data['foto']
                 selected_tipo_profissional = form.cleaned_data['tipo_profissional']
@@ -560,21 +558,32 @@ def user_login(request):
         form = LoginForm(data=request.POST)
         username = request.POST['username']
         password = request.POST['password']
+
+        print(f"Recebido login: username={username}, password={password}")
+
+        # Verifica se usuário existe
+        try:
+            user_obj = Cliente.objects.get(email=username)
+            print(f"Usuário encontrado no banco: {user_obj}")
+        except Cliente.DoesNotExist:
+            print("Usuário não encontrado no banco.")
+
+        # Tenta autenticar
         user = authenticate(request, username=username, password=password)
 
-        
         if user is not None:
+            print("Autenticação bem-sucedida")
             auth_login(request, user)
             messages.success(request, "Login realizado com sucesso")
             next_page = request.POST.get('next', 'home')
             return redirect(next_page)
         else:
+            print("Falha na autenticação")
             messages.error(request, "Email ou senha inválidos.")
     else:
         form = LoginForm()
-        
-    context['form'] = form  # Agora, o form é adicionado ao contexto aqui.
-        
+
+    context['form'] = form
     return render(request, 'core/login.html', context)
 
 

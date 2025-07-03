@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
+* {
+    
+}
+
 :root {
     --btn-color: #55ec8f;
     --border-color: #ffffff;
@@ -231,11 +235,11 @@ h2, h3
     font-size: 1.2rem;
 }
 
-*
+/* *
 {
-    font-family: 'Arial', sans-serif !important;
+    font-family: 'Arial', sans-serif;
     
-}
+} */
 
 
 

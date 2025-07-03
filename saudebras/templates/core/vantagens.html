@@ -1,30 +1,322 @@
 {%extends 'core/base.html'%}
 {%load static%}
 {%block 'conteudo'%}
-<div class="container d-flex flex-column align-items-center justify-content-center" style="flex-grow:1">
-    <div class="my-4">
-        <h2 style="color:#212529" class="fw-bold">VANTAGENS</h2>
-        <p style="color:#212529">Por que escolher a SaúdeBras?</p>
-        <div>
-          <h3>1. Economia Sem Compromisso</h3>
-          <p style="color: #212529;">Na SaúdeBras, acreditamos que saúde de qualidade não deve custar uma fortuna. Nossa plataforma oferece descontos significativos em consultas e exames médicos, garantindo que você receba o melhor cuidado sem comprometer seu orçamento.</p>
+<style>
+    .vantagens-container {
+        min-height: 100vh;
+        background: linear-gradient(45deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
+        padding: 3rem 0;
+        position: relative;
+    }
+    
+    .vantagens-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .main-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .title-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .main-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #1e293b, #475569);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+    }
+    
+    .main-subtitle {
+        font-size: 1.3rem;
+        color: #64748b;
+        font-weight: 500;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .vantagens-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .vantagem-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .vantagem-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+    
+    .vantagem-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .vantagem-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .vantagem-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .vantagem-card:nth-child(1) .vantagem-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .vantagem-card:nth-child(2) .vantagem-icon {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    
+    .vantagem-card:nth-child(3) .vantagem-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+    
+    .vantagem-card:nth-child(4) .vantagem-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .vantagem-card:nth-child(5) .vantagem-icon {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    .vantagem-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+    
+    .vantagem-description {
+        color: #475569;
+        line-height: 1.7;
+        font-size: 1rem;
+    }
+    
+    .floating-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    
+    .floating-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .floating-circle:nth-child(1) {
+        width: 80px;
+        height: 80px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .floating-circle:nth-child(2) {
+        width: 120px;
+        height: 120px;
+        top: 70%;
+        right: 10%;
+        animation-delay: 2s;
+    }
+    
+    .floating-circle:nth-child(3) {
+        width: 60px;
+        height: 60px;
+        top: 30%;
+        right: 20%;
+        animation-delay: 4s;
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+        }
+    }
+    
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.8s ease-out;
+    }
+    
+    .scroll-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    @media (max-width: 768px) {
+        .vantagens-grid {
+            grid-template-columns: 1fr;
+            padding: 0 1rem;
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+        }
+        
+        .vantagem-card {
+            padding: 2rem;
+        }
+        
+        .vantagens-container {
+            padding: 2rem 0;
+        }
+    }
+</style>
+
+<div class="vantagens-container">
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+    
+    <div class="main-header scroll-reveal">
+        <div class="title-badge">Por que escolher</div>
+        <h1 class="main-title">SaúdeBras?</h1>
+        <p class="main-subtitle">Descubra as vantagens que fazem da nossa plataforma a melhor escolha para seus cuidados médicos</p>
+    </div>
+    
+    <div class="vantagens-grid">
+        <div class="vantagem-card scroll-reveal">
+            <div class="vantagem-icon">💰</div>
+            <h3 class="vantagem-title">Economia Sem Compromisso</h3>
+            <p class="vantagem-description">Na SaúdeBras, acreditamos que saúde de qualidade não deve custar uma fortuna. Nossa plataforma oferece descontos significativos em consultas e exames médicos, garantindo que você receba o melhor cuidado sem comprometer seu orçamento.</p>
         </div>
-        <div>
-          <h3>2. Facilidade de Uso</h3>
-          <p style="color: #212529;">Agendar uma consulta ou exame com a SaúdeBras é simples e rápido. Com apenas alguns cliques, você pode encontrar e reservar o serviço de saúde que precisa, sem complicações.</p>
+        
+        <div class="vantagem-card scroll-reveal">
+            <div class="vantagem-icon">⚡</div>
+            <h3 class="vantagem-title">Facilidade de Uso</h3>
+            <p class="vantagem-description">Agendar uma consulta ou exame com a SaúdeBras é simples e rápido. Com apenas alguns cliques, você pode encontrar e reservar o serviço de saúde que precisa, sem complicações.</p>
         </div>
-        <div>
-          <h3>3. Ampla Rede de Profissionais</h3>
-          <p style="color: #212529;">Trabalhamos com uma ampla rede de médicos e clínicas renomadas, garantindo que você receba atendimento médico de alta qualidade em diversas especialidades.</p>
+        
+        <div class="vantagem-card scroll-reveal">
+            <div class="vantagem-icon">🏥</div>
+            <h3 class="vantagem-title">Ampla Rede de Profissionais</h3>
+            <p class="vantagem-description">Trabalhamos com uma ampla rede de médicos e clínicas renomadas, garantindo que você receba atendimento médico de alta qualidade em diversas especialidades.</p>
         </div>
-        <div>
-          <h3>4. Transparência e Confiança</h3>
-          <p style="color: #212529;">Na SaúdeBras, transparência é fundamental. Todos os custos são apresentados claramente antes do agendamento, para que você possa planejar seu orçamento com antecedência.</p>
+        
+        <div class="vantagem-card scroll-reveal">
+            <div class="vantagem-icon">🔒</div>
+            <h3 class="vantagem-title">Transparência e Confiança</h3>
+            <p class="vantagem-description">Na SaúdeBras, transparência é fundamental. Todos os custos são apresentados claramente antes do agendamento, para que você possa planejar seu orçamento com antecedência.</p>
         </div>
-        <div>
-          <h3>5. Sem Mensalidades</h3>
-          <p style="color: #212529;">Diferente de outras plataformas, na SaúdeBras você não paga nenhuma mensalidade para obter os descontos. Nosso foco é proporcionar economia real em cada consulta ou exame que você agendar.</p>
+        
+        <div class="vantagem-card scroll-reveal">
+            <div class="vantagem-icon">🚫</div>
+            <h3 class="vantagem-title">Sem Mensalidades</h3>
+            <p class="vantagem-description">Diferente de outras plataformas, na SaúdeBras você não paga nenhuma mensalidade para obter os descontos. Nosso foco é proporcionar economia real em cada consulta ou exame que você agendar.</p>
         </div>
-      </div>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Scroll reveal animation
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all scroll-reveal elements
+    document.querySelectorAll('.scroll-reveal').forEach((el, index) => {
+        // Add staggered delay
+        el.style.transitionDelay = `${index * 0.1}s`;
+        observer.observe(el);
+    });
+    
+    // Add subtle parallax effect to floating elements
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const parallax = scrolled * 0.5;
+        
+        document.querySelectorAll('.floating-circle').forEach((circle, index) => {
+            const speed = (index + 1) * 0.1;
+            circle.style.transform = `translateY(${parallax * speed}px)`;
+        });
+    });
+});
+</script>
+
 {%endblock%}

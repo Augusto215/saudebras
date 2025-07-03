@@ -1,40 +1,274 @@
 {%extends 'core/base.html'%}
 {%load static%}
 {%block 'conteudo'%}
-<div class="container d-flex flex-column align-items-center justify-content-center" style="flex-grow:1">
-    <div class="my-4">
-        <h2 class="fw-bold" style="color:#212529">QUEM SOMOS</h2>
-        <p style="color: black;">Na SaúdeBras, estamos comprometidos em tornar a busca e o acesso a cuidados médicos de qualidade mais fácil para todos.</p>
-        <p style="color: black;">Somos uma plataforma inovadora que conecta pacientes a uma ampla rede de profissionais de saúde, oferecendo consultas e exames médicos a preços reduzidos, sem a necessidade de custos adicionais ou mensalidades.</p>
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+        color: white;
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .section-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00b4db, #0083b0);
+    }
+    
+    .section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .section-title {
+        color: #2d3748;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .section-text {
+        color: #4a5568;
+        line-height: 1.7;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .value-card {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        border-left: 4px solid #00b4db;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .value-card:hover {
+        transform: translateX(5px);
+        border-left-color: #0083b0;
+        box-shadow: 0 5px 20px rgba(0, 180, 219, 0.2);
+    }
+    
+    .value-number {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .value-title {
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .value-text {
+        color: #4a5568;
+        line-height: 1.6;
+    }
+    
+    .intro-text {
+        font-size: 1.25rem;
+        line-height: 1.8;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .container-modern {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .main-content {
+        padding: 4rem 0;
+        background: #f8fafc;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
         
-        <h2 class="fw-bold" style="color:#212529">MISSÃO</h2>
-        <p style="color: black;">Na SaúdeBras, nossa missão é facilitar o acesso a cuidados médicos de qualidade, proporcionando uma plataforma confiável e acessível que conecta pacientes a uma rede diversificada de profissionais de saúde. Buscamos promover a saúde e o bem-estar, oferecendo serviços eficientes e transparentes, sem custos ocultos, para que todos possam receber o cuidado necessário quando mais precisam.</p>
+        .section-card {
+            padding: 1.5rem;
+        }
         
-        <h2 class="fw-bold" style="color:#212529">VISÃO</h2>
-        <p style="color: black;">Nossa visão é ser a principal referência em facilitação de acesso à saúde, utilizando tecnologia de ponta para conectar pacientes a profissionais de saúde em todo o Brasil. Almejamos transformar a experiência de cuidado médico, tornando-a mais acessível, conveniente e humanizada, promovendo uma comunidade mais saudável e informada.</p>
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
         
-        <h2 class="fw-bold" style="color:#212529">VALORES</h2>
-        <div>
-          <h3>1. Excelência</h3>
-          <p style="color: #212529;">Comprometemo-nos com a qualidade em tudo o que fazemos, garantindo padrões elevados de cuidado e serviço.</p>
-        </div>
-        <div>
-          <h3>2. Acessibilidade</h3>
-          <p style="color: #212529;">Acreditamos que todos devem ter acesso igualitário a cuidados médicos de qualidade, sem barreiras financeiras.</p>
-        </div>
-        <div>
-          <h3>3. Integridade</h3>
-          <p style="color: #212529;">Agimos com transparência, ética e responsabilidade em todas as nossas interações, construindo confiança e respeito.</p>
-        </div>
-        <div>
-          <h3>4. Inovação</h3>
-          <p style="color: #212529;">Buscamos constantemente maneiras inovadoras de melhorar nossos serviços e experiência do paciente, utilizando tecnologia para facilitar o acesso à saúde.</p>
-        </div>
-        <div>
-          <h3>5. Empatia</h3>
-          <p style="color: #212529;">Colocamos as necessidades dos nossos pacientes em primeiro lugar, demonstrando compreensão e empatia em cada interação.</p>
-        </div>
-        <p style="color: #212529;">Estes valores fundamentais guiam nossas ações diárias e nos motivam a continuar melhorando e expandindo nosso impacto na vida das pessoas que atendemos.</p>
-      </div>
+        .container-modern {
+            padding: 0 1rem;
+        }
+    }
+    
+    .fade-in {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="hero-section">
+    <div class="container-modern">
+        <h1 class="hero-title fade-in">SaúdeBras</h1>
+        <p class="intro-text fade-in">Conectando você aos melhores cuidados médicos com tecnologia, transparência e humanização</p>
+    </div>
 </div>
+
+<div class="main-content">
+    <div class="container-modern">
+        
+        <div class="section-card fade-in">
+            <h2 class="section-title">Quem Somos</h2>
+            <p class="section-text">Na SaúdeBras, estamos comprometidos em tornar a busca e o acesso a cuidados médicos de qualidade mais fácil para todos.</p>
+            <p class="section-text">Somos uma plataforma inovadora que conecta pacientes a uma ampla rede de profissionais de saúde, oferecendo consultas e exames médicos a preços reduzidos, sem a necessidade de custos adicionais ou mensalidades.</p>
+        </div>
+
+        <div class="section-card fade-in">
+            <h2 class="section-title">Nossa Missão</h2>
+            <p class="section-text">Na SaúdeBras, nossa missão é facilitar o acesso a cuidados médicos de qualidade, proporcionando uma plataforma confiável e acessível que conecta pacientes a uma rede diversificada de profissionais de saúde. Buscamos promover a saúde e o bem-estar, oferecendo serviços eficientes e transparentes, sem custos ocultos, para que todos possam receber o cuidado necessário quando mais precisam.</p>
+        </div>
+
+        <div class="section-card fade-in">
+            <h2 class="section-title">Nossa Visão</h2>
+            <p class="section-text">Nossa visão é ser a principal referência em facilitação de acesso à saúde, utilizando tecnologia de ponta para conectar pacientes a profissionais de saúde em todo o Brasil. Almejamos transformar a experiência de cuidado médico, tornando-a mais acessível, conveniente e humanizada, promovendo uma comunidade mais saudável e informada.</p>
+        </div>
+
+        <div class="section-card fade-in">
+            <h2 class="section-title">Nossos Valores</h2>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-number">1</div>
+                    <h3 class="value-title">Excelência</h3>
+                    <p class="value-text">Comprometemo-nos com a qualidade em tudo o que fazemos, garantindo padrões elevados de cuidado e serviço.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-number">2</div>
+                    <h3 class="value-title">Acessibilidade</h3>
+                    <p class="value-text">Acreditamos que todos devem ter acesso igualitário a cuidados médicos de qualidade, sem barreiras financeiras.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-number">3</div>
+                    <h3 class="value-title">Integridade</h3>
+                    <p class="value-text">Agimos com transparência, ética e responsabilidade em todas as nossas interações, construindo confiança e respeito.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-number">4</div>
+                    <h3 class="value-title">Inovação</h3>
+                    <p class="value-text">Buscamos constantemente maneiras inovadoras de melhorar nossos serviços e experiência do paciente, utilizando tecnologia para facilitar o acesso à saúde.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-number">5</div>
+                    <h3 class="value-title">Empatia</h3>
+                    <p class="value-text">Colocamos as necessidades dos nossos pacientes em primeiro lugar, demonstrando compreensão e empatia em cada interação.</p>
+                </div>
+            </div>
+            
+            <p class="section-text" style="margin-top: 2rem; text-align: center; font-style: italic;">Estes valores fundamentais guiam nossas ações diárias e nos motivam a continuar melhorando e expandindo nosso impacto na vida das pessoas que atendemos.</p>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+// Adiciona animação de fade-in quando os elementos entram na tela
+document.addEventListener('DOMContentLoaded', function() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observa todos os elementos com a classe fade-in
+    document.querySelectorAll('.section-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.8s ease-out';
+        observer.observe(el);
+    });
+});
+</script>
+
 {%endblock%}
