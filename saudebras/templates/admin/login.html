@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>Acessar | POUPECOMPRANDO</title>
+    <title>Painel</title>
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="/static/vendor/fontawesome-free/css/all.min.css">
@@ -40,20 +40,17 @@
 
 <div class="login-box">
     <div class="login-logo">
-        <h1>
-            <picture>
-                <source
-                    srcset="/static/img/c843eefa-f7d4-4534-852f-971f82ebfa4c-removebg-preview.png"
-                    media="(prefers-color-scheme: dark)">
-                 <img style="max-width:15rem; border-radius:50%;" src="/static/img/IMG_9283%20(1).JPG" alt="JAQUERA">
-            </picture>
-        </h1>
+<h1>
+    <img src="/static/img/saudebras-logo.png" alt="SaudeBras" style="display: block; margin: 0 auto; max-width: 300px; height: auto;">
+</h1>
+
+
     </div>
 
     <div class="card">
         <div class="card-body" style="text-align:center">
             
-    <p class="login-box-msg">RESERVA JAQUERA</p>
+    <p class="login-box-msg">Painel de administrador</p>
     <form action="/admin/login/?next=/admin/" method="post" style="margin-bottom:1.5rem">
         {%csrf_token%}
         
