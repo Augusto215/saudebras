@@ -76,9 +76,9 @@ def artigos(request):
     return render(request, 'core/artigos.html')
 
 
-def assistencia(request):
+def suporte(request):
     
-    return render(request, 'core/assistencia.html')
+    return render(request, 'core/suporte.html')
 
 
 def contato(request):

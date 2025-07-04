@@ -311,7 +311,7 @@
       </li>
 
       <li class="nav-item">
-        <a href="{%url 'assistencia' %}" class="nav-link">Assistência</a>
+        <a href="{%url 'suporte' %}" class="nav-link">Assistência</a>
       </li>
 
       <li class="nav-item">
@@ -380,7 +380,7 @@
               </li>
 
               <li class="nav-item">
-                <a href="{%url 'assistencia' %}" class="nav-link">Suporte</a>
+                <a href="{%url 'suporte' %}" class="nav-link">Suporte</a>
               </li>
 
               <li class="nav-item">
@@ -605,7 +605,7 @@
                       (currentPath.includes('/sobre') && linkPath.includes('/sobre')) ||
                       (currentPath.includes('/vantagens') && linkPath.includes('/vantagens')) ||
                       (currentPath.includes('/artigos') && linkPath.includes('/artigos')) ||
-                      (currentPath.includes('/assistencia') && linkPath.includes('/assistencia'))) {
+                      (currentPath.includes('/suporte') && linkPath.includes('/suporte'))) {
                     link.classList.add('active');
                     if (link.parentElement) {
                       link.parentElement.classList.add('current-page');

@@ -37,7 +37,7 @@ urlpatterns = [
     path('sobre/', sobre, name='sobre'),
     path('vantagens/', vantagens, name='vantagens'),
     path('artigos/', artigos, name='artigos'),
-    path('assistencia/', assistencia, name='assistencia'),
+    path('suporte/', suporte, name='suporte'),
     path('contato/', contato, name='contato'),
     path('create-payment-intent/',  create_payment_intent, name='create-payment-intent'),
 
