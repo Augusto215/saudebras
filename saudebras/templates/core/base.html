@@ -224,6 +224,10 @@
     <header>
       <div class="collapse navbar-collapse"  id="navbarNavDropdown">
         <ul class="navbar-nav" >
+
+          <li class="nav-item">
+            <a href="{% url 'home' %}" class="nav-link">Início</a>
+          </li>
  
           {% if user.is_authenticated == False %}
 
