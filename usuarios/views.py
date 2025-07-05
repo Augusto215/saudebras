@@ -182,6 +182,14 @@ def registerProfissional(request):
                 return JsonResponse({'cpf_exists': cpf_exists})
             return JsonResponse({'cpf_exists': False})
         
+        # Verificar se é uma requisição AJAX para verificar Email
+        if request.POST.get('action') == 'verificar_email':
+            email = request.POST.get('email')
+            if email:
+                email_exists = Profissional.objects.filter(email=email).exists()
+                return JsonResponse({'email_exists': email_exists})
+            return JsonResponse({'email_exists': False})
+        
         # Processamento normal do formulário
         form = ProfissionalRegistrationForm(request.POST, request.FILES)
         if form.is_valid():

@@ -922,6 +922,11 @@
                     showEmailInvalidoModal("Formato de email inválido. Use: nome@email.com");
                     return false;
                 }
+                
+                // Verificar se email já existe no banco (via AJAX) - NOVA VALIDAÇÃO
+                if (!verificarEmailExistente(emailValue)) {
+                    return false; // Email já existe, bloquear progressão
+                }
             }
             
             // Validação do Celular
@@ -1066,9 +1071,17 @@
                 console.log('Senha 1:', password1.value);
                 console.log('Senha 2:', password2.value);
                 
-                // Verificar se a senha tem pelo menos 1 caractere (teste simples)
-                if (password1.value.length < 1) {
-                    console.log('Senha muito curta');
+                // Verificar se a senha está vazia
+                if (password1.value.trim() === "") {
+                    console.log('Senha vazia');
+                    showSenhaInvalidaModal();
+                    return false;
+                }
+                
+                // Verificar se a senha atende a todos os requisitos
+                const requirements = validatePasswordRequirements(password1.value);
+                if (!requirements.length || !requirements.uppercase || !requirements.number || !requirements.symbol) {
+                    console.log('Senha não atende aos requisitos');
                     showSenhaInvalidaModal();
                     return false;
                 }
@@ -1919,6 +1932,45 @@ input[required]:focus {
     </div>
 </div>
 
+<!-- Modal para Email Já Cadastrado -->
+<div class="modal fade" id="emailExistenteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-envelope-check-fill me-2"></i>
+                    Email Já Cadastrado
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-envelope-exclamation-fill"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Email já cadastrado no sistema!</h6>
+                <p style="color: #666; margin-bottom: 15px;">
+                    Este email já possui uma conta em nosso banco de dados.
+                </p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <p style="color: #555; margin: 0; font-size: 14px;">
+                        <strong>O que você pode fazer:</strong><br>
+                        • Fazer login com este email se já tem uma conta<br>
+                        • Usar um email diferente para criar nova conta<br>
+                        • Entrar em contato conosco se acredita que há um erro
+                    </p>
+                </div>
+                <p style="color: #666; margin-bottom: 0; font-size: 13px;">
+                    <em>Cada email pode ter apenas uma conta no sistema.</em>
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharEmailExistenteModal" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalEmailExistente()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal para Email Inválido -->
 <div class="modal fade" id="emailInvalidoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -2273,6 +2325,11 @@ input[required]:focus {
         modal.show();
     }
     
+    function showEmailExistenteModal() {
+        var modal = new bootstrap.Modal(document.getElementById('emailExistenteModal'));
+        modal.show();
+    }
+    
     function showCelularInvalidoModal(message) {
         document.getElementById('celularErrorMessage').textContent = message;
         var modal = new bootstrap.Modal(document.getElementById('celularInvalidoModal'));
@@ -2467,6 +2524,58 @@ input[required]:focus {
             if (cpfInput) {
                 cpfInput.focus();
                 cpfInput.select();
+            }
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal do Email já existente
+    function fecharModalEmailExistente() {
+        var modalElement = document.getElementById('emailExistenteModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#emailExistenteModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo email
+            var emailInput = document.querySelector('input[name="email"]');
+            if (emailInput) {
+                emailInput.focus();
+                emailInput.select();
             }
         }, 100);
     }
@@ -2772,6 +2881,35 @@ input[required]:focus {
         return true;
     }
     
+    // Função para verificar se email já existe no banco de dados (idêntica ao padrão do CPF)
+    function verificarEmailExistente(email) {
+        try {
+            var xhr = new XMLHttpRequest();
+            var formData = new FormData();
+            formData.append('email', email);
+            formData.append('action', 'verificar_email');
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            xhr.open('POST', window.location.href, false); // Requisição síncrona
+            xhr.send(formData);
+            
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.email_exists) {
+                    showEmailExistenteModal();
+                    return false;
+                }
+                return true;
+            }
+        } catch (error) {
+            console.error('Erro ao verificar email:', error);
+            // Em caso de erro na requisição, permitir continuar
+            return true;
+        }
+        
+        return true;
+    }
+    
     // Adicionar validação em tempo real no campo CPF (apenas feedback visual)
     document.addEventListener('DOMContentLoaded', function() {
         var nomeInput = document.querySelector('input[name="nome"]');
@@ -2804,6 +2942,16 @@ input[required]:focus {
                 e.preventDefault();
                 e.stopPropagation();
                 fecharModalCpfExistente();
+            });
+        }
+        
+        // Adicionar evento específico para o botão da modal do email existente
+        var btnFecharEmailExistente = document.getElementById('btnFecharEmailExistenteModal');
+        if (btnFecharEmailExistente) {
+            btnFecharEmailExistente.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fecharModalEmailExistente();
             });
         }
         
@@ -2858,6 +3006,14 @@ input[required]:focus {
                     e.preventDefault();
                     e.stopPropagation();
                     fecharModalEmailInvalido();
+                }
+            }
+            // Evento para o botão de Email existente
+            if (e.target && (e.target.id === 'btnFecharEmailExistenteModal')) {
+                if (e.target.closest('#emailExistenteModal') && e.target.textContent.trim() === 'Entendi') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fecharModalEmailExistente();
                 }
             }
             // Evento para o botão de Celular inválido
