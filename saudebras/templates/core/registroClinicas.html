@@ -506,13 +506,6 @@
 </div>
 
 <div class="tab">
-    <div id="payment-element">
-        <!-- Stripe Payment Element será anexado aqui -->
-      </div>
-      <div id="payment-message"></div>
-</div>
-
-<div class="tab">
     <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
    
       
@@ -581,7 +574,6 @@
 
       <!-- Circles which indicates the steps of the form: -->
       <div style="text-align:center;margin-top:40px;">
-         <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
          <span class="step"></span>
@@ -1892,66 +1884,6 @@
             enderecosDataField.value = JSON.stringify(enderecosCadastro);
         }
     }
-</script>
-
-
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        const stripe = Stripe('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5');
-    
-        fetch('/create-payment-intent/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // Adicione o token CSRF aqui, se necessário
-            },
-            body: JSON.stringify({ items: [{ id: 'your-item-id' }] })
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            const elements = stripe.elements({ clientSecret: data.clientSecret });
-            const paymentElement = elements.create('payment');
-            paymentElement.mount('#payment-element');
-    
-            const form = document.getElementById('registration-form');
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-    
-                stripe.confirmCardPayment(data.clientSecret).then(function (result) {
-                    if (result.error) {
-                        // Mostrar erro ao usuário
-                        console.error(result.error.message);
-                    } else {
-                        if (result.paymentIntent.status === 'succeeded') {
-                            // Pagamento bem-sucedido, envie os dados do formulário para o servidor
-                            submitRegistrationForm();
-                        }
-                    }
-                });
-            });
-        });
-    });
-    
-    function submitRegistrationForm() {
-        var formData = new FormData(document.getElementById('registration-form'));
-    
-        fetch('/register-user/', {  // Substitua pela URL correta do seu endpoint de registro
-            method: 'POST',
-            body: formData,
-        }).then(response => response.json())
-        .then(data => {
-            // Trate a resposta do servidor aqui
-            if (data.success) {
-                window.location.href = '/success-page';  // Substitua pela sua página de sucesso
-            } else {
-                console.error('Erro no registro:', data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Erro na requisição:', error);
-        });
-    }
-
 </script>
 
 <!-- Modais de Erro para Validação -->
