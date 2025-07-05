@@ -146,48 +146,59 @@
     </div>
     
     <div class="tab">
-        <span     style="color:#6D6875 !important;" class=" mb-2">Tipo Clínica:</span>
+        <span style="color:#6D6875 !important;" class="mb-2">Tipo Clínica:</span>
   
-                
+        {% for tipo in tipo_clinica %}
         <div class="form-check medico" style="display: flex;
         align-items: center;
         justify-content: start;
         padding-left: 0 !important;">
-            <input type="checkbox" style="margin:.5rem !important;" id="clinica-exames-check" class="form-check-input registrar-check-tipo-clinica clinica_exames_check" onclick="changeClinicaExames()" name="tipo_clinica" value="clinica">
-            <label class="form-check-label" for="clinica-exames-check">Exames e Laboratórios</label>
+            <input type="checkbox" style="margin:.5rem !important;" id="tipo-clinica-{{ tipo.id }}" class="form-check-input registrar-check-tipo-clinica" name="tipo_clinica" value="{{ tipo.id }}">
+            <label class="form-check-label" for="tipo-clinica-{{ tipo.id }}">{{ tipo.nome }}</label>
         </div>
-
-        <div class="form-check medico" style="display: flex;
-                align-items: center;
-                justify-content: start;
-                padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;" id="hospital-check" class="form-check-input registrar-check-tipo-clinica hospital_check" onclick="changeHospital()" name="tipo_clinica" value="exames">
-                    <label class="form-check-label" for="hospital-check">Hospital</label>
-                </div>
+        {% endfor %}
 
     </div>
 
+    <script>
+        // Função para tornar os checkboxes de tipo de clínica mutuamente exclusivos
+        function handleTipoClinicaChange(selectedCheckbox) {
+            const tipoClinicaCheckboxes = document.querySelectorAll('input[name="tipo_clinica"]');
+            
+            // Se o checkbox atual foi marcado, desmarcar todos os outros
+            if (selectedCheckbox.checked) {
+                tipoClinicaCheckboxes.forEach(checkbox => {
+                    if (checkbox !== selectedCheckbox) {
+                        checkbox.checked = false;
+                    }
+                });
+            }
+        }
+        
+        // Adicionar event listeners aos checkboxes de tipo de clínica quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoClinicaCheckboxes = document.querySelectorAll('input[name="tipo_clinica"]');
+            tipoClinicaCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    handleTipoClinicaChange(this);
+                });
+            });
+        });
+    </script>
+
    <div class="tab">
 
-    <span     style="color:#6D6875 !important;" class=" mb-2">Profissionais Disponíveis:</span>
+    <span style="color:#6D6875 !important;" class="mb-2">Profissionais Disponíveis:</span>
   
-                
-                    <div class="form-check medico" style="display: flex;
-                    align-items: center;
-                    justify-content: start;
-                    padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;" id="medico-check" class="form-check-input registrar-check-profissao medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
-                        <label class="form-check-label" for="medico-check">Médico/Especialista</label>
-                    </div>
-             
-            
-                <div class="form-check medico" style="display: flex;
-                align-items: center;
-                justify-content: start;
-                padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;" id="dentista-check" class="form-check-input registrar-check-profissao dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
-                    <label class="form-check-label" for="dentista-check">Dentista</label>
-                </div>
+    {% for tipo in tipo_profissional %}
+    <div class="form-check medico" style="display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 0 !important;">
+        <input type="checkbox" style="margin:.5rem !important;" id="tipo-profissional-{{ tipo.id }}" class="form-check-input registrar-check-profissao" name="tipo_profissional" value="{{ tipo.id }}">
+        <label class="form-check-label" for="tipo-profissional-{{ tipo.id }}">{{ tipo.nome }}</label>
+    </div>
+    {% endfor %}
            
 
     <script>
@@ -198,94 +209,86 @@
             });
         }
         
-        // Funções para tipo de clínica (mutuamente exclusivas)
-        function changeClinicaExames() {
-            const clinicaExamesCheck = document.querySelector('.clinica_exames_check');
-            const hospitalCheck = document.querySelector('.hospital_check');
+        // Função para tornar os checkboxes de tipo profissional mutuamente exclusivos
+        function handleTipoProfissionalChange(selectedCheckbox) {
+            const tipoProfissionalCheckboxes = document.querySelectorAll('input[name="tipo_profissional"]');
             
-            if(clinicaExamesCheck.checked){
-                // Desmarcar hospital (mutuamente exclusivo)
-                hospitalCheck.checked = false;
+            // Se o checkbox atual foi marcado, desmarcar todos os outros
+            if (selectedCheckbox.checked) {
+                tipoProfissionalCheckboxes.forEach(checkbox => {
+                    if (checkbox !== selectedCheckbox) {
+                        checkbox.checked = false;
+                    }
+                });
             }
-        }
-        
-        function changeHospital() {
-            const hospitalCheck = document.querySelector('.hospital_check');
-            const clinicaExamesCheck = document.querySelector('.clinica_exames_check');
             
-            if(hospitalCheck.checked){
-                // Desmarcar clínica/exames (mutuamente exclusivo)
-                clinicaExamesCheck.checked = false;
-            }
-        }
-        
-        function toggleEspecialidadesLabel() {
-            const deciderMedicos = document.querySelector('.medico_check').checked;
-            const deciderDentistas = document.querySelector('.dentista_check').checked;
+            // Verificar quais tipos estão selecionados após a mudança
+            const tipoProfissionalChecked = document.querySelectorAll('input[name="tipo_profissional"]:checked');
+            const especialidadesDiv = document.getElementById('especialidadesDiv');
             const especialidadesLabel = document.getElementById('especialidadesLabel');
-        
-            if (deciderMedicos || deciderDentistas) {
+            
+            // Mostrar ou ocultar seção de especialidades
+            if (tipoProfissionalChecked.length > 0) {
+                especialidadesDiv.style.display = 'block';
                 especialidadesLabel.style.display = 'inline';
             } else {
+                especialidadesDiv.style.display = 'none';
                 especialidadesLabel.style.display = 'none';
             }
-        }
-
-        function changeMedico() {
-            const deciderMedicos = document.querySelector('.medico_check');
-            const deciderDentistas = document.querySelector('.dentista_check');
+            
+            // Mostrar apenas especialidades relacionadas ao tipo selecionado
+            const medicoSelecionado = Array.from(tipoProfissionalChecked).some(input => {
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                return label && label.textContent.includes('Médico');
+            });
+            
+            const dentistaSelecionado = Array.from(tipoProfissionalChecked).some(input => {
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                return label && label.textContent.includes('Dentista');
+            });
+            
+            // Mostrar/ocultar seções de especialidades
+            const medicoEspecialidades = document.getElementById('espcialidadesMedicos');
+            const dentistaEspecialidades = document.getElementById('espcialidadesDentistas');
             const convenioMedicos = document.getElementById('convenio_medico');
-            const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
-            const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
             const convenioDentistas = document.getElementById('convenio_dentista');
             
-            if(deciderMedicos.checked){
-                // Desmarcar dentista (mutuamente exclusivo)
-                deciderDentistas.checked = false;
-                
-                medicoEspecialidade.style.display = 'block';
-                convenioMedicos.style.display = 'block';
-                // Ocultar especialidades e convênios de dentista
-                dentistaEspecialidade.style.display = 'none';
-                convenioDentistas.style.display = 'none';
-                uncheckAllCheckboxes('espcialidadesDentistas');
-            } else {
-                medicoEspecialidade.style.display = 'none';
-                convenioMedicos.style.display = 'none';
-                uncheckAllCheckboxes('espcialidadesMedicos');
+            if (medicoEspecialidades) {
+                medicoEspecialidades.style.display = medicoSelecionado ? 'block' : 'none';
+                if (!medicoSelecionado) {
+                    uncheckAllCheckboxes('espcialidadesMedicos');
+                }
             }
-            toggleEspecialidadesLabel();
+            
+            if (dentistaEspecialidades) {
+                dentistaEspecialidades.style.display = dentistaSelecionado ? 'block' : 'none';
+                if (!dentistaSelecionado) {
+                    uncheckAllCheckboxes('espcialidadesDentistas');
+                }
+            }
+            
+            if (convenioMedicos) {
+                convenioMedicos.style.display = medicoSelecionado ? 'block' : 'none';
+            }
+            
+            if (convenioDentistas) {
+                convenioDentistas.style.display = dentistaSelecionado ? 'block' : 'none';
+            }
         }
         
-        function changeDentista() {
-            const deciderDentistas = document.querySelector('.dentista_check');
-            const deciderMedicos = document.querySelector('.medico_check');
-            const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
-            const convenioDentistas = document.getElementById('convenio_dentista');
-            const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
-            const convenioMedicos = document.getElementById('convenio_medico');
-            
-            if(deciderDentistas.checked){
-                // Desmarcar médico (mutuamente exclusivo)
-                deciderMedicos.checked = false;
-                
-                dentistaEspecialidade.style.display = 'block';
-                convenioDentistas.style.display = 'block';
-                // Ocultar especialidades e convênios de médico
-                medicoEspecialidade.style.display = 'none';
-                convenioMedicos.style.display = 'none';
-                uncheckAllCheckboxes('espcialidadesMedicos');
-            } else {
-                dentistaEspecialidade.style.display = 'none';
-                convenioDentistas.style.display = 'none';
-                uncheckAllCheckboxes('espcialidadesDentistas');
-            }
-            toggleEspecialidadesLabel();
-        }
+        // Adicionar event listeners aos checkboxes de tipo profissional quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoProfissionalCheckboxes = document.querySelectorAll('input[name="tipo_profissional"]');
+            tipoProfissionalCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    handleTipoProfissionalChange(this);
+                });
+            });
+        });
     </script>
 
 
-    <div class="mb-3 mt-5" id="especialidadesDiv">
+    <div class="mb-3 mt-5" id="especialidadesDiv" style="display:none;">
         <span   style="color:#6D6875 !important;"  class=" mb-2">Especializações:</span>
         <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label"></label>
         <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
@@ -391,7 +394,7 @@
                     <input 
                         type="checkbox" 
                         style="margin:.5rem !important;"  
-                        class="form-check-input registrar-check-profissao medico_check" 
+                        class="form-check-input" 
                         id="idioma_{{ idioma.id }}" 
                         name="idiomas" 
                         value="{{ idioma.id }}"
@@ -414,7 +417,7 @@
     <div id="convenios">
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
-        <div id="convenio_medico">
+        <div id="convenio_medico" style="display:none;">
         {% for convenio in convenios %}
             {% if convenio.tipo_profissional == 'Médico' %}
             
@@ -422,7 +425,7 @@
                 align-items: center;
                 justify-content: start;
                 padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check-profissao medico_check" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
+                    <input type="checkbox" style="margin:.5rem !important;" class="form-check-input" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
                     <label class="form-check-label" for="convenio_{{ convenio.id }}">{{ convenio.nome }}</label>
                 </div>
            
@@ -430,7 +433,7 @@
         {% endfor %}
             </div>
 
-        <div id="convenio_dentista">
+        <div id="convenio_dentista" style="display:none;">
         {% for convenio in convenios %}
         {% if convenio.tipo_profissional == 'Dentista' %}
         
@@ -438,7 +441,7 @@
             align-items: center;
             justify-content: start;
             padding-left: 0 !important;">
-                <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check-profissao dentista_check" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
+                <input type="checkbox" style="margin:.5rem !important;" class="form-check-input" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
                 <label class="form-check-label" for="convenio_{{ convenio.id }}">{{ convenio.nome }}</label>
             </div>
        
@@ -641,9 +644,15 @@
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
             
+            // Verificar se a senha principal atende a todos os requisitos
+            const isMainPasswordValid = isPasswordValid(password);
+            
             // Só validar se ambos os campos têm valor
             if (confirmPassword) {
-                if (password === confirmPassword) {
+                // O campo de confirmação só fica verde se:
+                // 1. As senhas coincidem E
+                // 2. A senha principal atende a todos os requisitos
+                if (password === confirmPassword && isMainPasswordValid) {
                     confirmPasswordInput.classList.remove('invalid');
                     confirmPasswordInput.classList.add('valid');
                     if (confirmPasswordField) {
@@ -671,6 +680,7 @@
     function updatePasswordFieldVisual() {
         const passwordInput = document.getElementById('password-input');
         const passwordField = passwordInput ? passwordInput.closest('.password-field') : null;
+        const confirmPasswordInput = document.getElementById('confirm-password-input');
         
         if (passwordInput && passwordField) {
             const isValid = isPasswordValid(passwordInput.value);
@@ -691,6 +701,11 @@
                 passwordInput.classList.remove('valid', 'invalid');
                 passwordField.classList.remove('valid', 'invalid');
             }
+            
+            // Reavaliar o campo de confirmação sempre que a senha principal muda
+            if (confirmPasswordInput && confirmPasswordInput.value) {
+                validatePasswordMatch();
+            }
         }
     }
 </script>
@@ -702,7 +717,7 @@
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-            <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check-profissao medico_check" id="termos" name="termos" value="aceito" required>
+            <input type="checkbox" style="margin:.5rem !important;" class="form-check-input" id="termos" name="termos" value="aceito" required>
             <label class="form-check-label" for="termos">Eu aceito e declaro que li e concordo com os termos e condições</label>
         </div>
 
@@ -921,6 +936,11 @@
                     showEmailInvalidoModal("Formato de email inválido. Use: nome@email.com");
                     return false;
                 }
+                
+                // Verificar se email já existe no banco (via AJAX)
+                if (!verificarEmailExistente(emailValue)) {
+                    return false; // Email já existe, bloquear progressão
+                }
             }
             
             // Validação do Celular
@@ -1006,10 +1026,9 @@
         
         // Validação da aba de tipo de clínica (aba 3)
         if (currentTab == 3) { // Tipo de Clínica
-            var clinicaExamesChecked = document.querySelector('.clinica_exames_check').checked;
-            var hospitalChecked = document.querySelector('.hospital_check').checked;
+            var tipoClinicaChecked = document.querySelectorAll('input[name="tipo_clinica"]:checked');
             
-            if (!clinicaExamesChecked && !hospitalChecked) {
+            if (tipoClinicaChecked.length === 0) {
                 showTipoClinicaObrigatorioModal();
                 return false;
             }
@@ -1017,11 +1036,10 @@
         
         // Validação da aba de profissionais disponíveis (aba 4)
         if (currentTab == 4) { // Profissionais Disponíveis
-            var medicoChecked = document.querySelector('.medico_check').checked;
-            var dentistaChecked = document.querySelector('.dentista_check').checked;
+            var tipoProfissionalChecked = document.querySelectorAll('input[name="tipo_profissional"]:checked');
             
             // Verificar se pelo menos um profissional foi selecionado
-            if (!medicoChecked && !dentistaChecked) {
+            if (tipoProfissionalChecked.length === 0) {
                 showProfissionaisObrigatorioModal();
                 return false;
             }
@@ -1029,18 +1047,10 @@
             // Verificar se pelo menos uma especialização foi selecionada para o profissional escolhido
             var especializacaoSelecionada = false;
             
-            if (medicoChecked) {
-                var especialidadesMedicos = document.querySelectorAll('#espcialidadesMedicos input[type="checkbox"]:checked');
-                if (especialidadesMedicos.length > 0) {
-                    especializacaoSelecionada = true;
-                }
-            }
-            
-            if (dentistaChecked) {
-                var especialidadesDentistas = document.querySelectorAll('#espcialidadesDentistas input[type="checkbox"]:checked');
-                if (especialidadesDentistas.length > 0) {
-                    especializacaoSelecionada = true;
-                }
+            // Verificar se há especialidades selecionadas
+            var especialidadesSelecionadas = document.querySelectorAll('input[name="especialidades"]:checked');
+            if (especialidadesSelecionadas.length > 0) {
+                especializacaoSelecionada = true;
             }
             
             if (!especializacaoSelecionada) {
@@ -1165,6 +1175,35 @@
         return true;
     }
     
+    // Função para verificar se email já existe no banco de dados
+    function verificarEmailExistente(email) {
+        try {
+            var xhr = new XMLHttpRequest();
+            var formData = new FormData();
+            formData.append('email', email);
+            formData.append('action', 'verificar_email');
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            xhr.open('POST', window.location.href, false); // Requisição síncrona
+            xhr.send(formData);
+            
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.email_exists) {
+                    showEmailExistenteModal();
+                    return false;
+                }
+                return true;
+            }
+        } catch (error) {
+            console.error('Erro ao verificar email:', error);
+            // Em caso de erro na requisição, permitir continuar
+            return true;
+        }
+        
+        return true;
+    }
+    
     // Funções para exibir as modais
     function showNomeVazioModal() {
         var modal = new bootstrap.Modal(document.getElementById('nomeVazioModal'));
@@ -1185,6 +1224,11 @@
     function showEmailInvalidoModal(message) {
         document.getElementById('emailErrorMessage').textContent = message;
         var modal = new bootstrap.Modal(document.getElementById('emailInvalidoModal'));
+        modal.show();
+    }
+    
+    function showEmailExistenteModal() {
+        var modal = new bootstrap.Modal(document.getElementById('emailExistenteModal'));
         modal.show();
     }
     
@@ -1486,6 +1530,58 @@
             
             // Focar no campo email
             var emailInput = document.querySelector('input[name="email"]');
+            if (emailInput) {
+                emailInput.focus();
+                emailInput.select();
+            }
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal do Email Existente
+    function fecharModalEmailExistente() {
+        var modalElement = document.getElementById('emailExistenteModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#emailExistenteModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo de email
+            var emailInput = document.getElementById('emailId');
             if (emailInput) {
                 emailInput.focus();
                 emailInput.select();
@@ -1935,6 +2031,14 @@
             });
         }
         
+        // Adicionar evento específico para o botão da modal de email existente
+        var btnFecharEmailExistente = document.getElementById('btnFecharEmailExistenteModal');
+        if (btnFecharEmailExistente) {
+            btnFecharEmailExistente.addEventListener('click', function() {
+                fecharModalEmailExistente();
+            });
+        }
+        
         // Adicionar evento específico para o botão da modal de celular
         var btnFecharCelularInvalido = document.querySelector('#celularInvalidoModal .btn');
         if (btnFecharCelularInvalido) {
@@ -1971,6 +2075,10 @@
                     if (e.target.closest('#cnpjExistenteModal') && e.target.textContent.trim() === 'Entendi') {
                         fecharModalCnpjExistente();
                     }
+                } else if (e.target && (e.target.id === 'btnFecharEmailExistenteModal')) {
+                    if (e.target.closest('#emailExistenteModal') && e.target.textContent.trim() === 'Entendi') {
+                        fecharModalEmailExistente();
+                    }
                 }
             }
         });
@@ -1998,6 +2106,14 @@
                     e.preventDefault();
                     e.stopPropagation();
                     fecharModalCnpjExistente();
+                }
+            }
+            // Evento para o botão de Email existente
+            if (e.target && (e.target.id === 'btnFecharEmailExistenteModal')) {
+                if (e.target.closest('#emailExistenteModal') && e.target.textContent.trim() === 'Entendi') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fecharModalEmailExistente();
                 }
             }
             // Evento para o botão de Email inválido
@@ -2473,6 +2589,42 @@
             <div class="modal-footer" style="border: none; justify-content: center;">
                 <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="fecharModalEmailInvalido()" style="padding: 10px 30px; border-radius: 25px;">
                     Corrigir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Email Já Existente -->
+<div class="modal fade" id="emailExistenteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-envelope-exclamation me-2"></i>
+                    Email Já Cadastrado
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-envelope-x-fill"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Este email já está sendo usado!</h6>
+                <p style="color: #666; margin-bottom: 15px;">
+                    O endereço de email informado já está cadastrado em nosso sistema.
+                </p>
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p style="margin: 0; color: #721c24;">
+                        <strong>Por favor:</strong><br>
+                        • Verifique se digitou o email corretamente<br>
+                        • Use um endereço de email diferente<br>
+                        • Se já possui cadastro, faça o login
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharEmailExistenteModal" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalEmailExistente()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
                 </button>
             </div>
         </div>

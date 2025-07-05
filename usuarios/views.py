@@ -390,6 +390,14 @@ def registerClinica(request):
                 return JsonResponse({'cnpj_exists': cnpj_exists})
             return JsonResponse({'cnpj_exists': False})
         
+        # Verificar se é uma requisição AJAX para verificar Email
+        if request.POST.get('action') == 'verificar_email':
+            email = request.POST.get('email')
+            if email:
+                email_exists = Clinica.objects.filter(email=email).exists()
+                return JsonResponse({'email_exists': email_exists})
+            return JsonResponse({'email_exists': False})
+        
         # Processamento normal do formulário
         form = ClinicaForm(request.POST, request.FILES)
         if form.is_valid():
@@ -572,9 +580,9 @@ def registerClinica(request):
         'convenios': convenios,
         'idiomas': idiomas,
         'form': form,
-        'tipos_profissionais': tipo_profissional,
-        'tipos_clinicas':tipo_clinica,
-        'banners':banners
+        'tipo_profissional': tipo_profissional,
+        'tipo_clinica': tipo_clinica,
+        'banners': banners
     }
 
     return render(request, 'core/registroClinicas.html', context)
