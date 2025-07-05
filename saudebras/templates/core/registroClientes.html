@@ -14,13 +14,16 @@
       <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="text" id="cpfId" placeholder="C.P.F" name="username" required></p>
       <p><input  style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail" name="email" required></p>
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel" id="phone1" placeholder="Celular/Whatsapp" name="telefone" required></p>
-      <p class="my-4">
+      <p class="my-4 position-relative">
         <select style="border-radius:4px; border: solid 1px #000 !important; padding:10px; outline:none; font-size:17px; color:#767575; -webkit-appearance: none; -moz-appearance: none; appearance: none;" 
-                class="w-100" id="genderSelect" name="gender">
+                class="w-100" id="genderSelect" name="gender" required>
           <option style="color:#767575 !important;" value="" selected disabled hidden>Gênero</option>
           <option style="color:#767575 !important;" value="male">Masculino</option>
           <option style="color:#767575 !important;" value="female">Feminino</option>
+          <option style="color:#767575 !important;" value="other">Outro</option>
         </select>
+        <!-- Setinha customizada -->
+        <i class="bi bi-chevron-down" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #767575; font-size: 14px;"></i>
       </p>
     
    </div>
@@ -434,6 +437,15 @@
                return false;
            }
        }
+       
+       // Validação do Gênero
+       var genderSelect = document.querySelector('select[name="gender"]');
+       if (genderSelect) {
+           if (genderSelect.value === "" || genderSelect.value === null) {
+               showGeneroVazioModal();
+               return false;
+           }
+       }
    }
    
    // A loop that checks every input field in the current tab:
@@ -569,6 +581,11 @@ function showCelularInvalidoModal(message) {
     modal.show();
 }
 
+function showGeneroVazioModal() {
+    var modal = new bootstrap.Modal(document.getElementById('generoVazioModal'));
+    modal.show();
+}
+
 // Funções para fechar as modais
 function fecharModalNomeVazio() {
     var modalElement = document.getElementById('nomeVazioModal');
@@ -698,6 +715,57 @@ function fecharModalCelularInvalido() {
     }, 100);
 }
 
+// Função específica para fechar a modal do Gênero
+function fecharModalGeneroVazio() {
+    var modalElement = document.getElementById('generoVazioModal');
+    
+    // Método 1: Bootstrap 5
+    try {
+        var modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        } else {
+            var newModal = new bootstrap.Modal(modalElement);
+            newModal.hide();
+        }
+    } catch (e) {
+        console.log('Erro Bootstrap 5:', e);
+    }
+    
+    // Método 2: jQuery (fallback)
+    try {
+        if (typeof $ !== 'undefined') {
+            $('#generoVazioModal').modal('hide');
+        }
+    } catch (e) {
+        console.log('Erro jQuery:', e);
+    }
+    
+    // Método 3: Manual (último recurso)
+    setTimeout(function() {
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('show');
+        modalElement.setAttribute('aria-hidden', 'true');
+        
+        // Remover backdrop
+        var backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        
+        // Restaurar body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        
+        // Focar no campo select de gênero
+        var genderSelect = document.querySelector('select[name="gender"]');
+        if (genderSelect) {
+            genderSelect.focus();
+        }
+    }, 100);
+}
+
 // Remover classe invalid quando começar a digitar
 document.addEventListener('input', function(e) {
     if (e.target.tagName === 'INPUT') {
@@ -766,6 +834,32 @@ function validarTelefone(telefone) {
 </script>
 
 <!-- Modais de Erro para Validação -->
+
+<!-- Modal para Gênero não selecionado -->
+<div class="modal fade" id="generoVazioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Campo Obrigatório
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #ffc107; margin-bottom: 20px;">
+                    <i class="bi bi-gender-ambiguous"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Gênero é obrigatório!</h6>
+                <p style="color: #666; margin-bottom: 0;">Por favor, selecione seu gênero para continuar.</p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharGeneroModal" class="btn btn-warning" data-bs-dismiss="modal" onclick="fecharModalGeneroVazio()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal para Email Inválido -->
 <div class="modal fade" id="emailInvalidoModal" tabindex="-1" aria-hidden="true">
