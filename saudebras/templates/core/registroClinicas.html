@@ -153,16 +153,16 @@
         align-items: center;
         justify-content: start;
         padding-left: 0 !important;">
-            <input type="checkbox" style="margin:.5rem !important;"   class="form-check-input registrar-check "  name="tipo_clinica" value="clinica">
-            <label class="form-check-label" for="medico-check">Exames e Laboratórios</label>
+            <input type="checkbox" style="margin:.5rem !important;" id="clinica-exames-check" class="form-check-input registrar-check-tipo-clinica clinica_exames_check" onclick="changeClinicaExames()" name="tipo_clinica" value="clinica">
+            <label class="form-check-label" for="clinica-exames-check">Exames e Laboratórios</label>
         </div>
 
         <div class="form-check medico" style="display: flex;
                 align-items: center;
                 justify-content: start;
                 padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check " name="tipo_clinica" value="exames">
-                    <label class="form-check-label" for="dentista-check">Hospital</label>
+                    <input type="checkbox" style="margin:.5rem !important;" id="hospital-check" class="form-check-input registrar-check-tipo-clinica hospital_check" onclick="changeHospital()" name="tipo_clinica" value="exames">
+                    <label class="form-check-label" for="hospital-check">Hospital</label>
                 </div>
 
     </div>
@@ -176,7 +176,7 @@
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  id="medico-check" class="form-check-input registrar-check medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
+                        <input type="checkbox" style="margin:.5rem !important;" id="medico-check" class="form-check-input registrar-check-profissao medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
                         <label class="form-check-label" for="medico-check">Médico/Especialista</label>
                     </div>
              
@@ -185,7 +185,7 @@
                 align-items: center;
                 justify-content: start;
                 padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  id="dentista-check" class="form-check-input registrar-check dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
+                    <input type="checkbox" style="margin:.5rem !important;" id="dentista-check" class="form-check-input registrar-check-profissao dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
                     <label class="form-check-label" for="dentista-check">Dentista</label>
                 </div>
            
@@ -198,9 +198,30 @@
             });
         }
         
+        // Funções para tipo de clínica (mutuamente exclusivas)
+        function changeClinicaExames() {
+            const clinicaExamesCheck = document.querySelector('.clinica_exames_check');
+            const hospitalCheck = document.querySelector('.hospital_check');
+            
+            if(clinicaExamesCheck.checked){
+                // Desmarcar hospital (mutuamente exclusivo)
+                hospitalCheck.checked = false;
+            }
+        }
+        
+        function changeHospital() {
+            const hospitalCheck = document.querySelector('.hospital_check');
+            const clinicaExamesCheck = document.querySelector('.clinica_exames_check');
+            
+            if(hospitalCheck.checked){
+                // Desmarcar clínica/exames (mutuamente exclusivo)
+                clinicaExamesCheck.checked = false;
+            }
+        }
+        
         function toggleEspecialidadesLabel() {
             const deciderMedicos = document.querySelector('.medico_check').checked;
-            const deciderDentistas = document.getElementById('switchDentistas').checked;
+            const deciderDentistas = document.querySelector('.dentista_check').checked;
             const especialidadesLabel = document.getElementById('especialidadesLabel');
         
             if (deciderMedicos || deciderDentistas) {
@@ -212,11 +233,22 @@
 
         function changeMedico() {
             const deciderMedicos = document.querySelector('.medico_check');
-            const convenioMedicos = document.getElementById('convenio_medico')
+            const deciderDentistas = document.querySelector('.dentista_check');
+            const convenioMedicos = document.getElementById('convenio_medico');
             const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
+            const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
+            const convenioDentistas = document.getElementById('convenio_dentista');
+            
             if(deciderMedicos.checked){
+                // Desmarcar dentista (mutuamente exclusivo)
+                deciderDentistas.checked = false;
+                
                 medicoEspecialidade.style.display = 'block';
-                convenioMedicos.style.display = 'block'
+                convenioMedicos.style.display = 'block';
+                // Ocultar especialidades e convênios de dentista
+                dentistaEspecialidade.style.display = 'none';
+                convenioDentistas.style.display = 'none';
+                uncheckAllCheckboxes('espcialidadesDentistas');
             } else {
                 medicoEspecialidade.style.display = 'none';
                 convenioMedicos.style.display = 'none';
@@ -227,11 +259,22 @@
         
         function changeDentista() {
             const deciderDentistas = document.querySelector('.dentista_check');
+            const deciderMedicos = document.querySelector('.medico_check');
             const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
             const convenioDentistas = document.getElementById('convenio_dentista');
+            const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
+            const convenioMedicos = document.getElementById('convenio_medico');
+            
             if(deciderDentistas.checked){
+                // Desmarcar médico (mutuamente exclusivo)
+                deciderMedicos.checked = false;
+                
                 dentistaEspecialidade.style.display = 'block';
                 convenioDentistas.style.display = 'block';
+                // Ocultar especialidades e convênios de médico
+                medicoEspecialidade.style.display = 'none';
+                convenioMedicos.style.display = 'none';
+                uncheckAllCheckboxes('espcialidadesMedicos');
             } else {
                 dentistaEspecialidade.style.display = 'none';
                 convenioDentistas.style.display = 'none';
@@ -239,10 +282,6 @@
             }
             toggleEspecialidadesLabel();
         }
-
-        
-
-        
     </script>
 
 
@@ -259,7 +298,7 @@
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
+                        <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check-especialidade" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
                         <label class="form-check-label" for="{{ especialidade.id }}">{{ especialidade.nome }}</label>
                     </div>
                
@@ -276,7 +315,7 @@
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
+                        <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check-especialidade" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
                         <label class="form-check-label" for="{{ especialidade.id }}">{{ especialidade.nome }}</label>
                     </div>
                
@@ -1954,6 +1993,65 @@
 </div>
 
 <style>
+/* CSS customizado para checkboxes quadrados de profissão, especialidade e tipo de clínica */
+.registrar-check-profissao, .registrar-check-especialidade, .registrar-check-tipo-clinica {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 22px !important;
+    height: 22px !important;
+    border: 2px solid #ccc !important;
+    border-radius: 4px !important; /* Quadrado com bordas arredondadas */
+    outline: none !important;
+    cursor: pointer !important;
+    position: relative !important;
+    background-color: white !important;
+    transition: all 0.3s ease !important;
+    margin-right: 8px !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+}
+
+.registrar-check-profissao:checked, .registrar-check-especialidade:checked, .registrar-check-tipo-clinica:checked {
+    border-color: #007bff !important;
+    background-color: #007bff !important;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2) !important;
+}
+
+.registrar-check-profissao:checked::after, .registrar-check-especialidade:checked::after, .registrar-check-tipo-clinica:checked::after {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+.registrar-check-profissao:hover, .registrar-check-especialidade:hover, .registrar-check-tipo-clinica:hover {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.1) !important;
+}
+
+/* Estilo específico para labels */
+.form-check-label {
+    cursor: pointer !important;
+    user-select: none !important;
+    margin-left: 4px !important;
+}
+
+/* Remover TODOS os estilos padrão do Bootstrap que podem interferir */
+.form-check-input {
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    float: none !important;
+}
+
+.form-check-input[type=checkbox], .form-check-input[type=radio] {
+    border-radius: 4px !important;
+}
+
 .invalid {
     border: 2px solid red !important;
     background-color: #ffe6e6 !important;
