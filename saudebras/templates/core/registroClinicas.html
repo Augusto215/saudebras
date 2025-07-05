@@ -330,9 +330,9 @@
         </div>
     </div>
 <div class="tab">
-    <input style="border-radius:4px; border: solid 1px #000 !important;" class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Número de Registro (CRM ou ORM, por exemplo):">
+    <input style="border-radius:4px; border: solid 1px #000 !important;" class="mb-3" name="codigo" oninput="this.className = ''" placeholder="Número de Registro (CRM ou ORM, por exemplo):" required>
 
-    <p style="font-size:1rem !important; color:#21BFA6 !important;">*Opcional</p>
+    <p style="font-size:1rem !important; color:#dc3545 !important;">*Obrigatório</p>
 <span   style="color:#6D6875 !important;"  class=" mb-2">Digitalização do Diploma ou Carteira Profissional:</span>
 <input style="border-radius:4px; border: solid 1px #000 !important;" type="file" id="inputDiploma" name="diploma" accept="image/*">
 
@@ -807,6 +807,40 @@
             }
         }
         
+        // Validação da aba de número de registro (aba 5)
+        if (currentTab == 5) { // Número de Registro
+            var numeroRegistroInput = document.querySelector('input[name="codigo"]');
+            
+            if (numeroRegistroInput) {
+                var numeroRegistroValue = numeroRegistroInput.value.trim();
+                
+                // Verifica se número de registro está vazio
+                if (numeroRegistroValue === "") {
+                    showNumeroRegistroObrigatorioModal("Por favor, digite o número de registro da clínica.");
+                    return false;
+                }
+                
+                // Verifica se tem pelo menos 3 caracteres
+                if (numeroRegistroValue.length < 3) {
+                    showNumeroRegistroObrigatorioModal("Número de registro muito curto. Digite pelo menos 3 caracteres.");
+                    return false;
+                }
+                
+                // Verifica se tem mais de 20 caracteres
+                if (numeroRegistroValue.length > 20) {
+                    showNumeroRegistroObrigatorioModal("Número de registro muito longo. Digite no máximo 20 caracteres.");
+                    return false;
+                }
+                
+                // Verifica se contém apenas letras, números e alguns caracteres especiais permitidos
+                var registroRegex = /^[A-Za-z0-9\-\/\s]+$/;
+                if (!registroRegex.test(numeroRegistroValue)) {
+                    showNumeroRegistroObrigatorioModal("Número de registro contém caracteres inválidos. Use apenas letras, números, traços e barras.");
+                    return false;
+                }
+            }
+        }
+        
         return valid;
     }
     
@@ -916,6 +950,12 @@
     
     function showEnderecoObrigatorioModal() {
         var modal = new bootstrap.Modal(document.getElementById('enderecoObrigatorioModal'));
+        modal.show();
+    }
+    
+    function showNumeroRegistroObrigatorioModal(message) {
+        document.getElementById('numeroRegistroErrorMessage').textContent = message;
+        var modal = new bootstrap.Modal(document.getElementById('numeroRegistroObrigatorioModal'));
         modal.show();
     }
     
@@ -1229,6 +1269,58 @@
         }, 100);
     }
     
+    // Função específica para fechar a modal do Número de Registro
+    function fecharModalNumeroRegistro() {
+        var modalElement = document.getElementById('numeroRegistroObrigatorioModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#numeroRegistroObrigatorioModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo número de registro
+            var numeroRegistroInput = document.querySelector('input[name="codigo"]');
+            if (numeroRegistroInput) {
+                numeroRegistroInput.focus();
+                numeroRegistroInput.select();
+            }
+        }, 100);
+    }
+    
     // Remover classe invalid quando começar a digitar
     document.addEventListener('input', function(e) {
         if (e.target.tagName === 'INPUT') {
@@ -1293,6 +1385,16 @@
             });
         }
         
+        // Adicionar evento específico para o botão da modal de número de registro
+        var btnFecharNumeroRegistro = document.getElementById('btnFecharNumeroRegistroModal');
+        if (btnFecharNumeroRegistro) {
+            btnFecharNumeroRegistro.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fecharModalNumeroRegistro();
+            });
+        }
+        
         // Event listener para teclas (Enter/Escape)
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === 'Escape') {
@@ -1352,6 +1454,14 @@
                     e.preventDefault();
                     e.stopPropagation();
                     fecharModalCelularInvalido();
+                }
+            }
+            // Evento para o botão de Número de Registro
+            if (e.target && e.target.textContent.trim() === 'Corrigir') {
+                if (e.target.closest('#numeroRegistroObrigatorioModal')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fecharModalNumeroRegistro();
                 }
             }
         });
@@ -2463,6 +2573,43 @@
             <div class="modal-footer" style="border: none; justify-content: center;">
                 <button type="button" id="btnFecharEnderecoObrigatorioModal" class="btn btn-warning" data-bs-dismiss="modal" onclick="fecharModalEnderecoObrigatorio()" style="padding: 10px 30px; border-radius: 25px;">
                     Adicionar Endereço
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Número de Registro Obrigatório -->
+<div class="modal fade" id="numeroRegistroObrigatorioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-card-text me-2"></i>
+                    Número de Registro Obrigatório
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-clipboard-x"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Número de registro profissional é obrigatório!</h6>
+                <p style="color: #666; margin-bottom: 15px;" id="numeroRegistroErrorMessage">
+                    Por favor, digite o número de registro da clínica (CRM, ORM, etc.).
+                </p>
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p style="color: #721c24; margin: 0; font-size: 14px;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Exemplos:</strong> CRM 12345/SP, CRO 54321/RJ, CREF 98765/MG
+                    </p>
+                </div>
+                <p style="color: #666; margin-bottom: 0; font-size: 13px;">
+                    <em>Este número é necessário para validar a qualificação da clínica.</em>
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharNumeroRegistroModal" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalNumeroRegistro()" style="padding: 10px 30px; border-radius: 25px;">
+                    Corrigir
                 </button>
             </div>
         </div>
