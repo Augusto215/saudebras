@@ -555,10 +555,399 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
     function nextPrev(n) {
         var x = document.getElementsByClassName("tab");
+        
+        // Se estiver indo para frente, validar campos obrigatórios
+        if (n == 1 && !validateForm()) return false;
+        
         x[currentTab].style.display = "none";  // Esconder a aba atual
         currentTab = currentTab + n;  // Atualizar a aba atual
+        
+        // Se chegou na última tab e clicou em próximo, enviar formulário
+        if (currentTab >= x.length) {
+            document.getElementById("regForm").submit();
+            return false;
+        }
+        
         showTab(currentTab);  // Exibir a nova aba
     }
+    
+    function validateForm() {
+        var x, y, i, valid = true;
+        x = document.getElementsByClassName("tab");
+        y = x[currentTab].getElementsByTagName("input");
+        
+        // Validações específicas para a primeira aba (nome e CNPJ)
+        if (currentTab == 0) {
+            var nomeInput = document.querySelector('input[name="nome"]');
+            var cnpjInput = document.querySelector('input[name="username"]');
+            
+            // Validação do nome
+            if (nomeInput && nomeInput.value.trim() === "") {
+                showNomeVazioModal();
+                return false;
+            }
+            
+            // Validação do CNPJ
+            if (cnpjInput) {
+                // Tentar múltiplas formas de obter o valor do CNPJ
+                var cnpjValue1 = cnpjInput.value;
+                var cnpjValue2 = document.getElementById('cpfId2').value;
+                var cnpjValue3 = document.querySelector('#cpfId2').value;
+                
+                // Usar o valor que não estiver vazio
+                var cnpjValue = cnpjValue1 || cnpjValue2 || cnpjValue3;
+                cnpjValue = cnpjValue.replace(/\D/g, ''); // Remove formatação
+                
+                // Verifica se CNPJ tem pelo menos algum dígito
+                if (cnpjValue.length === 0) {
+                    showCnpjInvalidoModal("Por favor, digite um CNPJ válido.");
+                    return false;
+                }
+                
+                // Verifica se CNPJ está incompleto
+                if (cnpjValue.length < 14) {
+                    showCnpjInvalidoModal("CNPJ incompleto! Digite os 14 dígitos.");
+                    return false;
+                }
+                
+                // Verifica se CNPJ tem mais de 14 dígitos
+                if (cnpjValue.length > 14) {
+                    showCnpjInvalidoModal("CNPJ inválido! Deve ter exatamente 14 dígitos.");
+                    return false;
+                }
+                
+                // Validação de CNPJ
+                if (!validarCNPJ(cnpjValue)) {
+                    showCnpjInvalidoModal("CNPJ inválido! Verifique os números digitados.");
+                    return false;
+                }
+                
+                // Verificar se CNPJ já existe no banco (via AJAX)
+                return verificarCnpjExistente(cnpjValue);
+            }
+        }
+        
+        // Verificar campos obrigatórios (validação original)
+        for (i = 0; i < y.length; i++) {
+            if (y[i].hasAttribute("required") && y[i].value == "") {
+                y[i].className += " invalid";
+                valid = false;
+            }
+        }
+        
+        // Validações específicas por tab (validações originais)
+        if (currentTab == 1) { // Email
+            var email = document.querySelector('input[name="email"]');
+            if (email && email.value && !email.value.includes('@')) {
+                email.className += " invalid";
+                valid = false;
+            }
+        }
+        
+        return valid;
+    }
+    
+    // Função de validação de CNPJ
+    function validarCNPJ(cnpj) {
+        // Remove caracteres não numéricos
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+        
+        // Verifica se tem 14 dígitos
+        if (cnpj.length !== 14) {
+            return false;
+        }
+        
+        // Verifica se todos os dígitos são iguais
+        if (/^(\d)\1{13}$/.test(cnpj)) {
+            return false;
+        }
+        
+        // Calcula primeiro dígito verificador
+        var tamanho = cnpj.length - 2;
+        var numeros = cnpj.substring(0, tamanho);
+        var digitos = cnpj.substring(tamanho);
+        var soma = 0;
+        var pos = tamanho - 7;
+        
+        for (var i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        
+        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(0)) return false;
+        
+        // Calcula segundo dígito verificador
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        
+        for (var i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        
+        return resultado == digitos.charAt(1);
+    }
+    
+    // Função para verificar se CNPJ já existe no banco de dados
+    function verificarCnpjExistente(cnpj) {
+        try {
+            var xhr = new XMLHttpRequest();
+            var formData = new FormData();
+            formData.append('cnpj', cnpj);
+            formData.append('action', 'verificar_cnpj');
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            xhr.open('POST', window.location.href, false); // Requisição síncrona
+            xhr.send(formData);
+            
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.cnpj_exists) {
+                    showCnpjExistenteModal();
+                    return false;
+                }
+                return true;
+            }
+        } catch (error) {
+            console.error('Erro ao verificar CNPJ:', error);
+            // Em caso de erro na requisição, permitir continuar
+            return true;
+        }
+        
+        return true;
+    }
+    
+    // Funções para exibir as modais
+    function showNomeVazioModal() {
+        var modal = new bootstrap.Modal(document.getElementById('nomeVazioModal'));
+        modal.show();
+    }
+    
+    function showCnpjInvalidoModal(message) {
+        document.getElementById('cnpjErrorMessage').textContent = message;
+        var modal = new bootstrap.Modal(document.getElementById('cnpjInvalidoModal'));
+        modal.show();
+    }
+    
+    function showCnpjExistenteModal() {
+        var modal = new bootstrap.Modal(document.getElementById('cnpjExistenteModal'));
+        modal.show();
+    }
+    
+    // Função específica para fechar a modal do nome
+    function fecharModalNome() {
+        var modalElement = document.getElementById('nomeVazioModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#nomeVazioModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo nome
+            var nomeInput = document.querySelector('input[name="nome"]');
+            if (nomeInput) {
+                nomeInput.focus();
+                nomeInput.select();
+            }
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal do CNPJ
+    function fecharModalCnpj() {
+        var modalElement = document.getElementById('cnpjInvalidoModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#cnpjInvalidoModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo CNPJ
+            var cnpjInput = document.querySelector('input[name="username"]');
+            if (cnpjInput) {
+                cnpjInput.focus();
+                cnpjInput.select();
+            }
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal do CNPJ já existente
+    function fecharModalCnpjExistente() {
+        var modalElement = document.getElementById('cnpjExistenteModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#cnpjExistenteModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo CNPJ
+            var cnpjInput = document.querySelector('input[name="username"]');
+            if (cnpjInput) {
+                cnpjInput.focus();
+                cnpjInput.select();
+            }
+        }, 100);
+    }
+    
+    // Remover classe invalid quando começar a digitar
+    document.addEventListener('input', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            e.target.className = e.target.className.replace(" invalid", "");
+        }
+    });
+    
+    // Event listeners para fechar modais com clique ou Enter/Escape
+    document.addEventListener('DOMContentLoaded', function() {
+        // Botões das modais
+        var btnFecharNome = document.getElementById('btnFecharNomeModal');
+        var btnFecharCnpj = document.getElementById('btnFecharCnpjModal');
+        var btnFecharCnpjExistente = document.getElementById('btnFecharCnpjExistenteModal');
+        
+        // Event listeners para cliques nos botões
+        if (btnFecharNome) {
+            btnFecharNome.addEventListener('click', function() {
+                fecharModalNome();
+            });
+        }
+        
+        if (btnFecharCnpj) {
+            btnFecharCnpj.addEventListener('click', function() {
+                fecharModalCnpj();
+            });
+        }
+        
+        if (btnFecharCnpjExistente) {
+            btnFecharCnpjExistente.addEventListener('click', function() {
+                fecharModalCnpjExistente();
+            });
+        }
+        
+        // Event listener para teclas (Enter/Escape)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === 'Escape') {
+                // Verificar qual modal está aberta e fechar
+                if (e.target && (e.target.id === 'btnFecharNomeModal')) {
+                    if (e.target.closest('#nomeVazioModal') && e.target.textContent.trim() === 'Entendi') {
+                        fecharModalNome();
+                    }
+                } else if (e.target && (e.target.id === 'btnFecharCnpjModal')) {
+                    if (e.target.closest('#cnpjInvalidoModal') && e.target.textContent.trim() === 'Corrigir') {
+                        fecharModalCnpj();
+                    }
+                } else if (e.target && (e.target.id === 'btnFecharCnpjExistenteModal')) {
+                    if (e.target.closest('#cnpjExistenteModal') && e.target.textContent.trim() === 'Entendi') {
+                        fecharModalCnpjExistente();
+                    }
+                }
+            }
+        });
+    });
 </script>
 
 
@@ -621,6 +1010,139 @@ document.getElementById('add-cep').addEventListener('click', function() {
 
 </script>
 
+<!-- Modais de Erro para Validação -->
+
+<!-- Modal para Nome Vazio -->
+<div class="modal fade" id="nomeVazioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Campo Obrigatório
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #ffc107; margin-bottom: 20px;">
+                    <i class="bi bi-person-fill-x"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Nome da instituição é obrigatório!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, digite o nome completo da clínica/instituição.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharNomeModal" class="btn btn-warning" data-bs-dismiss="modal" onclick="fecharModalNome()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para CNPJ Inválido -->
+<div class="modal fade" id="cnpjInvalidoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-x-circle-fill me-2"></i>
+                    CNPJ Inválido
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-building-fill-x"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;" id="cnpjErrorTitle">CNPJ inválido!</h6>
+                <p style="color: #666; margin-bottom: 0;" id="cnpjErrorMessage">
+                    Verifique os números digitados.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharCnpjModal" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalCnpj()" style="padding: 10px 30px; border-radius: 25px;">
+                    Corrigir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para CNPJ já cadastrado -->
+<div class="modal fade" id="cnpjExistenteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-building-check-fill me-2"></i>
+                    CNPJ Já Cadastrado
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-building-fill-exclamation"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">CNPJ já cadastrado no sistema!</h6>
+                <p style="color: #666; margin-bottom: 15px;">
+                    Este CNPJ já possui uma conta em nosso banco de dados.
+                </p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <p style="color: #555; margin: 0; font-size: 14px;">
+                        <strong>O que você pode fazer:</strong><br>
+                        • Fazer login com este CNPJ se já tem uma conta<br>
+                        • Usar um CNPJ diferente para criar nova conta<br>
+                        • Entrar em contato conosco se acredita que há um erro
+                    </p>
+                </div>
+                <p style="color: #666; margin-bottom: 0; font-size: 13px;">
+                    <em>Cada CNPJ pode ter apenas uma conta no sistema.</em>
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharCnpjExistenteModal" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalCnpjExistente()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.invalid {
+    border: 2px solid red !important;
+    background-color: #ffe6e6 !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Animação de shake para campos inválidos */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Estilo para campos válidos */
+.valid {
+    border: 2px solid #28a745 !important;
+    background-color: #f8fff9 !important;
+}
+
+/* Estilos para as modais de erro */
+.modal-content {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+</style>
 
 <script src="{%static 'js/form.js' %}"> </script>
 {%endblock%}

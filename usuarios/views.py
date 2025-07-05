@@ -361,6 +361,17 @@ def registerClinica(request):
     form = ClinicaForm()
 
     if request.method == 'POST':
+        # Verificar se é uma requisição AJAX para verificar CNPJ
+        if request.POST.get('action') == 'verificar_cnpj':
+            cnpj = request.POST.get('cnpj')
+            if cnpj:
+                # Remove formatação do CNPJ
+                cnpj_limpo = re.sub(r'\D', '', cnpj)
+                cnpj_exists = Clinica.objects.filter(username=cnpj_limpo).exists()
+                return JsonResponse({'cnpj_exists': cnpj_exists})
+            return JsonResponse({'cnpj_exists': False})
+        
+        # Processamento normal do formulário
         form = ClinicaForm(request.POST, request.FILES)
         if form.is_valid():
             with transaction.atomic():  # Início da transação atômica
