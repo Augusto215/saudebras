@@ -82,12 +82,41 @@ def registerCliente(request):
                 return JsonResponse({'cpf_exists': cpf_exists})
             return JsonResponse({'cpf_exists': False})
         
+        # Verificar se é uma requisição AJAX para verificar Email
+        if request.POST.get('action') == 'verificar_email':
+            email = request.POST.get('email')
+            if email:
+                email_exists = Cliente.objects.filter(email=email).exists()
+                return JsonResponse({'email_exists': email_exists})
+            return JsonResponse({'email_exists': False})
+        
         # Processamento normal do formulário
-        form = ClienteRegistrationForm(request.POST)
+        form = ClienteRegistrationForm(request.POST, request.FILES)
+        
+        # Processar dados do endereço independentemente da validação do form
+        endereco_data_str = request.POST.get('endereco_data', '')
+        endereco_data = None
+        
+        if endereco_data_str:
+            try:
+                import json
+                endereco_data = json.loads(endereco_data_str)
+            except json.JSONDecodeError:
+                messages.error(request, 'Dados de endereço inválidos.')
+                return render(request, 'core/registroClientes.html', {'form': form})
+        
+        if not endereco_data:
+            messages.error(request, 'CEP não foi digitado. Por favor, adicione um endereço.')
+            return render(request, 'core/registroClientes.html', {'form': form})
         
         if form.is_valid():
-            # Processa o CEP
-            cep = form.cleaned_data['cep']
+            # Processa o CEP do endereço
+            cep = endereco_data.get('cep', '').replace('-', '')
+            
+            if not cep:
+                messages.error(request, 'CEP não foi encontrado nos dados do endereço.')
+                return render(request, 'core/registroClientes.html', {'form': form})
+            
             response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
             data = response.json()
             
@@ -112,12 +141,15 @@ def registerCliente(request):
                 user.set_password(form.cleaned_data['password1'])
                 user.save()
 
-                    
                 return redirect('sucessoCliente')
+            else:
+                messages.error(request, 'CEP inválido. Verifique o CEP digitado.')
+                return render(request, 'core/registroClientes.html', {'form': form})
                
         else:
             print("Formulário inválido")
-            messages.error(request, form.errors)
+            print("Erros do formulário:", form.errors)
+            messages.error(request, 'Por favor, corrija os erros no formulário.')
     
     return render(request, 'core/registroClientes.html', {'form': form})
 

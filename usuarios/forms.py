@@ -58,13 +58,12 @@ class AddressUpdateForm(forms.Form):
     pass  # Placeholder, remova esta linha quando adicionar campos        
         
 class ClienteRegistrationForm(UserCreationForm):
-    cep = forms.CharField(max_length=9, required=True)
     image = forms.ImageField(required=False)
     
 
     class Meta:
         model = Cliente
-        fields = ['email', 'password1', 'password2', 'cep', 'nome', 'sobrenome', 'username', 'telefone', 'foto']
+        fields = ['email', 'password1', 'password2', 'nome', 'sobrenome', 'username', 'telefone', 'foto']
         
         
         
