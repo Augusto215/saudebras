@@ -41,6 +41,36 @@
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="email" id="emailId" placeholder="E-mail..." name="email" required></p>
       <p><input style="border-radius:4px; border: solid 1px #000 !important;" type="tel" id="phone1" placeholder="Celular/Whatsapp" name="telefone" required></p>
       
+      <script>
+        function maskTelefone(telefoneField) {
+            var telefoneValue = telefoneField.value;
+        
+            // Remove tudo o que não é dígito
+            telefoneValue = telefoneValue.replace(/\D/g, '');
+            
+            // Limita a entrada a exatamente 11 dígitos
+            telefoneValue = telefoneValue.slice(0, 11);
+        
+            // Aplica a formatação progressivamente baseada no tamanho
+            if (telefoneValue.length <= 2) {
+                // Apenas DDD: 11
+                telefoneValue = telefoneValue;
+            } else if (telefoneValue.length <= 7) {
+                // DDD + parte do número: (11) 9999
+                telefoneValue = telefoneValue.replace(/(\d{2})(\d+)/, '($1) $2');
+            } else if (telefoneValue.length <= 10) {
+                // Telefone fixo: (11) 9999-9999
+                telefoneValue = telefoneValue.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
+            } else {
+                // Celular: (11) 99999-9999
+                telefoneValue = telefoneValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            }
+        
+            // Atualiza o valor no campo
+            telefoneField.value = telefoneValue;
+        }
+      </script>
+      
    </div>
 
    <div class="tab">
@@ -612,11 +642,56 @@ document.getElementById('add-cep').addEventListener('click', function() {
         }
         
         // Validações específicas por tab (validações originais)
-        if (currentTab == 1) { // Email
+        if (currentTab == 1) { // Email e Telefone
             var email = document.querySelector('input[name="email"]');
-            if (email && email.value && !email.value.includes('@')) {
-                email.className += " invalid";
-                valid = false;
+            var telefone = document.querySelector('input[name="telefone"]');
+            
+            // Validação do Email
+            if (email) {
+                var emailValue = email.value.trim();
+                
+                // Verifica se email está vazio
+                if (emailValue === "") {
+                    showEmailInvalidoModal("Por favor, digite seu email.");
+                    return false;
+                }
+                
+                // Verifica se email tem formato válido
+                var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(emailValue)) {
+                    showEmailInvalidoModal("Formato de email inválido. Use: nome@email.com");
+                    return false;
+                }
+            }
+            
+            // Validação do Celular
+            if (telefone) {
+                var telefoneValue = telefone.value.replace(/\D/g, ''); // Remove formatação
+                
+                // Verifica se telefone está vazio
+                if (telefoneValue === "") {
+                    showCelularInvalidoModal("Por favor, digite seu número de celular.");
+                    return false;
+                }
+                
+                // Verifica se telefone tem pelo menos 10 dígitos (DDD + número)
+                if (telefoneValue.length < 10) {
+                    showCelularInvalidoModal("Número muito curto. Digite DDD + número (mínimo 10 dígitos).");
+                    return false;
+                }
+                
+                // Verifica se telefone tem mais de 11 dígitos
+                if (telefoneValue.length > 11) {
+                    showCelularInvalidoModal("Número muito longo. Digite apenas DDD + número (máximo 11 dígitos).");
+                    return false;
+                }
+                
+                // Verifica se o DDD é válido (entre 11 e 99)
+                var ddd = parseInt(telefoneValue.substr(0, 2));
+                if (ddd < 11 || ddd > 99) {
+                    showCelularInvalidoModal("DDD inválido. Digite um DDD válido (11 a 99).");
+                    return false;
+                }
             }
         }
         
@@ -653,6 +728,14 @@ document.getElementById('add-cep').addEventListener('click', function() {
         if (cpfField) {
             cpfField.addEventListener('input', function() {
                 maskCPF(this);
+            });
+        }
+        
+        // Aplicar máscara ao telefone
+        var telefoneField = document.getElementById('phone1');
+        if (telefoneField) {
+            telefoneField.addEventListener('input', function() {
+                maskTelefone(this);
             });
         }
         
@@ -808,6 +891,63 @@ input[required]:focus {
         </div>
     </div>
 </div>
+
+<!-- Modal para Email Inválido -->
+<div class="modal fade" id="emailInvalidoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-envelope-x-fill me-2"></i>
+                    Email Inválido
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-envelope-exclamation-fill"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;" id="emailErrorTitle">Email inválido!</h6>
+                <p style="color: #666; margin-bottom: 0;" id="emailErrorMessage">
+                    Por favor, digite um email válido (exemplo: nome@email.com).
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalEmailInvalido()" style="padding: 10px 30px; border-radius: 25px;">
+                    Corrigir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Celular Inválido -->
+<div class="modal fade" id="celularInvalidoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-phone-x-fill me-2"></i>
+                    Celular Inválido
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-phone-fill"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;" id="celularErrorTitle">Celular inválido!</h6>
+                <p style="color: #666; margin-bottom: 0;" id="celularErrorMessage">
+                    Por favor, digite um número de celular válido com DDD.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalCelularInvalido()" style="padding: 10px 30px; border-radius: 25px;">
+                    Corrigir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Funções para exibir as modais de erro
     function showNomeVazioModal() {
@@ -823,6 +963,18 @@ input[required]:focus {
     
     function showCpfExistenteModal() {
         var modal = new bootstrap.Modal(document.getElementById('cpfExistenteModal'));
+        modal.show();
+    }
+    
+    function showEmailInvalidoModal(message) {
+        document.getElementById('emailErrorMessage').textContent = message;
+        var modal = new bootstrap.Modal(document.getElementById('emailInvalidoModal'));
+        modal.show();
+    }
+    
+    function showCelularInvalidoModal(message) {
+        document.getElementById('celularErrorMessage').textContent = message;
+        var modal = new bootstrap.Modal(document.getElementById('celularInvalidoModal'));
         modal.show();
     }
     
@@ -982,6 +1134,110 @@ input[required]:focus {
         }, 100);
     }
     
+    // Função específica para fechar a modal do Email
+    function fecharModalEmailInvalido() {
+        var modalElement = document.getElementById('emailInvalidoModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#emailInvalidoModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo email
+            var emailInput = document.querySelector('input[name="email"]');
+            if (emailInput) {
+                emailInput.focus();
+                emailInput.select();
+            }
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal do Celular
+    function fecharModalCelularInvalido() {
+        var modalElement = document.getElementById('celularInvalidoModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#celularInvalidoModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo telefone
+            var telefoneInput = document.querySelector('input[name="telefone"]');
+            if (telefoneInput) {
+                telefoneInput.focus();
+                telefoneInput.select();
+            }
+        }, 100);
+    }
+    
     // Função de validação de CPF corrigida
     function validarCPF(cpf) {
         // Remove caracteres não numéricos
@@ -1018,6 +1274,31 @@ input[required]:focus {
         var digito2 = (resto < 2) ? 0 : 11 - resto;
         
         return parseInt(cpf.charAt(10)) === digito2;
+    }
+    
+    // Função de validação de Email
+    function validarEmail(email) {
+        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email.trim());
+    }
+    
+    // Função de validação de Telefone
+    function validarTelefone(telefone) {
+        // Remove formatação
+        var telefoneValue = telefone.replace(/\D/g, '');
+        
+        // Verifica se tem entre 10 e 11 dígitos
+        if (telefoneValue.length < 10 || telefoneValue.length > 11) {
+            return false;
+        }
+        
+        // Verifica se o DDD é válido (entre 11 e 99)
+        var ddd = parseInt(telefoneValue.substr(0, 2));
+        if (ddd < 11 || ddd > 99) {
+            return false;
+        }
+        
+        return true;
     }
     
     // Função para verificar se CPF já existe no banco de dados (sem modal automática)
@@ -1084,6 +1365,26 @@ input[required]:focus {
             });
         }
         
+        // Adicionar evento específico para o botão da modal de email
+        var btnFecharEmailInvalido = document.querySelector('#emailInvalidoModal .btn');
+        if (btnFecharEmailInvalido) {
+            btnFecharEmailInvalido.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fecharModalEmailInvalido();
+            });
+        }
+        
+        // Adicionar evento específico para o botão da modal de celular
+        var btnFecharCelularInvalido = document.querySelector('#celularInvalidoModal .btn');
+        if (btnFecharCelularInvalido) {
+            btnFecharCelularInvalido.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fecharModalCelularInvalido();
+            });
+        }
+        
         // Evento adicional usando querySelector (fallback)
         document.addEventListener('click', function(e) {
             if (e.target && (e.target.id === 'btnFecharNomeModal' || e.target.textContent.trim() === 'Entendi')) {
@@ -1107,6 +1408,22 @@ input[required]:focus {
                     e.preventDefault();
                     e.stopPropagation();
                     fecharModalCpfExistente();
+                }
+            }
+            // Evento para o botão de Email inválido
+            if (e.target && e.target.textContent.trim() === 'Corrigir') {
+                if (e.target.closest('#emailInvalidoModal')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fecharModalEmailInvalido();
+                }
+            }
+            // Evento para o botão de Celular inválido
+            if (e.target && e.target.textContent.trim() === 'Corrigir') {
+                if (e.target.closest('#celularInvalidoModal')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fecharModalCelularInvalido();
                 }
             }
         });

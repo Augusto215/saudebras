@@ -38,18 +38,22 @@
     function maskCPF(cpfField) {
         var cpfValue = cpfField.value;
     
-        // Limita a entrada a 14 caracteres
-        cpfValue = cpfValue.slice(0, 14);
-    
         // Remove tudo o que não é dígito
         cpfValue = cpfValue.replace(/\D/g, '');
+        
+        // Limita a entrada a exatamente 11 dígitos
+        cpfValue = cpfValue.slice(0, 11);
     
-        // Coloca ponto nos terceiros e sextos dígitos
-        cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
-        cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
-    
-        // Coloca traço antes do nono dígito
-        cpfValue = cpfValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        // Aplica a formatação progressivamente
+        if (cpfValue.length > 3) {
+            cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
+        }
+        if (cpfValue.length > 6) {
+            cpfValue = cpfValue.replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+        }
+        if (cpfValue.length > 9) {
+            cpfValue = cpfValue.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+        }
     
         // Atualiza o valor no campo
         cpfField.value = cpfValue;
@@ -307,6 +311,58 @@
    var x, y, i, valid = true;
    x = document.getElementsByClassName("tab");
    y = x[currentTab].getElementsByTagName("input");
+   
+   // Validações específicas para a primeira aba (nome e CPF)
+   if (currentTab == 0) {
+       var nomeInput = document.querySelector('input[name="nome"]');
+       var cpfInput = document.querySelector('input[name="username"]');
+       
+       // Validação do nome
+       if (nomeInput && nomeInput.value.trim() === "") {
+           showNomeVazioModal();
+           return false;
+       }
+       
+       // Validação do CPF
+       if (cpfInput) {
+           // Tentar múltiplas formas de obter o valor do CPF
+           var cpfValue1 = cpfInput.value;
+           var cpfValue2 = document.getElementById('cpfId').value;
+           var cpfValue3 = document.querySelector('#cpfId').value;
+           
+           // Usar o valor que não estiver vazio
+           var cpfValue = cpfValue1 || cpfValue2 || cpfValue3;
+           cpfValue = cpfValue.replace(/\D/g, ''); // Remove formatação
+           
+           // Verifica se CPF tem pelo menos algum dígito
+           if (cpfValue.length === 0) {
+               showCpfInvalidoModal("Por favor, digite o CPF.");
+               return false;
+           }
+           
+           // Verifica se CPF está incompleto
+           if (cpfValue.length < 11) {
+               showCpfInvalidoModal("CPF incompleto! Digite os 11 dígitos.");
+               return false;
+           }
+           
+           // Verifica se CPF tem mais de 11 dígitos
+           if (cpfValue.length > 11) {
+               showCpfInvalidoModal("CPF inválido! Deve ter exatamente 11 dígitos.");
+               return false;
+           }
+           
+           // Validação de CPF
+           if (!validarCPF(cpfValue)) {
+               showCpfInvalidoModal("CPF inválido! Verifique os números digitados.");
+               return false;
+           }
+           
+           // Verificar se CPF já existe no banco (via AJAX)
+           return verificarCpfExistente(cpfValue);
+       }
+   }
+   
    // A loop that checks every input field in the current tab:
    for (i = 0; i < y.length; i++) {
    // If a field is empty...
@@ -344,10 +400,260 @@
     });
 });
 
+// Função de validação de CPF
+function validarCPF(cpf) {
+    // Remove caracteres não numéricos
+    cpf = cpf.replace(/[^\d]+/g, '');
+    
+    // Verifica se tem 11 dígitos
+    if (cpf.length !== 11) {
+        return false;
+    }
+    
+    // Verifica se todos os dígitos são iguais (ex: 111.111.111-11)
+    if (/^(\d)\1{10}$/.test(cpf)) {
+        return false;
+    }
+    
+    // Calcula primeiro dígito verificador
+    var soma = 0;
+    for (var i = 0; i < 9; i++) {
+        soma += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    var resto = soma % 11;
+    var digito1 = (resto < 2) ? 0 : 11 - resto;
+    
+    if (parseInt(cpf.charAt(9)) !== digito1) {
+        return false;
+    }
+    
+    // Calcula segundo dígito verificador
+    soma = 0;
+    for (var i = 0; i < 10; i++) {
+        soma += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    resto = soma % 11;
+    var digito2 = (resto < 2) ? 0 : 11 - resto;
+    
+    return parseInt(cpf.charAt(10)) === digito2;
+}
+
+// Função para verificar se CPF já existe no banco de dados
+function verificarCpfExistente(cpf) {
+    try {
+        var xhr = new XMLHttpRequest();
+        var formData = new FormData();
+        formData.append('cpf', cpf);
+        formData.append('action', 'verificar_cpf');
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        xhr.open('POST', window.location.href, false); // Requisição síncrona
+        xhr.send(formData);
+        
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.cpf_exists) {
+                showCpfExistenteModal();
+                return false;
+            }
+            return true;
+        }
+    } catch (error) {
+        console.error('Erro ao verificar CPF:', error);
+        // Em caso de erro na requisição, permitir continuar
+        return true;
+    }
+    
+    return true;
+}
+
+// Funções para exibir as modais
+function showNomeVazioModal() {
+    var modal = new bootstrap.Modal(document.getElementById('nomeVazioModal'));
+    modal.show();
+}
+
+function showCpfInvalidoModal(message) {
+    document.getElementById('cpfErrorMessage').textContent = message;
+    var modal = new bootstrap.Modal(document.getElementById('cpfInvalidoModal'));
+    modal.show();
+}
+
+function showCpfExistenteModal() {
+    var modal = new bootstrap.Modal(document.getElementById('cpfExistenteModal'));
+    modal.show();
+}
+
+// Funções para fechar as modais
+function fecharModalNomeVazio() {
+    var modalElement = document.getElementById('nomeVazioModal');
+    var modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+    }
+}
+
+function fecharModalCpfInvalido() {
+    var modalElement = document.getElementById('cpfInvalidoModal');
+    var modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+    }
+}
+
+function fecharModalCpfExistente() {
+    var modalElement = document.getElementById('cpfExistenteModal');
+    var modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+    }
+}
+
+// Remover classe invalid quando começar a digitar
+document.addEventListener('input', function(e) {
+    if (e.target.tagName === 'INPUT') {
+        e.target.className = e.target.className.replace(" invalid", "");
+    }
+});
+
 
 
 </script>
 
+<!-- Modais de Erro para Validação -->
 
-<script src="{%static 'js/form.js' %}"> </script>
+<!-- Modal para Nome Vazio -->
+<div class="modal fade" id="nomeVazioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Campo Obrigatório
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #ffc107; margin-bottom: 20px;">
+                    <i class="bi bi-person-fill-x"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Nome completo é obrigatório!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, digite seu nome completo para continuar.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="fecharModalNomeVazio()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para CPF Inválido -->
+<div class="modal fade" id="cpfInvalidoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-x-circle-fill me-2"></i>
+                    CPF Inválido
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-person-fill-x"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;" id="cpfErrorTitle">CPF inválido!</h6>
+                <p style="color: #666; margin-bottom: 0;" id="cpfErrorMessage">
+                    Verifique os números digitados.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalCpfInvalido()" style="padding: 10px 30px; border-radius: 25px;">
+                    Corrigir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para CPF já cadastrado -->
+<div class="modal fade" id="cpfExistenteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-person-check-fill me-2"></i>
+                    CPF Já Cadastrado
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-person-fill-exclamation"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">CPF já cadastrado no sistema!</h6>
+                <p style="color: #666; margin-bottom: 15px;">
+                    Este CPF já possui uma conta em nosso banco de dados.
+                </p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <p style="color: #555; margin: 0; font-size: 14px;">
+                        <strong>O que você pode fazer:</strong><br>
+                        • Fazer login com este CPF se já tem uma conta<br>
+                        • Usar um CPF diferente para criar nova conta<br>
+                        • Entrar em contato conosco se acredita que há um erro
+                    </p>
+                </div>
+                <p style="color: #666; margin-bottom: 0; font-size: 13px;">
+                    <em>Cada CPF pode ter apenas uma conta no sistema.</em>
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" id="btnFecharCpfExistenteModal" class="btn btn-danger" data-bs-dismiss="modal" onclick="fecharModalCpfExistente()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.invalid {
+    border: 2px solid red !important;
+    background-color: #ffe6e6 !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Animação de shake para campos inválidos */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Estilo para campos válidos */
+.valid {
+    border: 2px solid #28a745 !important;
+    background-color: #f8fff9 !important;
+}
+
+/* Estilos para as modais de erro */
+.modal-content {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+</style>
+
+<!-- Arquivo form.js temporariamente removido para evitar conflitos -->
+<!-- <script src="{%static 'js/form.js' %}"> </script> -->
 {%endblock%}

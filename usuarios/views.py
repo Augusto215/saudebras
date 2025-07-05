@@ -72,6 +72,17 @@ def registerCliente(request):
     form = ClienteRegistrationForm()
 
     if request.method == 'POST':
+        # Verificar se é uma requisição AJAX para verificar CPF
+        if request.POST.get('action') == 'verificar_cpf':
+            cpf = request.POST.get('cpf')
+            if cpf:
+                # Remove formatação do CPF
+                cpf_limpo = re.sub(r'\D', '', cpf)
+                cpf_exists = Cliente.objects.filter(username=cpf_limpo).exists()
+                return JsonResponse({'cpf_exists': cpf_exists})
+            return JsonResponse({'cpf_exists': False})
+        
+        # Processamento normal do formulário
         form = ClienteRegistrationForm(request.POST)
         
         if form.is_valid():

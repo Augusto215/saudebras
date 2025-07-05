@@ -79,19 +79,19 @@ function validateCep(cepElementId) {
 }
 
 
-// Email Validation
-function validateEmail(emailId) {
-    document.getElementById(emailId).addEventListener('blur', function() {
-        const email = this.value;
-        const validEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (validEmail.test(email)) {
-            // Fazer algo, por exemplo:
-            // alert("Email válido.");
-        } else {
-            alert("Formato de e-mail inválido.");
-        }
-    });
-}
+// // Email Validation
+// function validateEmail(emailId) {
+//     document.getElementById(emailId).addEventListener('blur', function() {
+//         const email = this.value;
+//         const validEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+//         if (validEmail.test(email)) {
+//             // Fazer algo, por exemplo:
+//             // alert("Email válido.");
+//         } else {
+//             alert("Formato de e-mail inválido.");
+//         }
+//     });
+// }
 
 // CPF Validation - DESABILITADA
 // A validação do CPF agora é feita apenas no botão "Próximo" com modais personalizadas
