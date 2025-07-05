@@ -152,30 +152,29 @@
   
    <div class="tab">
 
-    <span     style="color:#6D6875 !important;" class=" mb-2">Profissão:</span>
+    <span style="color:#6D6875 !important;" class="mb-2">Profissão:</span>
   
-                
-                    <div class="form-check medico" style="display: flex;
-                    align-items: center;
-                    justify-content: start;
-                    padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  id="medico-check" class="form-check-input registrar-check medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
-                        <label class="form-check-label" for="medico-check">Médico/Especialista</label>
-                    </div>
-             
-            
-                <div class="form-check medico" style="display: flex;
-                align-items: center;
-                justify-content: start;
-                padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  id="dentista-check" class="form-check-input registrar-check dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
-                    <label class="form-check-label" for="dentista-check">Dentista</label>
-                </div>
+    <div class="form-check medico" style="display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 0 !important;">
+        <input type="checkbox" style="margin:.5rem !important;" id="medico-check" class="form-check-input registrar-check-profissao medico_check" onclick="changeMedico()" name="tipo_profissional" value="Médico">
+        <label class="form-check-label" for="medico-check">Médico/Especialista</label>
+    </div>
+     
+    <div class="form-check medico" style="display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 0 !important;">
+        <input type="checkbox" style="margin:.5rem !important;" id="dentista-check" class="form-check-input registrar-check-profissao dentista_check" onclick="changeDentista()" name="tipo_profissional" value="Dentista">
+        <label class="form-check-label" for="dentista-check">Dentista</label>
+    </div>
            
 
     <script>
         function uncheckAllCheckboxes(containerId) {
             const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
+            
             checkboxes.forEach((checkbox) => {
                 checkbox.checked = false;
             });
@@ -183,7 +182,7 @@
         
         function toggleEspecialidadesLabel() {
             const deciderMedicos = document.querySelector('.medico_check').checked;
-            const deciderDentistas = document.getElementById('switchDentistas').checked;
+            const deciderDentistas = document.querySelector('.dentista_check').checked;
             const especialidadesLabel = document.getElementById('especialidadesLabel');
         
             if (deciderMedicos || deciderDentistas) {
@@ -195,11 +194,22 @@
 
         function changeMedico() {
             const deciderMedicos = document.querySelector('.medico_check');
-            const convenioMedicos = document.getElementById('convenio_medico')
+            const deciderDentistas = document.querySelector('.dentista_check');
+            const convenioMedicos = document.getElementById('convenio_medico');
             const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
+            const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
+            const convenioDentistas = document.getElementById('convenio_dentista');
+            
             if(deciderMedicos.checked){
+                // Desmarcar dentista (mutuamente exclusivo)
+                deciderDentistas.checked = false;
+                
                 medicoEspecialidade.style.display = 'block';
-                convenioMedicos.style.display = 'block'
+                convenioMedicos.style.display = 'block';
+                // Ocultar especialidades e convênios de dentista
+                dentistaEspecialidade.style.display = 'none';
+                convenioDentistas.style.display = 'none';
+                uncheckAllCheckboxes('espcialidadesDentistas');
             } else {
                 medicoEspecialidade.style.display = 'none';
                 convenioMedicos.style.display = 'none';
@@ -210,11 +220,22 @@
         
         function changeDentista() {
             const deciderDentistas = document.querySelector('.dentista_check');
+            const deciderMedicos = document.querySelector('.medico_check');
             const dentistaEspecialidade = document.getElementById('espcialidadesDentistas');
             const convenioDentistas = document.getElementById('convenio_dentista');
+            const medicoEspecialidade = document.getElementById('espcialidadesMedicos');
+            const convenioMedicos = document.getElementById('convenio_medico');
+            
             if(deciderDentistas.checked){
+                // Desmarcar médico (mutuamente exclusivo)
+                deciderMedicos.checked = false;
+                
                 dentistaEspecialidade.style.display = 'block';
                 convenioDentistas.style.display = 'block';
+                // Ocultar especialidades e convênios de médico
+                medicoEspecialidade.style.display = 'none';
+                convenioMedicos.style.display = 'none';
+                uncheckAllCheckboxes('espcialidadesMedicos');
             } else {
                 dentistaEspecialidade.style.display = 'none';
                 convenioDentistas.style.display = 'none';
@@ -222,10 +243,6 @@
             }
             toggleEspecialidadesLabel();
         }
-
-        
-
-        
     </script>
 
 
@@ -233,7 +250,7 @@
         <span   style="color:#6D6875 !important;"  class=" mb-2">Especializações:</span>
         <label for="especialidades" id="especialidadesLabel" style="display:none" class="form-label"></label>
         <div id="especialidades" style="max-height:12rem; overflow-y:scroll;">
-            <!-- Checkbox para médicos -->
+            <!-- Checkboxes para médicos (múltipla seleção) -->
             <div id="espcialidadesMedicos" style="display:none;">
             {% for especialidade in especialidades %}
                 {% if especialidade.tipo_profissional == 'Médico' %}
@@ -242,7 +259,7 @@
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
+                        <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check-especialidade" id="{{ especialidade.id }}" name="especialidades_medico" value="{{ especialidade.id }}">
                         <label class="form-check-label" for="{{ especialidade.id }}">{{ especialidade.nome }}</label>
                     </div>
                
@@ -259,7 +276,7 @@
                     align-items: center;
                     justify-content: start;
                     padding-left: 0 !important;">
-                        <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ especialidade.id }}" name="especialidades" value="{{ especialidade.id }}">
+                        <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check-especialidade" id="{{ especialidade.id }}" name="especialidades_dentista" value="{{ especialidade.id }}">
                         <label class="form-check-label" for="{{ especialidade.id }}">{{ especialidade.nome }}</label>
                     </div>
                
@@ -583,34 +600,34 @@
     }
 
     function nextPrev(n) {
-        console.log('nextPrev chamado com n =', n, 'currentTab =', currentTab);
+
         var x = document.getElementsByClassName("tab");
         
         // Se estiver indo para frente, validar campos obrigatórios
         if (n == 1) {
-            console.log('Indo para frente - validando formulário...');
+
             const validationResult = validateForm();
-            console.log('Resultado da validação:', validationResult);
+
             if (!validationResult) {
-                console.log('Validação falhou - não avançando');
+
                 return false;
             }
-            console.log('Validação passou - continuando...');
+
         }
 
         // Se está saindo da aba de endereços (tab 2), atualizar campo hidden
         if (n == 1 && currentTab == 2) {
-            console.log('Saindo da aba de endereços - preparando dados...');
+
             prepararDadosEnderecos();
         }
 
         x[currentTab].style.display = "none";  // Esconder a aba atual
         currentTab = currentTab + n;  // Atualizar a aba atual
-        console.log('Nova aba:', currentTab);
+
 
         // Se chegou na última tab e clicou em próximo, enviar formulário
         if (currentTab >= x.length) {
-            console.log('Última aba alcançada - enviando formulário...');
+
             // Preparar dados dos endereços antes do submit
             prepararDadosEnderecos();
             document.getElementById("regForm").submit();
@@ -618,22 +635,22 @@
         }
 
         showTab(currentTab);  // Exibir a nova aba
-        console.log('Mostrando nova aba:', currentTab);
+
     }
     
     function validateForm() {
-        console.log('=== INICIANDO VALIDAÇÃO ===');
-        console.log('Aba atual (currentTab):', currentTab);
+
+
         
         var x, y, i, valid = true;
         x = document.getElementsByClassName("tab");
         y = x[currentTab].getElementsByTagName("input");
         
-        console.log('Número de inputs na aba atual:', y.length);
+
         
         // Validações específicas para a primeira aba (nome e CPF)
         if (currentTab == 0) {
-            console.log('Validando aba 0 (nome e CPF)');
+
             var nomeInput = document.querySelector('input[name="nome"]');
             var cpfInput = document.querySelector('input[name="username"]');
             
@@ -686,10 +703,10 @@
         // Verificar campos obrigatórios (validação original)
         // IMPORTANTE: Para a aba de endereços (currentTab == 2), pular esta validação
         if (currentTab !== 2) {
-            console.log('Validando campos obrigatórios para aba:', currentTab);
+
             for (i = 0; i < y.length; i++) {
                 if (y[i].hasAttribute("required") && y[i].value == "") {
-                    console.log('Campo obrigatório vazio encontrado:', y[i].name, y[i].id, y[i]);
+
                     
                     // Não aplicar classe invalid em campos que são preenchidos automaticamente via CEP
                     // ou que estão readonly (cidade, estado)
@@ -704,7 +721,7 @@
                 }
             }
         } else {
-            console.log('Pulando validação de campos individuais para aba de endereços');
+
         }
         
         // Validações específicas por tab (validações originais)
@@ -763,26 +780,26 @@
         
         // Validação da tab de endereços
         if (currentTab == 2) { // Tab de endereços
-            console.log('Validando aba de endereços...');
-            console.log('Quantidade de endereços:', enderecosCadastro.length);
-            console.log('Endereços array:', enderecosCadastro);
+
+
+
             
             // Garantir que o formulário de endereço está oculto para não interferir na validação
             const enderecoForm = document.getElementById('enderecoForm');
             if (enderecoForm && enderecoForm.style.display !== 'none') {
-                console.log('Formulário de endereço está visível - ocultando...');
+
                 enderecoForm.style.display = 'none';
             }
             
             // Verificar se pelo menos um endereço foi adicionado
             if (enderecosCadastro.length === 0) {
-                console.log('Nenhum endereço encontrado - mostrando modal');
+
                 // Mostrar modal pedindo para adicionar pelo menos um endereço
                 showEnderecoObrigatorioModal();
                 return false;
             }
             
-            console.log('Validação de endereços passou - permitindo avançar');
+
         }
         
         if (currentTab == 8) { // Senhas (última tab)
@@ -800,9 +817,9 @@
             }
         }
         
-        console.log('=== FINALIZANDO VALIDAÇÃO ===');
-        console.log('Valor de valid antes do return:', valid);
-        console.log('================================');
+
+
+
         
         return valid;
     }
@@ -2400,4 +2417,66 @@ input[required]:focus {
         }
     }
 </script>
+
+<style>
+/* CSS customizado para checkboxes quadrados de profissão e especialidade */
+.registrar-check-profissao, .registrar-check-especialidade {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 22px !important;
+    height: 22px !important;
+    border: 2px solid #ccc !important;
+    border-radius: 4px !important; /* Quadrado com bordas arredondadas */
+    outline: none !important;
+    cursor: pointer !important;
+    position: relative !important;
+    background-color: white !important;
+    transition: all 0.3s ease !important;
+    margin-right: 8px !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+}
+
+.registrar-check-profissao:checked, .registrar-check-especialidade:checked {
+    border-color: #007bff !important;
+    background-color: #007bff !important;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2) !important;
+}
+
+.registrar-check-profissao:checked::after, .registrar-check-especialidade:checked::after {
+    /* content: '✓' !important; */
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+.registrar-check-profissao:hover, .registrar-check-especialidade:hover {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.1) !important;
+}
+
+/* Estilo específico para labels */
+.form-check-label {
+    cursor: pointer !important;
+    user-select: none !important;
+    margin-left: 4px !important;
+}
+
+/* Remover TODOS os estilos padrão do Bootstrap que podem interferir */
+.form-check-input {
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    float: none !important;
+}
+
+.form-check-input[type=checkbox], .form-check-input[type=radio] {
+    border-radius: 4px !important;
+}
+</style>
 {%endblock%}
