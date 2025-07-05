@@ -398,8 +398,8 @@
             align-items: center;
             justify-content: start;
             padding-left: 0 !important;">
-                <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
-                <label class="form-check-label" for="{{ convenio.id }}">{{ convenio.nome }}</label>
+                <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check-profissao dentista_check" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
+                <label class="form-check-label" for="convenio_{{ convenio.id }}">{{ convenio.nome }}</label>
             </div>
        
         {% endif %}
@@ -1066,9 +1066,9 @@
                 console.log('Senha 1:', password1.value);
                 console.log('Senha 2:', password2.value);
                 
-                // Verificar se a senha atende aos requisitos
-                if (!isPasswordValid(password1.value)) {
-                    console.log('Senha inválida, mostrando modal');
+                // Verificar se a senha tem pelo menos 1 caractere (teste simples)
+                if (password1.value.length < 1) {
+                    console.log('Senha muito curta');
                     showSenhaInvalidaModal();
                     return false;
                 }

@@ -438,8 +438,8 @@
             align-items: center;
             justify-content: start;
             padding-left: 0 !important;">
-                <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
-                <label class="form-check-label" for="{{ convenio.id }}">{{ convenio.nome }}</label>
+                <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check-profissao dentista_check" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
+                <label class="form-check-label" for="convenio_{{ convenio.id }}">{{ convenio.nome }}</label>
             </div>
        
         {% endif %}
