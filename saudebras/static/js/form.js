@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // CEP Validation for both forms
     validateCep('registerCEP');
     validateEmail('emailId');
-    validateCPF('cpfId');
+    // validateCPF('cpfId'); // REMOVIDO - validação agora é feita apenas no botão "Próximo"
 
 
    
@@ -93,25 +93,26 @@ function validateEmail(emailId) {
     });
 }
 
-// CPF Validation
-let cpfAlertShown = false; // Variável de controle
+// CPF Validation - DESABILITADA
+// A validação do CPF agora é feita apenas no botão "Próximo" com modais personalizadas
+// let cpfAlertShown = false; // Variável de controle
 
-function validateCPF(cpfId) {
-    document.getElementById(cpfId).addEventListener('blur', function() {
-        if (cpfAlertShown) {
-            cpfAlertShown = false; // Resetar a variável
-            return;
-        }
+// function validateCPF(cpfId) {
+//     document.getElementById(cpfId).addEventListener('blur', function() {
+//         if (cpfAlertShown) {
+//             cpfAlertShown = false; // Resetar a variável
+//             return;
+//         }
 
-        const cpf = this.value.replace(/\D/g, '');
-        if (cpf.length === 11) {
-            // Fazer algo, por exemplo:
-            // alert("CPF válido.");
-        } else {
-            alert("CPF inválido.");
-            cpfAlertShown = true; // Marcar que o alerta foi mostrado
-            this.focus(); // Focar o elemento novamente
-        }
-    });
-}
+//         const cpf = this.value.replace(/\D/g, '');
+//         if (cpf.length === 11) {
+//             // Fazer algo, por exemplo:
+//             // alert("CPF válido.");
+//         } else {
+//             alert("CPF inválido.");
+//             cpfAlertShown = true; // Marcar que o alerta foi mostrado
+//             this.focus(); // Focar o elemento novamente
+//         }
+//     });
+// }
 
