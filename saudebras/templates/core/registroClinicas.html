@@ -506,9 +506,6 @@
 </div>
 
 <div class="tab">
-    <p style="font-size:1rem !important; color:#21BFA6 !important;">*A senha deve conter no min. 8 caracteres, uma letra maiúscula, um númeroe um símbolo</p>
-   
-      
         
  <div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
     <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="password-input" name="password1" placeholder="Digite sua senha">
@@ -517,6 +514,28 @@
     </span>
 </div>
 
+<!-- Lista de requisitos da senha -->
+<div id="password-requirements" style="margin-bottom: 1.5rem; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #21BFA6;">
+    <h6 style="color: #333; margin-bottom: 10px; font-size: 14px;">Requisitos da senha:</h6>
+    <ul style="list-style: none; padding: 0; margin: 0;">
+        <li id="req-length" style="margin-bottom: 5px; font-size: 13px; display: flex; align-items: center;">
+            <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+            Mínimo de 8 caracteres
+        </li>
+        <li id="req-uppercase" style="margin-bottom: 5px; font-size: 13px; display: flex; align-items: center;">
+            <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+            Pelo menos uma letra maiúscula
+        </li>
+        <li id="req-number" style="margin-bottom: 5px; font-size: 13px; display: flex; align-items: center;">
+            <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+            Pelo menos um número
+        </li>
+        <li id="req-symbol" style="margin-bottom: 0; font-size: 13px; display: flex; align-items: center;">
+            <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+            Pelo menos um símbolo (!@#$%^&*()_+)
+        </li>
+    </ul>
+</div>
 
 <div style="margin-bottom:2.2rem !important;" class="password-field d-flex align-items-center justify-content-center">
     <input style="padding:0 10px; border:none !important; outline:none !important;" type="password" id="confirm-password-input" name="password2" placeholder="Confirmar Senha">
@@ -542,33 +561,161 @@
             eyeIcon.classList.add('bi-eye-slash'); // Ícone de olho fechado
         }
     }
+    
+    // Função para validar senha em tempo real
+    function validatePasswordRequirements(password) {
+        const requirements = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            number: /\d/.test(password),
+            symbol: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+        };
+        
+        return requirements;
+    }
+    
+    // Função para atualizar a visualização dos requisitos
+    function updatePasswordRequirements(password) {
+        const requirements = validatePasswordRequirements(password);
+        
+        // Atualizar cada requisito
+        updateRequirement('req-length', requirements.length);
+        updateRequirement('req-uppercase', requirements.uppercase);
+        updateRequirement('req-number', requirements.number);
+        updateRequirement('req-symbol', requirements.symbol);
+    }
+    
+    // Função auxiliar para atualizar um requisito específico
+    function updateRequirement(elementId, isValid) {
+        const element = document.getElementById(elementId);
+        const icon = element.querySelector('i');
+        
+        if (isValid) {
+            icon.className = 'bi bi-check-circle-fill';
+            icon.style.color = '#28a745';
+            element.style.color = '#28a745';
+        } else {
+            icon.className = 'bi bi-x-circle-fill';
+            icon.style.color = '#dc3545';
+            element.style.color = '#dc3545';
+        }
+    }
+    
+    // Função para verificar se a senha atende a todos os requisitos
+    function isPasswordValid(password) {
+        const requirements = validatePasswordRequirements(password);
+        return requirements.length && requirements.uppercase && requirements.number && requirements.symbol;
+    }
+    
+    // Adicionar listener para validação em tempo real
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password-input');
+        const confirmPasswordInput = document.getElementById('confirm-password-input');
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                updatePasswordRequirements(this.value);
+                updatePasswordFieldVisual();
+                
+                // Verificar também se a confirmação ainda coincide
+                if (confirmPasswordInput && confirmPasswordInput.value) {
+                    validatePasswordMatch();
+                }
+            });
+        }
+        
+        if (confirmPasswordInput) {
+            confirmPasswordInput.addEventListener('input', function() {
+                validatePasswordMatch();
+            });
+        }
+    });
+    
+    // Função para validar se as senhas coincidem
+    function validatePasswordMatch() {
+        const passwordInput = document.getElementById('password-input');
+        const confirmPasswordInput = document.getElementById('confirm-password-input');
+        const confirmPasswordField = confirmPasswordInput ? confirmPasswordInput.closest('.password-field') : null;
+        
+        if (passwordInput && confirmPasswordInput) {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            // Só validar se ambos os campos têm valor
+            if (confirmPassword) {
+                if (password === confirmPassword) {
+                    confirmPasswordInput.classList.remove('invalid');
+                    confirmPasswordInput.classList.add('valid');
+                    if (confirmPasswordField) {
+                        confirmPasswordField.classList.remove('invalid');
+                        confirmPasswordField.classList.add('valid');
+                    }
+                } else {
+                    confirmPasswordInput.classList.remove('valid');
+                    confirmPasswordInput.classList.add('invalid');
+                    if (confirmPasswordField) {
+                        confirmPasswordField.classList.remove('valid');
+                        confirmPasswordField.classList.add('invalid');
+                    }
+                }
+            } else {
+                confirmPasswordInput.classList.remove('valid', 'invalid');
+                if (confirmPasswordField) {
+                    confirmPasswordField.classList.remove('valid', 'invalid');
+                }
+            }
+        }
+    }
+    
+    // Função para atualizar o visual do campo de senha principal
+    function updatePasswordFieldVisual() {
+        const passwordInput = document.getElementById('password-input');
+        const passwordField = passwordInput ? passwordInput.closest('.password-field') : null;
+        
+        if (passwordInput && passwordField) {
+            const isValid = isPasswordValid(passwordInput.value);
+            
+            if (passwordInput.value.length > 0) {
+                if (isValid) {
+                    passwordInput.classList.remove('invalid');
+                    passwordInput.classList.add('valid');
+                    passwordField.classList.remove('invalid');
+                    passwordField.classList.add('valid');
+                } else {
+                    passwordInput.classList.remove('valid');
+                    passwordInput.classList.add('invalid');
+                    passwordField.classList.remove('valid');
+                    passwordField.classList.add('invalid');
+                }
+            } else {
+                passwordInput.classList.remove('valid', 'invalid');
+                passwordField.classList.remove('valid', 'invalid');
+            }
+        }
+    }
 </script>
 
         
-        <span   style="color:#6D6875 !important;"  class="fw-bold mb-2">Termos e Condições:</span>
+        <span style="color:#6D6875 !important;" class="fw-bold mb-2">Termos e Condições:</span>
         
-        <div class="d-flex">
-        <label for="termos">Eu aceito e declaro que:</label>
-        <p><input type="checkbox" id="termos"></p>
+        <div class="form-check" style="display: flex;
+                    align-items: center;
+                    justify-content: start;
+                    padding-left: 0 !important;">
+            <input type="checkbox" style="margin:.5rem !important;" class="form-check-input registrar-check-profissao medico_check" id="termos" name="termos" value="aceito" required>
+            <label class="form-check-label" for="termos">Eu aceito e declaro que li e concordo com os termos e condições</label>
         </div>
 
     </div>
 
 
-    
-
-
-
-
-    
-    
 
 
 <div style="overflow:auto;">
     <div style="float:right;">
         <button type="button" style="padding:.7rem 1.3rem !important; border-radius:4px; background:rgb(130 130 130) !important; color:#fff !important; font-weight:600 !important;" id="prevBtn" onclick="nextPrev(-1)">Voltar</button>
         <button type="button" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important;" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
-        <button type="submit" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important; display:none;" id="submitBtn">Enviar</button>
+        <button type="submit" style="padding:.7rem 1.3rem !important; border-radius:4px; background:#00ae9d !important; color:#fff !important; font-weight:600 !important; display:none;" id="submitBtn" onclick="submitForm()">Enviar</button>
     </div>
 </div>
 
@@ -665,6 +812,25 @@
         }
         
         showTab(currentTab);  // Exibir a nova aba
+    }
+    
+    function submitForm() {
+        console.log('submitForm chamada');
+        
+        // Executar validação da última aba antes de submeter
+        const validationResult = validateForm();
+        
+        console.log('Resultado da validação:', validationResult);
+        
+        if (validationResult) {
+            console.log('Validação passou, preparando submit...');
+            // Preparar dados dos endereços antes do submit
+            prepararDadosEnderecos();
+            console.log('Submetendo formulário...');
+            document.getElementById("regForm").submit();
+        } else {
+            console.log('Validação falhou');
+        }
     }
     
     function validateForm() {
@@ -893,6 +1059,34 @@
             }
         }
         
+        // Validação da aba de senhas (aba 9 - última tab)
+        if (currentTab == 9) { // Senhas (última tab)
+            console.log('Validando senhas...');
+            var password1 = document.querySelector('input[name="password1"]');
+            var password2 = document.querySelector('input[name="password2"]');
+            
+            if (password1 && password2) {
+                console.log('Senha 1:', password1.value);
+                console.log('Senha 2:', password2.value);
+                
+                // Verificar se a senha atende aos requisitos
+                if (!isPasswordValid(password1.value)) {
+                    console.log('Senha não atende aos requisitos');
+                    showSenhaInvalidaModal();
+                    return false;
+                }
+                
+                // Verificar se as senhas coincidem
+                if (password1.value !== password2.value) {
+                    console.log('Senhas não coincidem');
+                    showSenhasNaoCoincidemModal();
+                    return false;
+                }
+                
+                console.log('Validação de senhas passou');
+            }
+        }
+        
         return valid;
     }
     
@@ -1028,6 +1222,16 @@
     
     function showIdiomasObrigatorioModal() {
         var modal = new bootstrap.Modal(document.getElementById('idiomasObrigatorioModal'));
+        modal.show();
+    }
+    
+    function showSenhaInvalidaModal() {
+        var modal = new bootstrap.Modal(document.getElementById('senhaInvalidaModal'));
+        modal.show();
+    }
+    
+    function showSenhasNaoCoincidemModal() {
+        var modal = new bootstrap.Modal(document.getElementById('senhasNaoCoincidemModal'));
         modal.show();
     }
     
@@ -1570,6 +1774,110 @@
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal de Senha Inválida
+    function fecharModalSenhaInvalida() {
+        var modalElement = document.getElementById('senhaInvalidaModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#senhaInvalidaModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo senha
+            var passwordInput = document.getElementById('password-input');
+            if (passwordInput) {
+                passwordInput.focus();
+                passwordInput.select();
+            }
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal de Senhas Não Coincidem
+    function fecharModalSenhasNaoCoincidem() {
+        var modalElement = document.getElementById('senhasNaoCoincidemModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#senhasNaoCoincidemModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Focar no campo de confirmação de senha
+            var confirmPasswordInput = document.getElementById('confirm-password-input');
+            if (confirmPasswordInput) {
+                confirmPasswordInput.focus();
+                confirmPasswordInput.select();
+            }
         }, 100);
     }
     
@@ -2703,6 +3011,73 @@
 .tab:first-child {
     display: block;
 }
+
+/* ===== ESTILOS PARA CAMPOS DE SENHA ===== */
+
+/* Campo de senha com visual melhorado */
+.password-field {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.password-field:focus-within {
+    border-color: #21BFA6;
+    box-shadow: 0 0 0 3px rgba(33, 191, 166, 0.1);
+}
+
+.password-field input {
+    background: transparent;
+    width: 100%;
+    min-height: 50px;
+    font-size: 16px;
+    color: #333;
+}
+
+.password-field input:focus {
+    box-shadow: none;
+}
+
+/* Lista de requisitos da senha */
+#password-requirements {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+#password-requirements ul li {
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+#password-requirements ul li i {
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+/* Estados dos requisitos */
+.requirement-met {
+    color: #28a745 !important;
+}
+
+/* Estilos para validação de campos de senha */
+.password-field.valid {
+    border-color: #28a745 !important;
+    background-color: #f8fff8 !important;
+}
+
+.password-field.invalid {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5 !important;
+}
+
+.password-field input.valid {
+    color: #28a745;
+}
+
+.password-field input.invalid {
+    color: #dc3545;
+}
 </style>
 
 <script src="{%static 'js/form.js' %}"> </script>
@@ -2914,6 +3289,62 @@
             <div class="modal-footer" style="border: none; justify-content: center;">
                 <button type="button" class="btn" style="background-color: #6f42c1; color: white; padding: 10px 30px; border-radius: 25px;" data-bs-dismiss="modal" onclick="fecharModalIdiomas()">
                     Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Senha Inválida -->
+<div class="modal fade" id="senhaInvalidaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-shield-x me-2"></i>
+                    Senha Inválida
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-lock"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Sua senha não atende aos requisitos!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, certifique-se de que sua senha tenha pelo menos 8 caracteres, uma letra maiúscula, um número e um símbolo.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn" style="background-color: #dc3545; color: white; padding: 10px 30px; border-radius: 25px;" data-bs-dismiss="modal" onclick="fecharModalSenhaInvalida()">
+                    Corrigir Senha
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Senhas Não Coincidem -->
+<div class="modal fade" id="senhasNaoCoincidemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #fd7e14, #e8590c); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-arrow-repeat me-2"></i>
+                    Senhas Não Coincidem
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #fd7e14; margin-bottom: 20px;">
+                    <i class="bi bi-arrow-left-right"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">As senhas digitadas são diferentes!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, digite a mesma senha nos dois campos para confirmar.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn" style="background-color: #fd7e14; color: white; padding: 10px 30px; border-radius: 25px;" data-bs-dismiss="modal" onclick="fecharModalSenhasNaoCoincidem()">
+                    Corrigir
                 </button>
             </div>
         </div>
