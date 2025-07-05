@@ -346,16 +346,20 @@
         <!-- Checkbox para médicos -->
         <div style="max-height:12rem; overflow-y:scroll;">
         {% for idioma in idiomas %}
-          
-            
-                <div class="form-check" style="display: flex;
-                align-items: center;
-                justify-content: start;
-                padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ idioma.id }}" name="idiomas" value="{{ idioma.id }}">
-                    <label class="form-check-label" for="{{ idioma.id }}">{{ idioma.nome }}</label>
+
+                <div class="form-check" style="display: flex; align-items: center; justify-content: start; padding-left: 0 !important;">
+                    <input 
+                        type="checkbox" 
+                        style="margin:.5rem !important;"  
+                        class="form-check-input registrar-check-profissao medico_check" 
+                        id="idioma_{{ idioma.id }}" 
+                        name="idiomas" 
+                        value="{{ idioma.id }}"
+                    >
+                    <label class="form-check-label" for="idioma_{{ idioma.id }}">
+                        {{ idioma.nome }}
+                    </label>
                 </div>
-           
             
         {% endfor %}
     </div>
@@ -378,8 +382,8 @@
                 align-items: center;
                 justify-content: start;
                 padding-left: 0 !important;">
-                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check" id="{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
-                    <label class="form-check-label" for="{{ convenio.id }}">{{ convenio.nome }}</label>
+                    <input type="checkbox" style="margin:.5rem !important;"  class="form-check-input registrar-check-profissao medico_check" id="convenio_{{ convenio.id }}" name="convenios" value="{{ convenio.id }}">
+                    <label class="form-check-label" for="convenio_{{ convenio.id }}">{{ convenio.nome }}</label>
                 </div>
            
             {% endif %}
