@@ -840,6 +840,50 @@
             }
         }
         
+        // Validação da aba de profissão (aba 3)
+        if (currentTab == 3) { // Profissão
+            var medicoChecked = document.querySelector('.medico_check').checked;
+            var dentistaChecked = document.querySelector('.dentista_check').checked;
+            
+            // Verificar se pelo menos um profissional foi selecionado
+            if (!medicoChecked && !dentistaChecked) {
+                showProfissaoObrigatoriaModal();
+                return false;
+            }
+            
+            // Verificar se pelo menos uma especialização foi selecionada para o profissional escolhido
+            var especializacaoSelecionada = false;
+            
+            if (medicoChecked) {
+                var especialidadesMedicos = document.querySelectorAll('#espcialidadesMedicos input[type="checkbox"]:checked');
+                if (especialidadesMedicos.length > 0) {
+                    especializacaoSelecionada = true;
+                }
+            }
+            
+            if (dentistaChecked) {
+                var especialidadesDentistas = document.querySelectorAll('#espcialidadesDentistas input[type="checkbox"]:checked');
+                if (especialidadesDentistas.length > 0) {
+                    especializacaoSelecionada = true;
+                }
+            }
+            
+            if (!especializacaoSelecionada) {
+                showEspecializacaoObrigatoriaModal();
+                return false;
+            }
+        }
+        
+        // Validação da aba de idiomas (aba 5)
+        if (currentTab == 5) { // Idiomas
+            var idiomasSelecionados = document.querySelectorAll('#idiomas input[type="checkbox"]:checked');
+            
+            if (idiomasSelecionados.length === 0) {
+                showIdiomasObrigatorioModal();
+                return false;
+            }
+        }
+        
         if (currentTab == 8) { // Senhas (última tab)
             var password1 = document.querySelector('input[name="password1"]');
             var password2 = document.querySelector('input[name="password2"]');
@@ -909,6 +953,141 @@
             });
         });
     });
+    
+    // Função específica para fechar a modal da Profissão
+    function fecharModalProfissao() {
+        var modalElement = document.getElementById('profissaoObrigatoriaModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#profissaoObrigatoriaModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal da Especialização
+    function fecharModalEspecializacao() {
+        var modalElement = document.getElementById('especializacaoObrigatoriaModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#especializacaoObrigatoriaModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 100);
+    }
+    
+    // Função específica para fechar a modal dos Idiomas
+    function fecharModalIdiomas() {
+        var modalElement = document.getElementById('idiomasObrigatorioModal');
+        
+        // Método 1: Bootstrap 5
+        try {
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                var newModal = new bootstrap.Modal(modalElement);
+                newModal.hide();
+            }
+        } catch (e) {
+            console.log('Erro Bootstrap 5:', e);
+        }
+        
+        // Método 2: jQuery (fallback)
+        try {
+            if (typeof $ !== 'undefined') {
+                $('#idiomasObrigatorioModal').modal('hide');
+            }
+        } catch (e) {
+            console.log('Erro jQuery:', e);
+        }
+        
+        // Método 3: Manual (último recurso)
+        setTimeout(function() {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            
+            // Remover backdrop
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Restaurar body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 100);
+    }
 </script>
 
 <style>
@@ -1541,6 +1720,90 @@ input[required]:focus {
     </div>
 </div>
 
+<!-- Modal para Profissão Obrigatória -->
+<div class="modal fade" id="profissaoObrigatoriaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-people-fill me-2"></i>
+                    Profissão Obrigatória
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #28a745; margin-bottom: 20px;">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Selecione sua profissão!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, escolha se você é Médico/Especialista ou Dentista.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="fecharModalProfissao()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Especialização Obrigatória -->
+<div class="modal fade" id="especializacaoObrigatoriaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-award me-2"></i>
+                    Especialização Obrigatória
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #ffc107; margin-bottom: 20px;">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Selecione pelo menos uma especialização!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, escolha pelo menos uma especialização para sua profissão.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="fecharModalEspecializacao()" style="padding: 10px 30px; border-radius: 25px;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Idiomas Obrigatório -->
+<div class="modal fade" id="idiomasObrigatorioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #6f42c1, #5a32a3); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center w-100">
+                    <i class="bi bi-translate me-2"></i>
+                    Idiomas Obrigatório
+                </h5>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #6f42c1; margin-bottom: 20px;">
+                    <i class="bi bi-chat-square-text"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Selecione pelo menos um idioma!</h6>
+                <p style="color: #666; margin-bottom: 0;">
+                    Por favor, escolha pelo menos um idioma em que você oferece atendimento.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn" style="background-color: #6f42c1; color: white; padding: 10px 30px; border-radius: 25px;" data-bs-dismiss="modal" onclick="fecharModalIdiomas()">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Funções para exibir as modais de erro
     function showNomeVazioModal() {
@@ -1579,6 +1842,21 @@ input[required]:focus {
     function showNumeroRegistroObrigatorioModal(message) {
         document.getElementById('numeroRegistroErrorMessage').textContent = message;
         var modal = new bootstrap.Modal(document.getElementById('numeroRegistroObrigatorioModal'));
+        modal.show();
+    }
+    
+    function showProfissaoObrigatoriaModal() {
+        var modal = new bootstrap.Modal(document.getElementById('profissaoObrigatoriaModal'));
+        modal.show();
+    }
+    
+    function showEspecializacaoObrigatoriaModal() {
+        var modal = new bootstrap.Modal(document.getElementById('especializacaoObrigatoriaModal'));
+        modal.show();
+    }
+    
+    function showIdiomasObrigatorioModal() {
+        var modal = new bootstrap.Modal(document.getElementById('idiomasObrigatorioModal'));
         modal.show();
     }
     
