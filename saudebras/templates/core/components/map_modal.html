@@ -1,0 +1,162 @@
+<!-- Modal de Mapa -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mapModalLabel">
+          <i class="bi bi-geo-alt-fill me-2"></i>
+          Localização no Mapa
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="map" style="height: 400px; width: 100%;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-custom" onclick="openGoogleMaps()">
+          <i class="bi bi-geo-alt me-2"></i>
+          Abrir no Google Maps
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.modern-modal .modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modern-modal .modal-header {
+  background: linear-gradient(135deg, #21BFA6, #47b2e4);
+  color: white;
+  border-bottom: none;
+}
+
+.modern-modal .btn-close {
+  filter: invert(1);
+}
+
+#map {
+  border-radius: 0 0 12px 12px;
+}
+
+.btn-custom {
+  background: linear-gradient(135deg, #21BFA6, #47b2e4);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  color: white;
+}
+
+.btn-outline-custom {
+  background: transparent;
+  color: #21BFA6;
+  border: 2px solid #21BFA6;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-custom:hover {
+  background: #21BFA6;
+  color: white;
+  transform: translateY(-1px);
+}
+</style>
+
+<script>
+let map;
+let marker;
+let currentLat, currentLng;
+
+// Função para inicializar o mapa (usando Leaflet)
+function initMap(lat, lng) {
+    currentLat = lat;
+    currentLng = lng;
+    
+    // Verificar se o Leaflet está disponível
+    if (typeof L !== 'undefined') {
+        // Remover mapa existente se houver
+        if (map) {
+            map.remove();
+        }
+        
+        // Criar novo mapa
+        map = L.map('map').setView([lat, lng], 15);
+        
+        // Adicionar camada de tile
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Adicionar marcador
+        marker = L.marker([lat, lng]).addTo(map);
+        
+        // Adicionar popup ao marcador
+        marker.bindPopup('<b>Localização</b>').openPopup();
+        
+    } else {
+        // Fallback: mostrar uma imagem do Google Maps Static API
+        document.getElementById('map').innerHTML = `
+            <img src="https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x400&markers=color:red%7C${lat},${lng}&key=YOUR_API_KEY" 
+                 alt="Mapa" style="width: 100%; height: 100%; object-fit: cover;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
+                Latitude: ${lat}<br>
+                Longitude: ${lng}
+            </div>
+        `;
+    }
+}
+
+// Função para abrir no Google Maps
+function openGoogleMaps() {
+    if (currentLat && currentLng) {
+        const url = `https://www.google.com/maps?q=${currentLat},${currentLng}`;
+        window.open(url, '_blank');
+    }
+}
+
+// Função para mostrar modal do mapa
+function showMapModal(latitude, longitude) {
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+        alert('Coordenadas inválidas');
+        return;
+    }
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('mapModal'));
+    modal.show();
+    
+    // Aguardar o modal ser totalmente exibido antes de inicializar o mapa
+    document.getElementById('mapModal').addEventListener('shown.bs.modal', function() {
+        setTimeout(() => {
+            initMap(lat, lng);
+        }, 100);
+    }, { once: true });
+}
+
+// Event listener para redimensionar o mapa quando o modal for redimensionado
+window.addEventListener('resize', function() {
+    if (map) {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+    }
+});
+</script>

@@ -1,0 +1,775 @@
+{% extends "core/base.html" %}
+
+{%load static%}
+
+{% block 'conteudo' %}
+
+<!-- CSS específico para perfis -->
+<link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+
+<div class="perfil-container">
+
+<!-- Modais -->
+<div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">Convênios Aceitos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="convenios-grid">
+          {%for convenio in clinica.convenios.all%}
+          <span class="convenio-tag">{{ convenio.nome }}</span>
+          {%endfor%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="especialidadesModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="especialidadesModalLabel-{{ clinica.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="especialidadesModalLabel-{{ clinica.id }}">Especialidades</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="especialidades-grid">
+          {%for especialidade in clinica.especialidades.all%}
+          <span class="specialty-tag">{{ especialidade.nome }}</span>
+          {%endfor%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="tiposModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="tiposModalLabel-{{ clinica.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tiposModalLabel-{{ clinica.id }}">Tipos de Atendimento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="especialidades-grid">
+          {%for tipo in clinica.tipo_clinica.all%}
+          <span class="tipo-tag">{{ tipo.nome }}</span>
+          {%endfor%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Header da página -->
+<div class="page-header">
+  <div class="container">
+    <div class="header-content">
+      <button class="back-btn" onclick="goBack()" aria-label="Voltar">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h1 class="doctor-name">{{clinica.nome}}</h1>
+      <div class="header-actions">
+        <button class="action-btn" aria-label="Compartilhar" onclick="shareProfile()">
+          <i class="bi bi-share-fill"></i>
+        </button>
+        <button class="action-btn favorite" aria-label="Favoritar" onclick="toggleFavorite()">
+          <i class="bi bi-heart-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Conteúdo principal -->
+<div class="main-content">
+  <div class="container">
+    <div class="profile-section">
+      
+      <!-- Card do perfil -->
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-image-container">
+            <img class="profile-image" src="{{ clinica.foto.url }}" alt="Foto da {{ clinica.nome }}">
+          </div>
+          
+          <div class="profile-info">
+            <h2 class="clinic-full-name">{{ clinica.nome }}</h2>
+            
+            <!-- Tipos de clínica -->
+            <div class="specialties">
+              {% for tipo in clinica.tipo_clinica.all %}
+              {% if forloop.counter < 3 %}
+              <span class="tipo-tag">{{ tipo.nome }}</span>
+              {% endif %}
+              {% endfor %}
+              {% if clinica.tipo_clinica.all.count > 2 %}
+              <button class="see-more-btn" data-bs-toggle="modal" data-bs-target="#tiposModal-{{ clinica.id }}">
+                +{{ clinica.tipo_clinica.all.count|add:"-2" }} mais
+              </button>
+              {% endif %}
+            </div>
+            
+            <!-- Especialidades -->
+            <div class="specialties">
+              {% for especialidade in clinica.especialidades.all %}
+              {% if forloop.counter < 2 %}
+              <span class="specialty-tag">{{ especialidade.nome }}</span>
+              {% endif %}
+              {% endfor %}
+              {% if clinica.especialidades.all.count > 1 %}
+              <button class="see-more-btn" data-bs-toggle="modal" data-bs-target="#especialidadesModal-{{ clinica.id }}">
+                +{{ clinica.especialidades.all.count|add:"-1" }} mais
+              </button>
+              {% endif %}
+            </div>
+            
+            {%if clinica.codigo%}
+            <div class="registration">
+              <i class="bi bi-award"></i>
+              <span>Registro {{clinica.codigo}}</span>
+            </div>
+            {%endif%}
+            
+            {%load floor%}
+            <div class="rating-section">
+              <div class="stars">
+                {% for star in stars %}
+                  {% if star == "full" %}
+                  <i class="bi bi-star-fill star-filled"></i>
+                  {% elif star == "half" %}
+                  <i class="bi bi-star-half star-filled"></i>
+                  {% else %}
+                  <i class="bi bi-star star-empty"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="rating-text">{{ total_avaliacoes }} avaliações</span>
+            </div>
+            
+            <div class="insurance-section">
+              <div class="insurance-list">
+                {% for convenio in clinica.convenios.all %}
+                {% if forloop.counter < 3 %}
+                <span class="insurance-tag">{{ convenio.nome }}</span>
+                {% endif %}
+                {% endfor %}
+                {% if clinica.convenios.all.count > 2 %}
+                <button class="see-more-btn" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">
+                  +{{ clinica.convenios.all.count|add:"-2" }} mais
+                </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Seção de contato -->
+        <div class="appointment-section">
+          {% if has_emergency %}
+          <div class="price-info">
+            <span class="price-label">Atendimento:</span>
+            <span class="price-value" style="color: #dc3545;">24 Horas</span>
+          </div>
+          {% else %}
+          <div class="price-info">
+            <span class="price-label">Atendimento:</span>
+            <span class="price-value">Consultar</span>
+          </div>
+          {% endif %}
+          
+          {%if user.is_authenticated%}
+          <a class="contact-btn" href="https://wa.me/55{{clinica.ddd}}{{clinica.telefone}}?text=Olá! Gostaria de mais informações sobre os serviços da {{clinica.nome}}." target="_blank">
+            <i class="bi bi-whatsapp"></i>
+            <span>Entrar em Contato</span>
+          </a>
+          {%else%}
+          <a class="contact-btn" href="{% url 'login' %}">
+            <i class="bi bi-whatsapp"></i>
+            <span>Entrar em Contato</span>
+          </a>
+          {%endif%}
+        </div>
+      </div>
+      
+      <!-- Navegação por abas -->
+      <div class="tabs-container">
+        <nav class="tabs-nav">
+          <button class="tab-button active" data-tab="0">
+            <i class="bi bi-geo-alt"></i>
+            <span>Localização</span>
+          </button>
+          <button class="tab-button" data-tab="1">
+            <i class="bi bi-heart-pulse"></i>
+            <span>Serviços</span>
+          </button>
+          <button class="tab-button" data-tab="2">
+            <i class="bi bi-people"></i>
+            <span>Profissionais</span>
+          </button>
+          <button class="tab-button" data-tab="3">
+            <i class="bi bi-star"></i>
+            <span>Avaliações</span>
+          </button>
+          <button class="tab-button" data-tab="4">
+            <i class="bi bi-question-circle"></i>
+            <span>Dúvidas</span>
+          </button>
+          <button class="tab-button" data-tab="5">
+            <i class="bi bi-info-circle"></i>
+            <span>Sobre</span>
+          </button>
+        </nav>
+        
+        <!-- Conteúdo das abas -->
+        <div class="tab-content">
+          
+          <!-- Aba Localização (índice 0) -->
+          <div class="tab-pane active" data-tab="0">
+            <div class="section-content">
+              <h3 class="section-title">
+                <i class="bi bi-geo-alt-fill"></i>
+                Locais de Atendimento
+              </h3>
+              
+              {%for endereco in clinica.enderecos.all%}
+              <div class="location-card">
+                <div class="location-header">
+                  <i class="bi bi-geo-alt-fill location-icon"></i>
+                  <h4>Unidade {{ forloop.counter }}</h4>
+                  {%if endereco.latitude != None and endereco.longitude != None %}
+                  <button class="map-btn showMapModal" data-latitude="{{ endereco.latitude }}" data-longitude="{{ endereco.longitude }}">
+                    <i class="bi bi-map"></i>
+                    Ver no Mapa
+                  </button>
+                  {%endif%}
+                </div>
+                <div class="location-address">
+                  <p>{{endereco.rua}}{%if endereco.complemento %}, {{endereco.complemento}}{%endif%}</p>
+                  <p>{{endereco.bairro.nome}}, {{endereco.cidade.nome}} - {{endereco.estado.nome}}</p>
+                </div>
+              </div>
+              {%empty%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Informações de localização não disponíveis.
+              </div>
+              {%endfor%}
+              
+              <div class="info-section">
+                <h4 class="info-title">
+                  <i class="bi bi-translate"></i>
+                  Idiomas
+                </h4>
+                <div class="info-list">
+                  {%for idioma in clinica.idiomas.all%}
+                  <span class="info-tag">{{idioma}}</span>
+                  {%empty%}
+                  <span class="text-muted">Não informado</span>
+                  {%endfor%}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Aba Serviços (índice 1) -->
+          <div class="tab-pane" data-tab="1">
+            <div class="section-content">
+              <h3 class="section-title">
+                <i class="bi bi-heart-pulse-fill"></i>
+                Serviços Oferecidos
+              </h3>
+              
+              {%if clinica.servicos.all.exists%}
+              <div class="services-grid">
+                {%for servico in clinica.servicos.all %}
+                <div class="service-card">
+                  <i class="bi bi-heart-pulse-fill"></i>
+                  <span>{{servico.nome}}</span>
+                </div>
+                {%endfor%}
+              </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Informações sobre serviços não disponíveis.
+              </div>
+              {%endif%}
+            </div>
+          </div>
+          
+          <!-- Aba Profissionais (índice 2) -->
+          <div class="tab-pane" data-tab="2">
+            <div class="section-content">
+              <h3 class="section-title">
+                <i class="bi bi-people-fill"></i>
+                Profissionais Disponíveis
+              </h3>
+              
+              <div class="info-section">
+                <h4 class="info-title">
+                  <i class="bi bi-person-badge"></i>
+                  Tipos de Profissionais
+                </h4>
+                <div class="info-list">
+                  {%for tipo_prof in clinica.tipo_profissional.all%}
+                  <span class="info-tag">{{tipo_prof.nome}}</span>
+                  {%empty%}
+                  <span class="text-muted">Não informado</span>
+                  {%endfor%}
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <h4 class="info-title">
+                  <i class="bi bi-award"></i>
+                  Especialidades Atendidas
+                </h4>
+                <div class="info-list">
+                  {%for especialidade in clinica.especialidades.all%}
+                  <span class="info-tag">{{especialidade.nome}}</span>
+                  {%empty%}
+                  <span class="text-muted">Não informado</span>
+                  {%endfor%}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Aba Avaliações (índice 3) -->
+          <div class="tab-pane" data-tab="3">
+            <div class="section-content">
+              <h3 class="section-title">
+                <i class="bi bi-star-fill"></i>
+                Avaliações dos Pacientes
+              </h3>
+              
+              {%if avaliacoes%}
+              <div class="reviews-container" id="reviews-container">
+                <!-- As avaliações serão carregadas aqui via JavaScript -->
+              </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Esta clínica ainda não possui avaliações.
+              </div>
+              {%endif%}
+              
+              {% load user_tags %}
+              {% if user.is_authenticated %}
+                {% if is_cliente %}
+                <div class="review-form-container">
+                  <h4>Deixe sua avaliação</h4>
+                  <form class="review-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_avaliacao">
+                    
+                    <div class="rating-input">
+                      <label>Sua avaliação:</label>
+                      <div class="stars-input" id="stars">
+                        <span class="star-input" data-value="1">☆</span>
+                        <span class="star-input" data-value="2">☆</span>
+                        <span class="star-input" data-value="3">☆</span>
+                        <span class="star-input" data-value="4">☆</span>
+                        <span class="star-input" data-value="5">☆</span>
+                        <input type="hidden" id="ratingInput" name="rating">
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="descricao">Comentário (opcional):</label>
+                      <textarea name="descricao" id="descricao" placeholder="Conte sobre sua experiência..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-review-btn">
+                      Enviar Avaliação
+                    </button>
+                  </form>
+                </div>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- Aba Dúvidas (índice 4) -->
+          <div class="tab-pane" data-tab="4">
+            <div class="section-content">
+              <h3 class="section-title">
+                <i class="bi bi-question-circle-fill"></i>
+                Perguntas Frequentes
+              </h3>
+              
+              {%if tem_respostas%}
+              <div class="faq-container" id="perguntas-container">
+                <!-- Perguntas e respostas serão carregadas aqui -->
+              </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Ainda não há perguntas respondidas por esta clínica.
+              </div>
+              {%endif%}
+              
+              {% if user.is_authenticated and is_cliente %}
+              <div class="review-form-container mt-4">
+                <h4>Faça uma pergunta</h4>
+                <form method="post" class="review-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="send_pergunta">
+                  
+                  <div class="form-group">
+                    <label for="pergunta">Sua pergunta:</label>
+                    <textarea name="pergunta" id="pergunta" placeholder="Digite sua pergunta aqui..." required></textarea>
+                  </div>
+                  
+                  <button type="submit" class="submit-review-btn">
+                    <i class="bi bi-send me-2"></i>
+                    Enviar Pergunta
+                  </button>
+                </form>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- Aba Sobre (índice 5) -->
+          <div class="tab-pane" data-tab="5">
+            <div class="section-content">
+              <h3 class="section-title">
+                <i class="bi bi-info-circle-fill"></i>
+                Sobre a Clínica
+              </h3>
+              
+              {%if clinica.descricao%}
+              <div class="experience-content">
+                <p>{{clinica.descricao}}</p>
+              </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Esta clínica ainda não adicionou informações sobre si.
+              </div>
+              {%endif%}
+              
+              {%if clinica.galeria.all.exists%}
+              <div class="gallery-section">
+                <h4 class="gallery-title">Galeria de Fotos</h4>
+                <div class="gallery-grid">
+                  {%for foto in clinica.galeria.all%}
+                  <a data-fancybox="gallery" href="{{foto.imagem.url}}" class="gallery-item">
+                    <img src="{{foto.imagem.url}}" alt="Foto da clínica" />
+                  </a>
+                  {%endfor%}
+                </div>
+              </div>
+              {%endif%}
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div> <!-- Fecha perfil-container -->
+
+<script>
+// Função para voltar
+function goBack() {
+    window.history.back();
+}
+
+// Função para compartilhar perfil
+function shareProfile() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{clinica.nome}}',
+            text: 'Confira o perfil da {{clinica.nome}}',
+            url: window.location.href
+        });
+    } else {
+        // Fallback para navegadores que não suportam Web Share API
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Link copiado para a área de transferência!');
+        });
+    }
+}
+
+// Função para favoritar
+function toggleFavorite() {
+    const btn = document.querySelector('.action-btn.favorite i');
+    const isFavorited = btn.classList.contains('bi-heart-fill');
+    
+    if (isFavorited) {
+        btn.classList.remove('bi-heart-fill');
+        btn.classList.add('bi-heart');
+    } else {
+        btn.classList.remove('bi-heart');
+        btn.classList.add('bi-heart-fill');
+    }
+    
+    // Aqui você pode adicionar a lógica para salvar no backend
+    console.log('Favorito alterado:', !isFavorited);
+}
+
+// Função para trocar abas
+function showTab(index) {
+    // Remove active de todos os botões
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Remove active de todos os painéis
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+    });
+    
+    // Adiciona active ao botão e painel selecionados
+    const buttons = document.querySelectorAll('.tab-button');
+    const panes = document.querySelectorAll('.tab-pane');
+    
+    if (buttons[index] && panes[index]) {
+        buttons[index].classList.add('active');
+        panes[index].classList.add('active');
+    }
+}
+
+// Função para carregar avaliações
+function loadReviews() {
+    const reviewsContainer = document.getElementById('reviews-container');
+    if (!reviewsContainer) return;
+    
+    // Simulação de carregamento - aqui você faria a requisição real
+    reviewsContainer.innerHTML = `
+        {% for avaliacao in avaliacoes %}
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <img src="{{ avaliacao.cliente.foto.url|default:'/static/images/unknown.png' }}" 
+                         alt="{{avaliacao.cliente.nome}}" class="reviewer-avatar">
+                    <div>
+                        <div class="reviewer-name">{{avaliacao.cliente.nome}}</div>
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= avaliacao.rating %}
+                                <i class="bi bi-star-fill star-filled"></i>
+                                {% else %}
+                                <i class="bi bi-star star-empty"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if avaliacao.descricao %}
+            <div class="review-text">{{avaliacao.descricao}}</div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Ainda não há avaliações para esta clínica.
+        </div>
+        {% endfor %}
+    `;
+}
+
+// Função para carregar perguntas e respostas
+function loadFAQ() {
+    const perguntasContainer = document.getElementById('perguntas-container');
+    if (!perguntasContainer) return;
+    
+    perguntasContainer.innerHTML = `
+        {% for pergunta in perguntas_paginated %}
+        <div class="faq-item">
+            <h4>{{pergunta.pergunta}}</h4>
+            <p><strong>Resposta da {{clinica.nome}}:</strong> {{pergunta.resposta}}</p>
+            <small class="text-muted">Por: {{pergunta.cliente.nome}}</small>
+        </div>
+        {% empty %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Ainda não há perguntas respondidas.
+        </div>
+        {% endfor %}
+    `;
+}
+
+// Inicialização quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar event listeners para as abas
+    const tabButtons = document.querySelectorAll('.tab-button');
+    
+    tabButtons.forEach((button, index) => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            showTab(index);
+            
+            // Carregar conteúdo específico baseado na aba
+            switch(index) {
+                case 3: // Aba de avaliações
+                    loadReviews();
+                    break;
+                case 4: // Aba de dúvidas
+                    loadFAQ();
+                    break;
+            }
+        });
+    });
+    
+    // Sistema de avaliação por estrelas
+    const stars = document.querySelectorAll('.star-input');
+    const ratingInput = document.getElementById('ratingInput');
+    
+    if (stars.length > 0 && ratingInput) {
+        stars.forEach((star, index) => {
+            star.addEventListener('click', function() {
+                const rating = index + 1;
+                ratingInput.value = rating;
+                
+                // Atualizar visual das estrelas
+                stars.forEach((s, i) => {
+                    if (i < rating) {
+                        s.textContent = '★';
+                        s.style.color = '#fbbf24';
+                    } else {
+                        s.textContent = '☆';
+                        s.style.color = '#d1d5db';
+                    }
+                });
+            });
+            
+            // Efeito hover
+            star.addEventListener('mouseenter', function() {
+                const rating = index + 1;
+                stars.forEach((s, i) => {
+                    if (i < rating) {
+                        s.textContent = '★';
+                        s.style.color = '#fbbf24';
+                    } else {
+                        s.textContent = '☆';
+                        s.style.color = '#d1d5db';
+                    }
+                });
+            });
+        });
+        
+        // Restaurar estado ao sair do hover
+        const starsContainer = document.querySelector('.stars-input');
+        if (starsContainer) {
+            starsContainer.addEventListener('mouseleave', function() {
+                const currentRating = parseInt(ratingInput.value) || 0;
+                stars.forEach((s, i) => {
+                    if (i < currentRating) {
+                        s.textContent = '★';
+                        s.style.color = '#fbbf24';
+                    } else {
+                        s.textContent = '☆';
+                        s.style.color = '#d1d5db';
+                    }
+                });
+            });
+        }
+    }
+    
+    // Inicialização do Fancybox para galeria (se disponível)
+    if (typeof $ !== 'undefined' && $.fancybox) {
+        $('[data-fancybox="gallery"]').fancybox({
+            afterLoad: function(instance, slide) {
+                slide.$image.css({
+                    'object-fit': 'cover',
+                    'width': '100%',
+                    'height': '100%'
+                });
+            }
+        });
+    }
+    
+    // Carregar conteúdo inicial
+    loadReviews();
+    loadFAQ();
+    
+    // Smooth scroll para navegação
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Lazy loading para imagens
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    }
+});
+
+// Função para mostrar/ocultar modal de mapa (se implementado)
+function showMapModal(latitude, longitude) {
+    // Implementação do modal de mapa seria adicionada aqui
+    console.log('Mostrar mapa:', latitude, longitude);
+}
+
+// Event listeners para botões de mapa
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('showMapModal')) {
+        const lat = e.target.dataset.latitude;
+        const lng = e.target.dataset.longitude;
+        if (lat && lng) {
+            showMapModal(lat, lng);
+        }
+    }
+});
+
+// Adicionar animações de entrada
+function addEntranceAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observar elementos para animação
+    document.querySelectorAll('.profile-card, .location-card, .service-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+}
+
+// Executar animações após o carregamento
+window.addEventListener('load', addEntranceAnimations);
+</script>
+
+{% endblock %}

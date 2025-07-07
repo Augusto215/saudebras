@@ -4,6 +4,11 @@
 
 {% block 'conteudo' %}
 
+<!-- CSS específico para perfis -->
+<link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+
+<div class="perfil-container">
+
 <!-- Modais -->
 <div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -50,10 +55,10 @@
       </button>
       <h1 class="doctor-name">Dr. {{profissional.nome}}</h1>
       <div class="header-actions">
-        <button class="action-btn" aria-label="Compartilhar">
+        <button class="action-btn" aria-label="Compartilhar" onclick="shareProfile()">
           <i class="bi bi-share-fill"></i>
         </button>
-        <button class="action-btn favorite" aria-label="Favoritar">
+        <button class="action-btn favorite" aria-label="Favoritar" onclick="toggleFavorite()">
           <i class="bi bi-heart-fill"></i>
         </button>
       </div>
@@ -133,11 +138,15 @@
         <div class="appointment-section">
           <div class="price-info">
             <span class="price-label">Valor da consulta:</span>
-            <span class="price-value">R$ 180,00</span>
+            {% if profissional.preco %}
+            <span class="price-value">R$ {{profissional.preco}}</span>
+            {% else %}
+            <span class="price-value">Consultar</span>
+            {% endif %}
           </div>
           
           {%if user.is_authenticated%}
-          <a class="appointment-btn" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" href="{{profissional.telefone}}">
+          <a class="appointment-btn" href="https://wa.me/55{{profissional.ddd}}{{profissional.telefone}}?text=Olá, Dr. {{profissional.nome}}! Gostaria de agendar uma consulta." target="_blank">
             <i class="bi bi-whatsapp"></i>
             <span>Agendar Consulta</span>
           </a>
@@ -150,30 +159,30 @@
         </div>
       </div>
       
-      <!-- Navegação por abas -->
-      <div class="tabs-container">
-        <nav class="tabs-nav">
-          <button class="tab-button active" data-tab="0">
-            <i class="bi bi-geo-alt"></i>
-            <span>Consultórios</span>
-          </button>
-          <button class="tab-button" data-tab="1">
-            <i class="bi bi-heart-pulse"></i>
-            <span>Serviços</span>
-          </button>
-          <button class="tab-button" data-tab="2">
-            <i class="bi bi-star"></i>
-            <span>Avaliações</span>
-          </button>
-          <button class="tab-button" data-tab="3">
-            <i class="bi bi-question-circle"></i>
-            <span>Dúvidas</span>
-          </button>
-          <button class="tab-button" data-tab="4">
-            <i class="bi bi-person-badge"></i>
-            <span>Experiência</span>
-          </button>
-        </nav>
+        <!-- Navegação por abas -->
+        <div class="tabs-container">
+          <nav class="tabs-nav">
+            <button class="tab-button active" data-tab="0">
+              <i class="bi bi-geo-alt"></i>
+              <span>Consultórios</span>
+            </button>
+            <button class="tab-button" data-tab="1">
+              <i class="bi bi-heart-pulse"></i>
+              <span>Serviços</span>
+            </button>
+            <button class="tab-button" data-tab="2">
+              <i class="bi bi-star"></i>
+              <span>Avaliações</span>
+            </button>
+            <button class="tab-button" data-tab="3">
+              <i class="bi bi-question-circle"></i>
+              <span>Dúvidas</span>
+            </button>
+            <button class="tab-button" data-tab="4">
+              <i class="bi bi-person-badge"></i>
+              <span>Experiência</span>
+            </button>
+          </nav>
         
         <!-- Conteúdo das abas -->
         <div class="tab-content">
@@ -214,7 +223,7 @@
                 </div>
               </div>
               
-              {%if profissional.servicos.exist%}
+              {%if profissional.servicos.all.exists%}
               <div class="info-section">
                 <h4 class="info-title">
                   <i class="bi bi-heart-pulse-fill"></i>
@@ -248,11 +257,19 @@
           <!-- Aba Avaliações (índice 2) -->
           <div class="tab-pane" data-tab="2">
             <div class="section-content">
-              <h3 class="section-title">Avaliações dos Pacientes</h3>
+              <h3 class="section-title">
+                <i class="bi bi-star-fill"></i>
+                Avaliações dos Pacientes
+              </h3>
               
               {%if avaliacoes%}
-              <div class="reviews-container">
+              <div class="reviews-container" id="reviews-container">
                 <!-- As avaliações serão carregadas aqui via JavaScript -->
+              </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Este profissional ainda não possui avaliações.
               </div>
               {%endif%}
               
@@ -295,28 +312,62 @@
           <!-- Aba Dúvidas (índice 3) -->
           <div class="tab-pane" data-tab="3">
             <div class="section-content">
-              <h3 class="section-title">Perguntas Frequentes</h3>
-              <div class="faq-container">
-                <!-- Conteúdo de dúvidas frequentes -->
-                <div class="faq-item">
-                  <h4>Como agendar uma consulta?</h4>
-                  <p>Você pode agendar através do WhatsApp clicando no botão "Agendar Consulta".</p>
-                </div>
-                <div class="faq-item">
-                  <h4>Quais convênios são aceitos?</h4>
-                  <p>Consulte a lista completa de convênios aceitos clicando em "Ver mais" na seção de convênios.</p>
-                </div>
+              <h3 class="section-title">
+                <i class="bi bi-question-circle-fill"></i>
+                Perguntas Frequentes
+              </h3>
+              
+              {%if tem_respostas%}
+              <div class="faq-container" id="perguntas-container">
+                <!-- Perguntas e respostas serão carregadas aqui -->
               </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Ainda não há perguntas respondidas por este profissional.
+              </div>
+              {%endif%}
+              
+              {% if user.is_authenticated and is_cliente %}
+              <div class="review-form-container mt-4">
+                <h4>Faça uma pergunta</h4>
+                <form method="post" class="review-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="send_pergunta">
+                  
+                  <div class="form-group">
+                    <label for="pergunta">Sua pergunta:</label>
+                    <textarea name="pergunta" id="pergunta" placeholder="Digite sua pergunta aqui..." required></textarea>
+                  </div>
+                  
+                  <button type="submit" class="submit-review-btn">
+                    <i class="bi bi-send me-2"></i>
+                    Enviar Pergunta
+                  </button>
+                </form>
+              </div>
+              {% endif %}
             </div>
           </div>
           
           <!-- Aba Experiência (índice 4) -->
           <div class="tab-pane" data-tab="4">
             <div class="section-content">
-              <h3 class="section-title">Experiência Profissional</h3>
+              <h3 class="section-title">
+                <i class="bi bi-person-badge-fill"></i>
+                Experiência Profissional
+              </h3>
+              
+              {%if profissional.descricao%}
               <div class="experience-content">
                 <p>{{profissional.descricao}}</p>
               </div>
+              {%else%}
+              <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Este profissional ainda não adicionou informações sobre sua experiência.
+              </div>
+              {%endif%}
               
               {%if profissional.galeria.all.exists%}
               <div class="gallery-section">
@@ -339,13 +390,51 @@
   </div>
 </div>
 
+</div> <!-- Fecha perfil-container -->
+
+<!-- Incluir modal de mapa -->
+{% include 'core/components/map_modal.html' %}
+
 <script>
 // Função para voltar
 function goBack() {
     window.history.back();
 }
 
-// Função para trocar abas - versão simplificada e funcional
+// Função para compartilhar perfil
+function shareProfile() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Dr. {{profissional.nome}}',
+            text: 'Confira o perfil do Dr. {{profissional.nome}}',
+            url: window.location.href
+        });
+    } else {
+        // Fallback para navegadores que não suportam Web Share API
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Link copiado para a área de transferência!');
+        });
+    }
+}
+
+// Função para favoritar
+function toggleFavorite() {
+    const btn = document.querySelector('.action-btn.favorite i');
+    const isFavorited = btn.classList.contains('bi-heart-fill');
+    
+    if (isFavorited) {
+        btn.classList.remove('bi-heart-fill');
+        btn.classList.add('bi-heart');
+    } else {
+        btn.classList.remove('bi-heart');
+        btn.classList.add('bi-heart-fill');
+    }
+    
+    // Aqui você pode adicionar a lógica para salvar no backend
+    console.log('Favorito alterado:', !isFavorited);
+}
+
+// Função para trocar abas
 function showTab(index) {
     // Remove active de todos os botões
     document.querySelectorAll('.tab-button').forEach(btn => {
@@ -357,11 +446,75 @@ function showTab(index) {
         pane.classList.remove('active');
     });
     
-    // Adiciona active ao botão clicado
-    document.querySelectorAll('.tab-button')[index].classList.add('active');
+    // Adiciona active ao botão e painel selecionados
+    const buttons = document.querySelectorAll('.tab-button');
+    const panes = document.querySelectorAll('.tab-pane');
     
-    // Adiciona active ao painel correspondente
-    document.querySelectorAll('.tab-pane')[index].classList.add('active');
+    if (buttons[index] && panes[index]) {
+        buttons[index].classList.add('active');
+        panes[index].classList.add('active');
+    }
+}
+
+// Função para carregar avaliações
+function loadReviews() {
+    const reviewsContainer = document.getElementById('reviews-container');
+    if (!reviewsContainer) return;
+    
+    // Simulação de carregamento - aqui você faria a requisição real
+    reviewsContainer.innerHTML = `
+        {% for avaliacao in avaliacoes %}
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <img src="{{ avaliacao.cliente.foto.url|default:'/static/images/unknown.png' }}" 
+                         alt="{{avaliacao.cliente.nome}}" class="reviewer-avatar">
+                    <div>
+                        <div class="reviewer-name">{{avaliacao.cliente.nome}}</div>
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= avaliacao.rating %}
+                                <i class="bi bi-star-fill star-filled"></i>
+                                {% else %}
+                                <i class="bi bi-star star-empty"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if avaliacao.descricao %}
+            <div class="review-text">{{avaliacao.descricao}}</div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Ainda não há avaliações para este profissional.
+        </div>
+        {% endfor %}
+    `;
+}
+
+// Função para carregar perguntas e respostas
+function loadFAQ() {
+    const perguntasContainer = document.getElementById('perguntas-container');
+    if (!perguntasContainer) return;
+    
+    perguntasContainer.innerHTML = `
+        {% for pergunta in perguntas_paginated %}
+        <div class="faq-item">
+            <h4>{{pergunta.pergunta}}</h4>
+            <p><strong>Resposta do Dr. {{profissional.nome}}:</strong> {{pergunta.resposta}}</p>
+            <small class="text-muted">Por: {{pergunta.cliente.nome}}</small>
+        </div>
+        {% empty %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Ainda não há perguntas respondidas.
+        </div>
+        {% endfor %}
+    `;
 }
 
 // Inicialização quando o DOM estiver pronto
@@ -373,6 +526,16 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             showTab(index);
+            
+            // Carregar conteúdo específico baseado na aba
+            switch(index) {
+                case 2: // Aba de avaliações
+                    loadReviews();
+                    break;
+                case 3: // Aba de dúvidas
+                    loadFAQ();
+                    break;
+            }
         });
     });
     
@@ -443,7 +606,88 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Carregar conteúdo inicial
+    loadReviews();
+    loadFAQ();
+    
+    // Smooth scroll para navegação
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Lazy loading para imagens
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    }
 });
+
+// Função para mostrar/ocultar modal de mapa (se implementado)
+function showMapModal(latitude, longitude) {
+    // Implementação do modal de mapa seria adicionada aqui
+    console.log('Mostrar mapa:', latitude, longitude);
+}
+
+// Event listeners para botões de mapa
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('showMapModal')) {
+        const lat = e.target.dataset.latitude;
+        const lng = e.target.dataset.longitude;
+        if (lat && lng) {
+            showMapModal(lat, lng);
+        }
+    }
+});
+
+// Adicionar animações de entrada
+function addEntranceAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observar elementos para animação
+    document.querySelectorAll('.profile-card, .location-card, .service-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+}
+
+// Executar animações após o carregamento
+window.addEventListener('load', addEntranceAnimations);
 </script>
 
 {% endblock %}
