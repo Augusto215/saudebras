@@ -311,10 +311,6 @@
       </li>
 
       <li class="nav-item">
-        <a href="{%url 'suporte' %}" class="nav-link">Assistência</a>
-      </li>
-
-      <li class="nav-item">
         <a href="{% url 'contato' %}" class="nav-link">Fale Conosco</a>
       </li>
 
@@ -377,10 +373,6 @@
 
               <li class="nav-item" style="display: none;">
                 <a href="{% url 'artigos' %}" class="nav-link">Artigos</a>
-              </li>
-
-              <li class="nav-item">
-                <a href="{%url 'suporte' %}" class="nav-link">Suporte</a>
               </li>
 
               <li class="nav-item">
@@ -604,8 +596,7 @@
                       (currentPath.includes('/contato') && linkPath.includes('/contato')) ||
                       (currentPath.includes('/sobre') && linkPath.includes('/sobre')) ||
                       (currentPath.includes('/vantagens') && linkPath.includes('/vantagens')) ||
-                      (currentPath.includes('/artigos') && linkPath.includes('/artigos')) ||
-                      (currentPath.includes('/suporte') && linkPath.includes('/suporte'))) {
+                      (currentPath.includes('/artigos') && linkPath.includes('/artigos'))) {
                     link.classList.add('active');
                     if (link.parentElement) {
                       link.parentElement.classList.add('current-page');
