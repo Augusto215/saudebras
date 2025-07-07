@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.http import HttpResponse
 from usuarios.models import *
+from .models import ContatoMensagem
 from django.db.models import Exists, OuterRef
 from django.utils.decorators import method_decorator
 from django.db.models import Q
@@ -82,6 +83,62 @@ def suporte(request):
 
 
 def contato(request):
+    if request.method == 'POST':
+        try:
+            nome = request.POST.get('nome')
+            email = request.POST.get('email')
+            telefone = request.POST.get('telefone')
+            assunto = request.POST.get('assunto')
+            mensagem = request.POST.get('mensagem')
+            
+            # Validação básica
+            if not all([nome, email, telefone, assunto, mensagem]):
+                return JsonResponse({
+                    'success': False, 
+                    'message': 'Todos os campos obrigatórios devem ser preenchidos.'
+                })
+            
+            # Salvar no banco de dados
+            contato_mensagem = ContatoMensagem.objects.create(
+                nome=nome,
+                email=email,
+                telefone=telefone,
+                assunto=assunto,
+                mensagem=mensagem
+            )
+            
+            # Aqui você pode implementar o envio de email
+            # from django.core.mail import send_mail
+            # 
+            # subject = f'Contato - {assunto}'
+            # message = f'''
+            # Nome: {nome}
+            # Email: {email}
+            # Telefone: {telefone}
+            # Assunto: {assunto}
+            # 
+            # Mensagem:
+            # {mensagem}
+            # '''
+            # 
+            # send_mail(
+            #     subject,
+            #     message,
+            #     email,
+            #     ['contato@saudebras.com.br'],
+            #     fail_silently=False,
+            # )
+            
+            return JsonResponse({
+                'success': True, 
+                'message': 'Mensagem enviada com sucesso!'
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False, 
+                'message': 'Erro interno do servidor. Tente novamente.'
+            })
     
     return render(request, 'core/contato.html')
 

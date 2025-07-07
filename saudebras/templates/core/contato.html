@@ -1,9 +1,921 @@
 {%extends 'core/base.html'%}
 {%load static%}
 {%block 'conteudo'%}
-<div class="container d-flex flex-column align-items-center justify-content-center" style="flex-grow:1">
-<h2 style="color:#6D6875 !important">
-Em breve
-</h2>    
+
+<div class="contact-page">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-50">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Entre em Contato</h1>
+                    <p class="hero-subtitle">Estamos aqui para ajudar você. Entre em contato conosco através dos canais abaixo ou envie uma mensagem.</p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <i class="bi bi-chat-dots-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="row">
+            <!-- Informações de Contato -->
+            <div class="col-lg-4 mb-5">
+                <div class="contact-info">
+                    <h3 class="section-title">Informações de Contato</h3>
+                    <p class="section-subtitle">Escolha a forma mais conveniente para entrar em contato conosco.</p>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5>Endereço</h5>
+                            <p>Rua da Saúde, 123<br>Centro, São Paulo - SP<br>CEP: 01234-567</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5>Telefone</h5>
+                            <p>(11) 3456-7890<br>(11) 98765-4321</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5>Email</h5>
+                            <p>contato@saudebras.com.br<br>suporte@saudebras.com.br</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5>Horário de Atendimento</h5>
+                            <p>Segunda a Sexta: 8h às 18h<br>Sábado: 8h às 12h<br>Domingo: Fechado</p>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <h5>Siga-nos</h5>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="social-icon"><i class="bi bi-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário de Contato -->
+            <div class="col-lg-8">
+                <div class="contact-form-container">
+                    <h3 class="section-title">Envie sua Mensagem</h3>
+                    <p class="section-subtitle">Preencha o formulário abaixo e entraremos em contato com você em breve.</p>
+                    
+                    <form id="contactForm" class="contact-form" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome Completo *</label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                                <div class="invalid-feedback">Por favor, digite seu nome completo.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">Por favor, digite um email válido.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">Telefone *</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone" required>
+                                <div class="invalid-feedback">Por favor, digite um telefone válido.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="assunto" class="form-label">Assunto *</label>
+                                <select class="form-control" id="assunto" name="assunto" required>
+                                    <option value="">Selecione um assunto</option>
+                                    <option value="duvidas">Dúvidas Gerais</option>
+                                    <option value="agendamento">Agendamento de Consulta</option>
+                                    <option value="suporte">Suporte Técnico</option>
+                                    <option value="reclamacao">Reclamação</option>
+                                    <option value="sugestao">Sugestão</option>
+                                    <option value="parceria">Parceria</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecione um assunto.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="mensagem" class="form-label">Mensagem *</label>
+                            <textarea class="form-control" id="mensagem" name="mensagem" rows="4" required placeholder="Digite sua mensagem aqui..."></textarea>
+                            <div class="invalid-feedback">Por favor, digite sua mensagem.</div>
+                        </div>
+                        
+                        <!-- <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="aceiteTermos" name="aceite_termos" required>
+                                <label class="form-check-label" for="aceiteTermos">
+                                    Aceito os <a href="#" class="link-primary">termos de uso</a> e <a href="#" class="link-primary">política de privacidade</a> *
+                                </label>
+                                <div class="invalid-feedback">Você deve aceitar os termos para continuar.</div>
+                            </div>
+                        </div> -->
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn-submit" id="submitBtn">
+                                <i class="bi bi-send-fill me-2"></i>
+                                Enviar Mensagem
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="container">
+            <h3 class="section-title text-center">Perguntas Frequentes</h3>
+            <p class="section-subtitle text-center">Encontre respostas para as dúvidas mais comuns</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Como posso agendar uma consulta?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Você pode agendar consultas através da nossa plataforma online, por telefone ou presencialmente. Nossa equipe está disponível para ajudá-lo a encontrar o melhor horário e profissional para suas necessidades.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Quais convênios são aceitos?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Trabalhamos com os principais convênios do mercado. Para verificar se seu convênio é aceito, entre em contato conosco ou consulte a lista completa em nosso site.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Como funciona o atendimento de emergência?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Nosso atendimento de emergência funciona 24 horas por dia, 7 dias por semana. Em casos de urgência, procure imediatamente nossa unidade de pronto-socorro ou ligue para nosso número de emergência.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    Posso remarcar ou cancelar uma consulta?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Sim, você pode remarcar ou cancelar consultas com até 24 horas de antecedência. Entre em contato conosco por telefone ou através da nossa plataforma online para fazer alterações.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Modal de Sucesso -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #00ae9d, #008e7a); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center flex-grow-1">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Mensagem Enviada com Sucesso!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #00ae9d; margin-bottom: 20px;">
+                    <i class="bi bi-envelope-check-fill"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Obrigado pelo seu contato!</h6>
+                <p style="color: #666; margin-bottom: 15px;">
+                    Sua mensagem foi enviada com sucesso e nossa equipe entrará em contato em breve.
+                </p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <p style="color: #555; margin: 0; font-size: 14px;">
+                        <strong>Tempo de resposta:</strong><br>
+                        Respondemos mensagens em até 24 horas úteis.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" style="padding: 10px 30px; border-radius: 25px; background: linear-gradient(135deg, #00ae9d, #008e7a); border: none;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Erro -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-center flex-grow-1">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Erro ao Enviar Mensagem
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="padding: 30px;">
+                <div style="font-size: 60px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="bi bi-envelope-x-fill"></i>
+                </div>
+                <h6 style="color: #333; margin-bottom: 15px;">Ops! Algo deu errado</h6>
+                <p style="color: #666; margin-bottom: 15px;" id="errorMessage">
+                    Não foi possível enviar sua mensagem. Tente novamente em alguns instantes.
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; justify-content: center;">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="padding: 10px 30px; border-radius: 25px;">
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos personalizados para a página de contato */
+.contact-page {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #00ae9d 0%, #008e7a 100%);
+    color: white;
+    padding: 80px 0;
+    margin-bottom: 0;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.hero-image {
+    text-align: center;
+    font-size: 15rem;
+    opacity: 0.3;
+}
+
+.section-title {
+    color: #00ae9d;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.section-subtitle {
+    color: #6D6875;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.contact-info {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.contact-item {
+    display: flex;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+}
+
+.contact-icon {
+    background: linear-gradient(135deg, #00ae9d, #008e7a);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.contact-details h5 {
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.contact-details p {
+    color: #6D6875;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.social-links {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+}
+
+.social-links h5 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-icon {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00ae9d, #008e7a);
+    color: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px);
+    color: white;
+}
+
+.contact-form-container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px 16px !important;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.contact-form .form-control:focus {
+    border-color: #00ae9d;
+    box-shadow: 0 0 0 0.2rem rgba(0, 174, 157, 0.25);
+    background: white;
+}
+
+/* Textarea auto-resize */
+.contact-form textarea.form-control {
+    resize: none;
+    min-height: 140px;
+    max-height: 400px;
+    overflow-y: hidden;
+}
+
+.contact-form .form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.8rem;
+    padding-left: 5px;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #00ae9d, #008e7a);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 174, 157, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 174, 157, 0.4);
+    color: white;
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.faq-section {
+    background: #f8f9fa;
+    padding: 80px 0;
+    margin-top: 80px;
+}
+
+.accordion {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.accordion-item {
+    border: none;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    /* overflow: hidden; */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.accordion-button {
+    background: white;
+    color: #333;
+    font-weight: 600;
+    border: none !important;
+    padding: 2rem 1.5rem;
+}
+
+.accordion-button:not(.collapsed) {
+    background: linear-gradient(135deg, #00ae9d, #008e7a);
+    color: white;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.accordion-body {
+    padding: 2rem 1.5rem;
+    background: white;
+    color: #6D6875;
+    line-height: 1.6;
+}
+
+.form-check-input:checked {
+    background-color: #00ae9d;
+    border-color: #00ae9d;
+}
+
+.form-check-label {
+    padding-left: 10px;
+    line-height: 1.5;
+}
+
+.form-check {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-check:hover {
+    border-color: #00ae9d;
+    background: #f0fffe;
+}
+
+.link-primary {
+    color: #00ae9d;
+    text-decoration: none;
+}
+
+.link-primary:hover {
+    color: #008e7a;
+    text-decoration: underline;
+}
+
+/* Animações */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.contact-info,
+.contact-form-container {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 40px 0;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .hero-image {
+        font-size: 8rem;
+        margin-top: 2rem;
+    }
+    
+    .contact-info,
+    .contact-form-container {
+        margin-bottom: 2rem;
+        padding: 2rem;
+    }
+    
+    .contact-item {
+        margin-bottom: 1.5rem;
+    }
+    
+    .social-icons {
+        justify-content: center;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 15px 20px;
+    }
+    
+    .faq-section {
+        padding: 40px 0;
+        margin-top: 40px;
+    }
+    
+    .accordion-button {
+        padding: 1.5rem 1rem;
+    }
+    
+    .accordion-body {
+        padding: 1.5rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .contact-info,
+    .contact-form-container {
+        padding: 1.5rem;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-image {
+        font-size: 6rem;
+    }
+    
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .social-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .form-check {
+        padding: 12px 15px;
+    }
+    
+    .contact-form .form-control {
+        padding: 12px 16px !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Máscaras para telefone - usando a mesma lógica do cadastro de profissionais
+    const telefoneInput = document.getElementById('telefone');
+    
+    function maskTelefone(telefoneField) {
+        var telefoneValue = telefoneField.value;
+    
+        // Remove tudo o que não é dígito
+        telefoneValue = telefoneValue.replace(/\D/g, '');
+        
+        // Limita a entrada a exatamente 11 dígitos
+        telefoneValue = telefoneValue.slice(0, 11);
+    
+        // Aplica a formatação progressivamente baseada no tamanho
+        if (telefoneValue.length <= 2) {
+            // Apenas DDD: 11
+            telefoneValue = telefoneValue;
+        } else if (telefoneValue.length <= 7) {
+            // DDD + parte do número: (11) 9999
+            telefoneValue = telefoneValue.replace(/(\d{2})(\d+)/, '($1) $2');
+        } else if (telefoneValue.length <= 10) {
+            // Telefone fixo: (11) 9999-9999
+            telefoneValue = telefoneValue.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
+        } else {
+            // Celular: (11) 99999-9999
+            telefoneValue = telefoneValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        }
+    
+        // Atualiza o valor no campo
+        telefoneField.value = telefoneValue;
+    }
+    
+    telefoneInput.addEventListener('input', function() {
+        maskTelefone(this);
+    });
+    
+    // Auto-resize para textarea
+    const mensagemTextarea = document.getElementById('mensagem');
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        const scrollHeight = textarea.scrollHeight;
+        const maxHeight = 400; // Máximo definido no CSS
+        const minHeight = 140; // Mínimo definido no CSS
+        
+        if (scrollHeight <= maxHeight) {
+            textarea.style.height = Math.max(scrollHeight, minHeight) + 'px';
+            textarea.style.overflowY = 'hidden';
+        } else {
+            textarea.style.height = maxHeight + 'px';
+            textarea.style.overflowY = 'auto';
+        }
+    }
+    
+    mensagemTextarea.addEventListener('input', function() {
+        autoResize(this);
+    });
+    
+    // Aplicar auto-resize inicial
+    autoResize(mensagemTextarea);
+    
+    // Validação em tempo real
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid')) {
+                validateField(this);
+            }
+        });
+    });
+    
+    function validateField(field) {
+        let isValid = true;
+        let customMessage = "";
+        
+        // Validações específicas por campo
+        if (field.name === 'nome') {
+            const nomeValue = field.value.trim();
+            
+            if (nomeValue === "") {
+                isValid = false;
+                customMessage = "Por favor, digite seu nome completo.";
+            } else {
+                // Verifica se tem pelo menos nome e sobrenome
+                const partesNome = nomeValue.split(' ').filter(parte => parte.length > 0);
+                if (partesNome.length < 2) {
+                    isValid = false;
+                    customMessage = "Por favor, digite seu nome completo (nome e sobrenome).";
+                }
+            }
+        }
+        
+        if (field.name === 'email') {
+            const emailValue = field.value.trim();
+            
+            if (emailValue === "") {
+                isValid = false;
+                customMessage = "Por favor, digite seu email.";
+            } else {
+                // Verifica se email tem formato válido
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(emailValue)) {
+                    isValid = false;
+                    customMessage = "Formato de email inválido. Use: nome@email.com";
+                }
+            }
+        }
+        
+        if (field.name === 'telefone') {
+            const telefoneValue = field.value.replace(/\D/g, ''); // Remove formatação
+            
+            if (telefoneValue === "") {
+                isValid = false;
+                customMessage = "Por favor, digite seu número de telefone.";
+            } else if (telefoneValue.length < 10) {
+                isValid = false;
+                customMessage = "Número muito curto. Digite DDD + número (mínimo 10 dígitos).";
+            } else if (telefoneValue.length > 11) {
+                isValid = false;
+                customMessage = "Número muito longo. Digite apenas DDD + número (máximo 11 dígitos).";
+            } else {
+                // Verifica se o DDD é válido (entre 11 e 99)
+                const ddd = parseInt(telefoneValue.substr(0, 2));
+                if (ddd < 11 || ddd > 99) {
+                    isValid = false;
+                    customMessage = "DDD inválido. Digite um DDD válido (11 a 99).";
+                }
+            }
+        }
+        
+        // Se não passou na validação customizada, use a mensagem customizada
+        if (!isValid) {
+            field.classList.remove('is-valid');
+            field.classList.add('is-invalid');
+            
+            // Atualizar mensagem de erro
+            const feedbackElement = field.parentElement.querySelector('.invalid-feedback');
+            if (feedbackElement && customMessage) {
+                feedbackElement.textContent = customMessage;
+            }
+            
+            return false;
+        }
+        
+        // Se passou na validação customizada, verificar a validação nativa do HTML5
+        const nativeValid = field.checkValidity();
+        
+        if (nativeValid) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        } else {
+            field.classList.remove('is-valid');
+            field.classList.add('is-invalid');
+        }
+        
+        return nativeValid;
+    }
+    
+    function validateForm() {
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+        
+        return isValid;
+    }
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+            return;
+        }
+        
+        // Envio real via AJAX
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Enviando...';
+        
+        const formData = new FormData(form);
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Enviar Mensagem';
+            
+            if (data.success) {
+                // Reset form
+                form.reset();
+                inputs.forEach(input => {
+                    input.classList.remove('is-valid', 'is-invalid');
+                });
+                
+                // Reset textarea size
+                autoResize(mensagemTextarea);
+                
+                // Mostrar modal de sucesso
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            } else {
+                // Mostrar modal de erro
+                document.getElementById('errorMessage').textContent = data.message;
+                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Enviar Mensagem';
+            
+            document.getElementById('errorMessage').textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        });
+    });
+    
+    // Smooth scroll para âncoras
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Garantir que os modais possam ser fechados
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.matches('[data-bs-dismiss="modal"]')) {
+            const modal = e.target.closest('.modal');
+            if (modal) {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+        }
+    });
+});
+</script>
+
 {%endblock%}
