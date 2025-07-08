@@ -18,8 +18,10 @@
             <p style="color:#000 !important; font-size:1rem !important; text-align:start">Encontre os melhores especialistas, com valores acessíveis, mais perto de você.</p>
             <div class="p-2" style="border:solid 1px #555; border-radius:4px;">
             <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important; color:#555 !important;" class="w-100 " id="especialidade_select" >
-              
-              
+              <option value="">Selecione uma especialidade</option>
+              {% for especialidade in especialidades %}
+                <option value="{{ especialidade.id }}">{{ especialidade.nome }}</option>
+              {% endfor %}
               <!-- Opções de especialidade aqui -->
          
             </select>
@@ -28,8 +30,11 @@
           <!-- Formulário para Estado -->
           <form id="estado_form"  class="mb-3" >
             <div class="p-2" style="border:solid 1px #555; border-radius:4px;">
-              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !importantf;color:#555 !important;" class="w-100 " id="estado_select" >
-              
+              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important;color:#555 !important;" class="w-100 " id="estado_select" >
+              <option value="">Selecione um estado</option>
+              {% for estado in estados %}
+                <option value="{{ estado.id }}">{{ estado.nome }}</option>
+              {% endfor %}
               <!-- Opções de estado aqui -->
             </select>
           </div>
@@ -40,8 +45,11 @@
           <!-- Formulário para Cidade -->
           <form id="cidade_form" class="mb-4">
             <div class="p-2" style="border:solid 1px #555; border-radius:4px;">
-              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !importantf;color:#555 !important;" class="w-100 " id="cidade_select" >
-             
+              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !important;color:#555 !important;" class="w-100 " id="cidade_select" >
+             <option value="">Selecione uma cidade</option>
+             {% for cidade in cidades %}
+               <option value="{{ cidade.id }}" data-estado="{{ cidade.estado.id }}">{{ cidade.nome }} - {{ cidade.estado.nome }}</option>
+             {% endfor %}
               <!-- Opções de cidade aqui -->
             </select>
           </div>

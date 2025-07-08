@@ -147,8 +147,27 @@ def contato(request):
 
 def pesquisarMedicos(request):
     banners = Banner.objects.all()
+    
+    # Buscar especialidades de médicos
+    especialidades_medicos = Especialidade.objects.filter(
+        tipo_profissional='Médico'
+    ).order_by('nome')
+    
+    # Buscar estados que têm profissionais com endereços cadastrados
+    estados_com_profissionais = Estado.objects.filter(
+        endereco__profissional__isnull=False
+    ).distinct().order_by('nome')
+    
+    # Buscar cidades que têm profissionais com endereços cadastrados
+    cidades_com_profissionais = Cidade.objects.filter(
+        endereco__profissional__isnull=False
+    ).distinct().order_by('nome')
+    
     context = {
-        'banners':banners
+        'banners': banners,
+        'especialidades': especialidades_medicos,
+        'estados': estados_com_profissionais,
+        'cidades': cidades_com_profissionais,
     }
     
     return render(request, 'core/pesquisarMedicos.html', context)
@@ -1126,8 +1145,27 @@ def buscar_tipos_clinicas(request):
 
 def pesquisarProfissionais(request, tipo_profissional=None):
     banners = Banner.objects.all()
+    
+    # Buscar especialidades de médicos
+    especialidades_medicos = Especialidade.objects.filter(
+        tipo_profissional='Médico'
+    ).order_by('nome')
+    
+    # Buscar estados que têm profissionais com endereços cadastrados
+    estados_com_profissionais = Estado.objects.filter(
+        endereco__profissional__isnull=False
+    ).distinct().order_by('nome')
+    
+    # Buscar cidades que têm profissionais com endereços cadastrados
+    cidades_com_profissionais = Cidade.objects.filter(
+        endereco__profissional__isnull=False
+    ).distinct().order_by('nome')
+    
     context = {
         'banners': banners,
+        'especialidades': especialidades_medicos,
+        'estados': estados_com_profissionais,
+        'cidades': cidades_com_profissionais,
     }
     
     if tipo_profissional:

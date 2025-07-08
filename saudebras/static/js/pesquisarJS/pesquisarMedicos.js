@@ -182,4 +182,42 @@ fetchEspecialidades().then(especialidades => {
     return url;
   }
   
-  
+  // Função para filtrar cidades baseado no estado selecionado
+function filterCidadesByEstado() {
+    const estadoSelect = document.getElementById('estado_select');
+    const cidadeSelect = document.getElementById('cidade_select');
+    
+    if (!estadoSelect || !cidadeSelect) return;
+    
+    // Armazenar todas as opções de cidade originalmente
+    if (!cidadeSelect.originalOptions) {
+        cidadeSelect.originalOptions = Array.from(cidadeSelect.options);
+    }
+    
+    estadoSelect.addEventListener('change', function() {
+        const estadoSelecionado = this.value;
+        
+        // Limpar select de cidades
+        cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+        
+        if (estadoSelecionado) {
+            // Filtrar e adicionar apenas cidades do estado selecionado
+            cidadeSelect.originalOptions.forEach(option => {
+                if (option.value === '' || option.dataset.estado === estadoSelecionado) {
+                    cidadeSelect.appendChild(option.cloneNode(true));
+                }
+            });
+        } else {
+            // Se nenhum estado selecionado, mostrar todas as cidades
+            cidadeSelect.originalOptions.forEach(option => {
+                cidadeSelect.appendChild(option.cloneNode(true));
+            });
+        }
+    });
+}
+
+// Inicializar filtros quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    filterCidadesByEstado();
+});
+
