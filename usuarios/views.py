@@ -235,38 +235,83 @@ def registerProfissional(request):
                 ceps_list = []
 
                 user.save()
-                ceps = request.POST.getlist('cep[]')
-                complementos = request.POST.getlist('complemento[]')
-                for i, cep in enumerate(ceps):
-                    response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-                    data = response.json()
+                
+                # Novo formato: processar endereços do campo JSON
+                enderecos_data_str = request.POST.get('enderecos_data')
+                if enderecos_data_str:
+                    try:
+                        enderecos_data = json.loads(enderecos_data_str)
+                        for endereco_info in enderecos_data:
+                            cep = endereco_info.get('cep', '').replace('-', '')
+                            if cep:
+                                response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                                data = response.json()
 
-                    if response.status_code == 200 and not data.get('erro'):
-                        estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                        cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                        bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-                        cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                        endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
+                                if response.status_code == 200 and not data.get('erro'):
+                                    estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                                    cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                                    bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                                    endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                                    latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
 
-                        complemento_atual = complementos[i]
-                        endereco, _ = Endereco.objects.get_or_create(
-                            rua=data['logradouro'],
-                            complemento=complemento_atual,
-                            bairro=bairro,
-                            cidade=cidade,
-                            estado=estado,
-                            cep=cep_obj,
-                            latitude=latitude,  # Adicionado
-                            longitude=longitude,
-                            profissional=user
-                        )
+                                    complemento_atual = endereco_info.get('complemento', '')
+                                    numero = endereco_info.get('numero', '')
+                                    
+                                    endereco, _ = Endereco.objects.get_or_create(
+                                        rua=data['logradouro'],
+                                        numero=numero,
+                                        complemento=complemento_atual,
+                                        bairro=bairro,
+                                        cidade=cidade,
+                                        estado=estado,
+                                        cep=cep_obj,
+                                        latitude=latitude,
+                                        longitude=longitude,
+                                        profissional=user
+                                    )
 
-                        estados.append(estado)
-                        cidades.append(cidade)
-                        bairros.append(bairro)
-                        enderecos.append(endereco)
-                        ceps_list.append(cep_obj)
+                                    estados.append(estado)
+                                    cidades.append(cidade)
+                                    bairros.append(bairro)
+                                    enderecos.append(endereco)
+                                    ceps_list.append(cep_obj)
+                    except json.JSONDecodeError:
+                        print("Erro ao decodificar JSON dos endereços")
+                else:
+                    # Formato antigo para compatibilidade
+                    ceps = request.POST.getlist('cep[]')
+                    complementos = request.POST.getlist('complemento[]')
+                    for i, cep in enumerate(ceps):
+                        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                        data = response.json()
+
+                        if response.status_code == 200 and not data.get('erro'):
+                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                            cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
+
+                            complemento_atual = complementos[i] if i < len(complementos) else ''
+                            endereco, _ = Endereco.objects.get_or_create(
+                                rua=data['logradouro'],
+                                complemento=complemento_atual,
+                                bairro=bairro,
+                                cidade=cidade,
+                                estado=estado,
+                                cep=cep_obj,
+                                latitude=latitude,
+                                longitude=longitude,
+                                profissional=user
+                            )
+
+                            estados.append(estado)
+                            cidades.append(cidade)
+                            bairros.append(bairro)
+                            enderecos.append(endereco)
+                            ceps_list.append(cep_obj)
 
                 user.set_password(form.cleaned_data['password1'])
                 user.tipo_profissional = form.cleaned_data['tipo_profissional']
@@ -443,40 +488,83 @@ def registerClinica(request):
                 ceps_list = []
                 
                 user.save()
-                ceps = request.POST.getlist('cep[]')
-                complementos = request.POST.getlist('complemento[]')
-                for i, cep in enumerate(ceps):
-                    response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-                    data = response.json()
-                    
-                    if response.status_code == 200 and not data.get('erro'):
-                        estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                        cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                        bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-                        cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                        endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                        latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
-                        
-                        
-                        complemento_atual = complementos[i]
-                        endereco, _ = Endereco.objects.get_or_create(
-                            rua=data['logradouro'],
-                            complemento=complemento_atual,
-                            bairro=bairro,
-                            cidade=cidade,
-                            estado=estado,
-                            cep=cep_obj,
-                            latitude=latitude,  # Adicionado
-                            longitude=longitude,
-                            clinica=user
-                            
-                        )
+                
+                # Novo formato: processar endereços do campo JSON
+                enderecos_data_str = request.POST.get('enderecos_data')
+                if enderecos_data_str:
+                    try:
+                        enderecos_data = json.loads(enderecos_data_str)
+                        for endereco_info in enderecos_data:
+                            cep = endereco_info.get('cep', '').replace('-', '')
+                            if cep:
+                                response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                                data = response.json()
+                                
+                                if response.status_code == 200 and not data.get('erro'):
+                                    estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                                    cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                                    bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                                    endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                                    latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
+                                    
+                                    complemento_atual = endereco_info.get('complemento', '')
+                                    numero = endereco_info.get('numero', '')
+                                    
+                                    endereco, _ = Endereco.objects.get_or_create(
+                                        rua=data['logradouro'],
+                                        numero=numero,
+                                        complemento=complemento_atual,
+                                        bairro=bairro,
+                                        cidade=cidade,
+                                        estado=estado,
+                                        cep=cep_obj,
+                                        latitude=latitude,
+                                        longitude=longitude,
+                                        clinica=user
+                                    )
 
-                        estados.append(estado)
-                        cidades.append(cidade)
-                        bairros.append(bairro)
-                        enderecos.append(endereco)
-                        ceps_list.append(cep_obj)
+                                    estados.append(estado)
+                                    cidades.append(cidade)
+                                    bairros.append(bairro)
+                                    enderecos.append(endereco)
+                                    ceps_list.append(cep_obj)
+                    except json.JSONDecodeError:
+                        print("Erro ao decodificar JSON dos endereços")
+                else:
+                    # Formato antigo para compatibilidade
+                    ceps = request.POST.getlist('cep[]')
+                    complementos = request.POST.getlist('complemento[]')
+                    for i, cep in enumerate(ceps):
+                        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+                        data = response.json()
+                        
+                        if response.status_code == 200 and not data.get('erro'):
+                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
+                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                            cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                            latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
+                            
+                            complemento_atual = complementos[i] if i < len(complementos) else ''
+                            endereco, _ = Endereco.objects.get_or_create(
+                                rua=data['logradouro'],
+                                complemento=complemento_atual,
+                                bairro=bairro,
+                                cidade=cidade,
+                                estado=estado,
+                                cep=cep_obj,
+                                latitude=latitude,
+                                longitude=longitude,
+                                clinica=user
+                            )
+
+                            estados.append(estado)
+                            cidades.append(cidade)
+                            bairros.append(bairro)
+                            enderecos.append(endereco)
+                            ceps_list.append(cep_obj)
 
                 # Salve o usuário antes de adicionar relações
                 user.save()
