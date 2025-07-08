@@ -40,6 +40,8 @@ urlpatterns = [
     path('suporte/', suporte, name='suporte'),
     path('contato/', contato, name='contato'),
     path('create-payment-intent/',  create_payment_intent, name='create-payment-intent'),
+    path('pesquisarMedicos/', pesquisarMedicos, name='pesquisarMedicos'),
+    path('pesquisarDentistas/', pesquisarDentistas, name='pesquisarDentistas'),
 
 
 

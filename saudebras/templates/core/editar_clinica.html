@@ -818,12 +818,6 @@
       <a href="{% url 'perfil_clinica' clinica.id %}" class="text-decoration-none">
         <button class="btn-secondary w-100 mt-2">Ver Perfil Público</button>
       </a>
-      
-      {% if days_remaining is not None %}
-      <div class="trial-text" style="margin-top: 1rem; padding: 0.5rem; background: #fef3c7; color: #92400e; border-radius: 6px; text-align: center; font-size: 0.8rem;">
-        Dias restantes no período de teste: {{ days_remaining }}
-      </div>
-      {% endif %}
     </div>
 
     <!-- Content Area -->

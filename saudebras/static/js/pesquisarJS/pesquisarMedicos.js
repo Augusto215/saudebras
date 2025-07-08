@@ -29,19 +29,40 @@ function filterOptions(searchInputId, selectId) {
     const especialidadeSelect = document.getElementById("especialidade_select");
     const estadoSelect = document.getElementById("estado_select");
     const cidadeSelect = document.getElementById("cidade_select");
+    const buscarButton = document.getElementById("mostrarPrincipal");
+    
+    // Função para verificar se todos os campos estão preenchidos
+    function verificarCamposObrigatorios() {
+      const especialidade = especialidadeSelect.value;
+      const estado = estadoSelect.value;
+      const cidade = cidadeSelect.value;
+      
+      if (especialidade && estado && cidade) {
+        buscarButton.disabled = false;
+        buscarButton.style.opacity = "1";
+        buscarButton.style.cursor = "pointer";
+      } else {
+        buscarButton.disabled = true;
+        buscarButton.style.opacity = "0.5";
+        buscarButton.style.cursor = "not-allowed";
+      }
+    }
+    
+    // Inicialmente desabilitar o botão
+    verificarCamposObrigatorios();
   
     document.getElementById("mostrarPrincipal").addEventListener("click", function() {
       let params = {};
   
-    
-  
-      
-      
-      
-    
       const estado = estadoSelect.value;
       const especialidade = especialidadeSelect.value;
       const cidade = cidadeSelect.value;
+    
+      // Verificar se todos os campos obrigatórios estão preenchidos
+      if (!especialidade || !estado || !cidade) {
+        alert("Por favor, selecione a especialidade, o estado e a cidade para realizar a pesquisa.");
+        return;
+      }
     
       if (estado) params['estado'] = estado;
       if (especialidade) params['especialidade'] = especialidade;
@@ -51,45 +72,11 @@ function filterOptions(searchInputId, selectId) {
       const origin = window.location.origin;
       const combinedURL = generateURL(`${origin}/profissionais?tipo_profissional=Médico`, params);
 
-    
-       
-  if (Object.keys(params).length > 2) {
+      window.location.href = combinedURL;
+    });
 
-    window.location.href = combinedURL;
-  } else {
-    console.log("Preencha ao menos um campo para gerar a URL");
-  }
-});
-
-
-
-
-
-
-  
-  
-  
-
-  
-    const especialidadeInitialOption = document.createElement("option");
-    especialidadeInitialOption.value = "";
-    especialidadeInitialOption.text = "Especialidades";
-    especialidadeSelect.appendChild(especialidadeInitialOption);
-  
-    const estadoInitialOption = document.createElement("option");
-    estadoInitialOption.value = "";
-    estadoInitialOption.text = "Estados";
-    estadoSelect.appendChild(estadoInitialOption);
-  
-    const cidadeInitialOption = document.createElement("option");
-    cidadeInitialOption.value = "";
-    cidadeInitialOption.text = "Cidades";
-    cidadeSelect.appendChild(cidadeInitialOption);
-  
-
-  
     function fetchEspecialidades() {
-      const url = `/buscar_especialidades/?tipo_profissional=Médico}`;
+      const url = `/buscar_especialidades/?tipo_profissional=Médico`;
       console.log("URL completa: ", url);
       
       return fetch(`/buscar_especialidades/?tipo_profissional=Médico`)
@@ -97,11 +84,8 @@ function filterOptions(searchInputId, selectId) {
       .then(data => {
         console.log("Dados recebidos em fetchEspecialidades: ", data);
         return data.especialidades;
-        
-        
       });
-      
-  }
+    }
   
     function fetchEstados(especialidade) {
       return fetch(`/buscar_estados/?tipo_profissional=Médico&especialidade=${especialidade}`)
@@ -110,7 +94,7 @@ function filterOptions(searchInputId, selectId) {
         console.log("Dados recebidos em fetchEstados: ", data);
         return data.estados;
       });
-  }
+    }
   
     function fetchCidades(estado, especialidade) {
       return fetch(`/get_cities/?estado=${estado}&tipo_profissional=Médico&especialidade=${especialidade}`)
@@ -119,105 +103,85 @@ function filterOptions(searchInputId, selectId) {
         console.log("Dados recebidos em fetchCidades: ", data);
         return data.cities;
       });
-  }
+    }
   
-  // Carrega Especialidades ao carregar a página
-fetchEspecialidades().then(especialidades => {
-    especialidades.forEach(especialidade => {
-      const option = document.createElement("option");
-      option.value = especialidade;
-      option.text = especialidade;
-      especialidadeSelect.appendChild(option);
-    });
-    especialidadeSelect.disabled = false;
-    // Você pode adicionar o seu filtro aqui, caso necessário
-  });
-  
-  // Evento change para Especialidades
-  especialidadeSelect.addEventListener("change", function() {
-    estadoSelect.innerHTML = "";
-    estadoSelect.appendChild(estadoInitialOption);
-    estadoSelect.disabled = false;
-  
-    cidadeSelect.innerHTML = "";
-    cidadeSelect.appendChild(cidadeInitialOption);
-    cidadeSelect.disabled = true;
-  
-    const especialidadeSelecionada = especialidadeSelect.value;
-      fetchEstados(especialidadeSelecionada).then(estados => {
-        estados.forEach(estado => {
+    // Carrega Especialidades ao carregar a página
+    fetchEspecialidades().then(especialidades => {
+        especialidades.forEach(especialidade => {
           const option = document.createElement("option");
-          option.value = estado;
-          option.text = estado;
-          estadoSelect.appendChild(option);
+          option.value = especialidade;
+          option.text = especialidade;
+          especialidadeSelect.appendChild(option);
         });
-        filterOptions('estadoSearch', 'estado_select'); // Chamada única fora do forEach
+        especialidadeSelect.disabled = false;
+        // Verificar campos após carregar especialidades
+        verificarCamposObrigatorios();
       });
-  });
-    estadoSelect.addEventListener("change", function() {
+  
+    // Evento change para Especialidades
+    especialidadeSelect.addEventListener("change", function() {
+      // Limpar estados
+      estadoSelect.innerHTML = "";
+      const estadoInitialOption = document.createElement("option");
+      estadoInitialOption.value = "";
+      estadoInitialOption.text = "Selecione um estado";
+      estadoSelect.appendChild(estadoInitialOption);
+      estadoSelect.disabled = false;
+  
+      // Limpar cidades
       cidadeSelect.innerHTML = "";
+      const cidadeInitialOption = document.createElement("option");
+      cidadeInitialOption.value = "";
+      cidadeInitialOption.text = "Selecione uma cidade";
+      cidadeSelect.appendChild(cidadeInitialOption);
+      cidadeSelect.disabled = true;
+  
+      const especialidadeSelecionada = especialidadeSelect.value;
+        fetchEstados(especialidadeSelecionada).then(estados => {
+          estados.forEach(estado => {
+            const option = document.createElement("option");
+            option.value = estado;
+            option.text = estado;
+            estadoSelect.appendChild(option);
+          });
+          filterOptions('estadoSearch', 'estado_select'); // Chamada única fora do forEach
+          // Verificar campos após carregar estados
+          verificarCamposObrigatorios();
+        });
+    });
+    
+    estadoSelect.addEventListener("change", function() {
+      // Limpar cidades
+      cidadeSelect.innerHTML = "";
+      const cidadeInitialOption = document.createElement("option");
+      cidadeInitialOption.value = "";
+      cidadeInitialOption.text = "Selecione uma cidade";
       cidadeSelect.appendChild(cidadeInitialOption);
       cidadeSelect.disabled = false;
   
       const estadoSelecionado = estadoSelect.value;
       const especialidadeSelecionada = especialidadeSelect.value;
   
-      fetchCidades(estadoSelecionado,  especialidadeSelecionada).then(cidades => {
+      fetchCidades(estadoSelecionado, especialidadeSelecionada).then(cidades => {
         cidades.forEach(cidade => {
           const option = document.createElement("option");
           option.value = cidade;
           option.text = cidade;
           cidadeSelect.appendChild(option);
-          
         });
+        // Verificar campos após carregar cidades
+        verificarCamposObrigatorios();
       });
     });
+    
+    // Adicionar event listeners para verificar campos em mudanças
+    especialidadeSelect.addEventListener("change", verificarCamposObrigatorios);
+    estadoSelect.addEventListener("change", verificarCamposObrigatorios);
+    cidadeSelect.addEventListener("change", verificarCamposObrigatorios);
   });
-  
-  
   
   function generateURL(base, params) {
     const url = new URL(base);
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     return url;
   }
-  
-  // Função para filtrar cidades baseado no estado selecionado
-function filterCidadesByEstado() {
-    const estadoSelect = document.getElementById('estado_select');
-    const cidadeSelect = document.getElementById('cidade_select');
-    
-    if (!estadoSelect || !cidadeSelect) return;
-    
-    // Armazenar todas as opções de cidade originalmente
-    if (!cidadeSelect.originalOptions) {
-        cidadeSelect.originalOptions = Array.from(cidadeSelect.options);
-    }
-    
-    estadoSelect.addEventListener('change', function() {
-        const estadoSelecionado = this.value;
-        
-        // Limpar select de cidades
-        cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
-        
-        if (estadoSelecionado) {
-            // Filtrar e adicionar apenas cidades do estado selecionado
-            cidadeSelect.originalOptions.forEach(option => {
-                if (option.value === '' || option.dataset.estado === estadoSelecionado) {
-                    cidadeSelect.appendChild(option.cloneNode(true));
-                }
-            });
-        } else {
-            // Se nenhum estado selecionado, mostrar todas as cidades
-            cidadeSelect.originalOptions.forEach(option => {
-                cidadeSelect.appendChild(option.cloneNode(true));
-            });
-        }
-    });
-}
-
-// Inicializar filtros quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', function() {
-    filterCidadesByEstado();
-});
-

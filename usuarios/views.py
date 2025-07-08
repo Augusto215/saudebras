@@ -780,6 +780,7 @@ def editar_perfil(request):
     has_active_subscription = Subscription.objects.filter(Q(profissional=profissional),
         active=True).exists()
     convenios = Convenio.objects.all()
+    especialidades = Especialidade.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()        
@@ -836,6 +837,7 @@ def editar_perfil(request):
         'profissional_form': profissional_form,
         'endereco_form': endereco_form,
         'enderecos': enderecos_do_profissional,
+        'especialidades': especialidades,
         'convenios':convenios,
         'idiomas':idiomas,
         'servicos':servicos,
@@ -866,6 +868,7 @@ def alterar_Profissional(request):
         Q(profissional=user) & Q(active=True)
     ).exists()
     convenios = Convenio.objects.all()
+    especialidades = Especialidade.objects.all()
     idiomas = Idioma.objects.all()
     servicos = Servico.objects.all()
     fotos = Foto.objects.all()
@@ -894,19 +897,23 @@ def alterar_Profissional(request):
                 convenios_ids = request.POST.getlist('convenios')
                 idiomas_ids = request.POST.getlist('idiomas')  
                 servicos_ids = request.POST.getlist('servicos')
+                especialidades_ids = request.POST.getlist('especialidades')
                 
                 logging.debug(f"Convênios IDs: {convenios_ids}")
                 logging.debug(f"Idiomas IDs: {idiomas_ids}")
                 logging.debug(f"Serviços IDs: {servicos_ids}")
+                logging.debug(f"Especialidades IDs: {especialidades_ids}")
 
                 # Converter para inteiros e filtrar valores vazios
                 convenios_ids = [int(id) for id in convenios_ids if id]
                 idiomas_ids = [int(id) for id in idiomas_ids if id]
                 servicos_ids = [int(id) for id in servicos_ids if id]
+                especialidades_ids = [int(id) for id in especialidades_ids if id]
 
                 user.convenios.set(convenios_ids)
                 user.idiomas.set(idiomas_ids)
                 user.servicos.set(servicos_ids)
+                user.especialidades.set(especialidades_ids)
 
                 # Código novo começa aqui
                 new_galeria_ids = request.POST.getlist('galeria')  # IDs enviados do frontend
@@ -1120,6 +1127,7 @@ def alterar_Profissional(request):
     return render(request, 'core/editar_profissional.html', {
         'form': form, 
         'convenios': convenios,
+        'especialidades': especialidades,
         'idiomas': idiomas,
         'servicos': servicos,
         'fotos': fotos,

@@ -237,12 +237,26 @@
   }
   
   /* Botões de adicionar menores */
+  #addEspecialidade,
   #addConvenio, 
   #addIdioma, 
   #addServico {
     padding: 0.5rem 1rem !important;
     font-size: 0.9rem !important;
     min-width: auto !important;
+    background: #00ae9d !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+  }
+  
+  #addEspecialidade:hover,
+  #addConvenio:hover,
+  #addIdioma:hover,
+  #addServico:hover {
+    background: #008e7a !important;
   }
   
   /* Botão de adicionar endereço menor */
@@ -273,7 +287,7 @@
     font-size: 0.9rem !important;
   }
   /* Estilos para tags criadas dinamicamente */
-  #conveniosContainer, #idiomasContainer, #servicosContainer {
+  #especialidadesContainer, #conveniosContainer, #idiomasContainer, #servicosContainer {
     min-height: 2rem;
     margin-bottom: 1rem;
     display: flex;
@@ -312,6 +326,7 @@
   }
   
   /* Especificidade máxima para garantir que seja sempre vermelho */
+  #especialidadesContainer .tag-remove,
   #conveniosContainer .tag-remove,
   #idiomasContainer .tag-remove,
   #servicosContainer .tag-remove,
@@ -334,6 +349,7 @@
   }
   
   .tag-remove:hover,
+  #especialidadesContainer .tag-remove:hover,
   #conveniosContainer .tag-remove:hover,
   #idiomasContainer .tag-remove:hover,
   #servicosContainer .tag-remove:hover,
@@ -966,12 +982,6 @@
       <a href="{% url 'perfil_profissional' profissional.id %}" class="text-decoration-none">
         <button class="btn-secondary w-100 mt-2">Ver Perfil Público</button>
       </a>
-      
-      {% if days_remaining is not None %}
-      <div class="trial-text">
-        Dias restantes no período de teste: {{ days_remaining }}
-      </div>
-      {% endif %}
     </div>
 
     <!-- Content Area -->
@@ -1024,6 +1034,13 @@
               <label for="descricao">Experiência Profissional</label>
               <textarea id="descricao" name="descricao" rows="4">{{profissional.descricao}}</textarea>
             </div>
+          </div>
+
+          <!-- Especialidades -->
+          <div class="profile-card">
+            <h6 class="mb-3">Especialidades</h6>
+            <div id="especialidadesContainer"></div>
+            <button type="button" id="addEspecialidade" class="btn-secondary">Adicionar Especialidade</button>
           </div>
 
           <!-- Convênios -->
@@ -1302,6 +1319,18 @@ function createCustomConfirm(message, onConfirm, onCancel) {
 }
 
 // Dados dos convênios, idiomas e serviços - preenchidos pelo template
+const allEspecialidades = [
+  {% for especialidade in especialidades %}
+    {id: {{ especialidade.id }}, nome: "{{ especialidade.nome }}"},
+  {% endfor %}
+];
+
+const userEspecialidades = [
+  {% for especialidade in profissional.especialidades.all %}
+    {id: {{ especialidade.id }}, nome: "{{ especialidade.nome }}"},
+  {% endfor %}
+];
+
 const allConvenios = [
   {% for convenio in convenios %}
     {id: {{ convenio.id }}, nome: "{{ convenio.nome }}"},
@@ -1338,6 +1367,7 @@ const userServicos = [
   {% endfor %}
 ];
 
+let selectedEspecialidades = userEspecialidades.map(e => e.id);
 let selectedConvenios = userConvenios.map(c => c.id);
 let selectedIdiomas = userIdiomas.map(i => i.id);
 let selectedServicos = userServicos.map(s => s.id);
@@ -1358,6 +1388,75 @@ function alterarConteudo(conteudoId) {
   // Adicionar classe active ao botão clicado
   event.target.classList.add('active');
 }
+
+// ======================== ESPECIALIDADES ========================
+function updateAddEspecialidadeButtonVisibility() {
+  const addButton = document.getElementById("addEspecialidade");
+  const availableEspecialidades = allEspecialidades.filter(e => !selectedEspecialidades.includes(e.id));
+  
+  if (availableEspecialidades.length === 0) {
+    addButton.style.display = 'none';
+  } else {
+    addButton.style.display = 'inline-block';
+  }
+}
+
+function createEspecialidadeElement(id) {
+  const especialidade = allEspecialidades.find(e => e.id === id);
+  const span = document.createElement("span");
+  span.className = "tag-item";
+  span.textContent = especialidade.nome;
+
+  const removeButton = document.createElement("button");
+  removeButton.className = "tag-remove";
+  removeButton.textContent = "×";
+  removeButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeEspecialidadeFromList(id, span);
+  });
+
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+  hiddenInput.name = "especialidades";
+  hiddenInput.value = id;
+
+  span.appendChild(removeButton);
+  const container = document.getElementById("especialidadesContainer");
+  container.appendChild(span);
+  container.appendChild(hiddenInput);
+}
+
+function removeEspecialidadeFromList(id, element) {
+  // Buscar o nome da especialidade para a confirmação
+  const especialidade = allEspecialidades.find(e => e.id === id);
+  const nomeEspecialidade = especialidade ? especialidade.nome : 'esta especialidade';
+  
+  // Mostrar confirmação personalizada
+  createCustomConfirm(
+    `Tem certeza que deseja remover "<strong>${nomeEspecialidade}</strong>"?`,
+    () => {
+      // Callback de confirmação
+      const index = selectedEspecialidades.indexOf(id);
+      if (index > -1) {
+        selectedEspecialidades.splice(index, 1);
+        element.remove();
+
+        const container = document.getElementById("especialidadesContainer");
+        const hiddenInput = container.querySelector(`input[value="${id}"]`);
+        if (hiddenInput) {
+          hiddenInput.remove();
+        }
+      }
+      updateAddEspecialidadeButtonVisibility();
+    },
+    () => {
+      // Callback de cancelamento (não faz nada, apenas mantém a página)
+    }
+  );
+}
+
+
 
 // ======================== CONVÊNIOS ========================
 function updateAddConvenioButtonVisibility() {
@@ -1425,6 +1524,88 @@ function removeConvenioFromList(id, element) {
     }
   );
 }
+
+document.getElementById("addEspecialidade").addEventListener("click", (event) => {
+  event.preventDefault(); // Prevenir comportamento padrão
+  // Verificar se já existe um formulário aberto
+  const existingForm = document.querySelector("#especialidadesContainer .add-form-container");
+  if (existingForm) {
+    return; // Não criar novo formulário se já existe um
+  }
+  
+  // Criar container para o formulário
+  const formContainer = document.createElement("div");
+  formContainer.className = "add-form-container";
+  
+  const select = document.createElement("select");
+  select.className = "add-form-select";
+  
+  // Adicionar opção padrão
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Selecione uma especialidade...";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+  
+  allEspecialidades.forEach(especialidade => {
+    if (!selectedEspecialidades.includes(especialidade.id)) {
+      const option = document.createElement("option");
+      option.value = especialidade.id;
+      option.text = especialidade.nome;
+      select.appendChild(option);
+    }
+  });
+  
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "add-form-button";
+  addButton.textContent = "Adicionar";
+
+  addButton.addEventListener("click", (event) => {
+    event.preventDefault(); // Prevenir qualquer comportamento padrão
+    if (select.value) {
+      const selectedId = Number(select.value);
+      selectedEspecialidades.push(selectedId);
+      createEspecialidadeElement(selectedId);
+      formContainer.remove();
+      updateAddEspecialidadeButtonVisibility();
+    } else {
+      // Mostrar mensagem de erro
+      const existingError = formContainer.querySelector('.error-message');
+      if (!existingError) {
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "error-message";
+        errorMsg.textContent = "Por favor, selecione uma especialidade antes de adicionar.";
+        errorMsg.style.color = "#dc2626";
+        errorMsg.style.fontSize = "0.8rem";
+        errorMsg.style.marginTop = "0.5rem";
+        formContainer.appendChild(errorMsg);
+        
+        // Remover a mensagem após 3 segundos
+        setTimeout(() => {
+          if (errorMsg.parentNode) {
+            errorMsg.remove();
+          }
+        }, 3000);
+      }
+    }
+  });
+
+  // Remover mensagem de erro quando algo for selecionado
+  select.addEventListener("change", () => {
+    const existingError = formContainer.querySelector('.error-message');
+    if (existingError && select.value) {
+      existingError.remove();
+    }
+  });
+
+  formContainer.appendChild(select);
+  formContainer.appendChild(addButton);
+  
+  const container = document.getElementById("especialidadesContainer");
+  container.appendChild(formContainer);
+});
 
 document.getElementById("addConvenio").addEventListener("click", (event) => {
   event.preventDefault(); // Prevenir comportamento padrão
@@ -1808,6 +1989,10 @@ document.getElementById("addServico").addEventListener("click", (event) => {
 
 // ======================== INICIALIZAÇÃO ========================
 window.addEventListener('load', function() {
+  // Inicializa especialidades
+  userEspecialidades.forEach(e => createEspecialidadeElement(e.id));
+  updateAddEspecialidadeButtonVisibility();
+  
   // Inicializa convênios
   userConvenios.forEach(c => createConvenioElement(c.id));
   updateAddConvenioButtonVisibility();

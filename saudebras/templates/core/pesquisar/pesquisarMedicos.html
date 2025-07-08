@@ -20,7 +20,7 @@
             <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important; color:#555 !important;" class="w-100 " id="especialidade_select" >
               <option value="">Selecione uma especialidade</option>
               {% for especialidade in especialidades %}
-                <option value="{{ especialidade.id }}">{{ especialidade.nome }}</option>
+                <option value="{{ especialidade }}">{{ especialidade }}</option>
               {% endfor %}
               <!-- Opções de especialidade aqui -->
          
@@ -33,7 +33,7 @@
               <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important;color:#555 !important;" class="w-100 " id="estado_select" >
               <option value="">Selecione um estado</option>
               {% for estado in estados %}
-                <option value="{{ estado.id }}">{{ estado.nome }}</option>
+                <option value="{{ estado }}">{{ estado }}</option>
               {% endfor %}
               <!-- Opções de estado aqui -->
             </select>
@@ -48,7 +48,7 @@
               <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !important;color:#555 !important;" class="w-100 " id="cidade_select" >
              <option value="">Selecione uma cidade</option>
              {% for cidade in cidades %}
-               <option value="{{ cidade.id }}" data-estado="{{ cidade.estado.id }}">{{ cidade.nome }} - {{ cidade.estado.nome }}</option>
+               <option value="{{ cidade }}">{{ cidade }}</option>
              {% endfor %}
               <!-- Opções de cidade aqui -->
             </select>

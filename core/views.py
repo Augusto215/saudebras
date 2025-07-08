@@ -148,36 +148,85 @@ def contato(request):
 def pesquisarMedicos(request):
     banners = Banner.objects.all()
     
-    # Buscar especialidades de médicos
-    especialidades_medicos = Especialidade.objects.filter(
+    # Buscar especialidades únicas de médicos ativos
+    especialidades_medicos = Profissional.objects.filter(
+        is_active=True,
+        email_verified=True,
         tipo_profissional='Médico'
-    ).order_by('nome')
+    ).values_list('especialidades__nome', flat=True).distinct().order_by('especialidades__nome')
     
-    # Buscar estados que têm profissionais com endereços cadastrados
-    estados_com_profissionais = Estado.objects.filter(
-        endereco__profissional__isnull=False
-    ).distinct().order_by('nome')
+    # Filtrar valores nulos e vazios
+    especialidades_medicos = [esp for esp in especialidades_medicos if esp]
     
-    # Buscar cidades que têm profissionais com endereços cadastrados
-    cidades_com_profissionais = Cidade.objects.filter(
-        endereco__profissional__isnull=False
-    ).distinct().order_by('nome')
+    # Buscar estados únicos que têm médicos ativos
+    estados_com_medicos = Profissional.objects.filter(
+        is_active=True,
+        email_verified=True,
+        tipo_profissional='Médico'
+    ).values_list('estado__nome', flat=True).distinct().order_by('estado__nome')
+    
+    # Filtrar valores nulos e vazios
+    estados_com_medicos = [estado for estado in estados_com_medicos if estado]
+    
+    # Buscar cidades únicas que têm médicos ativos
+    cidades_com_medicos = Profissional.objects.filter(
+        is_active=True,
+        email_verified=True,
+        tipo_profissional='Médico'
+    ).values_list('cidade__nome', flat=True).distinct().order_by('cidade__nome')
+    
+    # Filtrar valores nulos e vazios
+    cidades_com_medicos = [cidade for cidade in cidades_com_medicos if cidade]
     
     context = {
         'banners': banners,
         'especialidades': especialidades_medicos,
-        'estados': estados_com_profissionais,
-        'cidades': cidades_com_profissionais,
+        'estados': estados_com_medicos,
+        'cidades': cidades_com_medicos,
     }
     
-    return render(request, 'core/pesquisarMedicos.html', context)
+    return render(request, 'core/pesquisar/pesquisarMedicos.html', context)
 
 
 
 def pesquisarDentistas(request):
     banners = Banner.objects.all()
+    
+    # Buscar especialidades únicas de dentistas ativos
+    especialidades_dentistas = Profissional.objects.filter(
+        is_active=True,
+        email_verified=True,
+        tipo_profissional='Dentista'
+    ).values_list('especialidades__nome', flat=True).distinct().order_by('especialidades__nome')
+    
+    # Filtrar valores nulos e vazios
+    especialidades_dentistas = [esp for esp in especialidades_dentistas if esp]
+    
+    # Buscar estados únicos que têm dentistas ativos
+    estados_com_dentistas = Profissional.objects.filter(
+        is_active=True,
+        email_verified=True,
+        tipo_profissional='Dentista'
+    ).values_list('estado__nome', flat=True).distinct().order_by('estado__nome')
+    
+    # Filtrar valores nulos e vazios
+    estados_com_dentistas = [estado for estado in estados_com_dentistas if estado]
+    
+    # Buscar cidades únicas que têm dentistas ativos
+    cidades_com_dentistas = Profissional.objects.filter(
+        is_active=True,
+        email_verified=True,
+        tipo_profissional='Dentista'
+    ).values_list('cidade__nome', flat=True).distinct().order_by('cidade__nome')
+    
+    # Filtrar valores nulos e vazios
+    cidades_com_dentistas = [cidade for cidade in cidades_com_dentistas if cidade]
+    
     context = {
-        'banners':banners
+        'banners': banners,
+        'especialidades': especialidades_dentistas,
+        'estados': estados_com_dentistas,
+        'cidades': cidades_com_dentistas,
     }
     
     return render(request, 'core/pesquisarDentistas.html', context)
@@ -885,9 +934,13 @@ def buscar_convenios_por_tipo_clinica(request):
 def buscar_estados(request):
     q_objects = Q(is_active=True) & Q(email_verified=True)
     especialidade = request.GET.get('especialidade', None)
+    tipo_profissional = request.GET.get('tipo_profissional', None)
 
     if especialidade:
         q_objects &= Q(especialidades__nome__icontains=especialidade)
+    
+    if tipo_profissional:
+        q_objects &= Q(tipo_profissional=tipo_profissional)
     
     profissionais_ativos = Profissional.objects.filter(q_objects).prefetch_related('estado')
     estados_ativos = set()
