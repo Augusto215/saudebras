@@ -1,6 +1,33 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
+
+<style>
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.custom-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+    padding-right: 2.5rem !important;
+}
+
+.custom-select::after {
+    content: '▼';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #555;
+    font-size: 0.8rem;
+}
+</style>
 <div class="fluid-container flex-column d-flex align-items-center" style="flex-grow:1; background:#FAFAFA">
   <div class="w-100 d-flex justify-content-center flex-column align-items-center text-center" style="background-color:#00ae9d; min-height:20rem;">
 
@@ -16,19 +43,19 @@
               <!-- Formulário para Especialidade -->
           <form id="especialidade_form"   class="mb-3"> 
             <p style="color:#000 !important; font-size:1rem !important; text-align:start">Encontre os melhores especialistas, com valores acessíveis, mais perto de você.</p>
-            <div class="p-2" style="border:solid .3px #000; border-radius:4px;">
-              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !importantf;color:#555 !important;" class="w-100 " id="especialidade_select" >              
-              
-              <!-- Opções de especialidade aqui -->
-         
+            <div class="p-2 custom-select" style="border:solid 1px #555; border-radius:4px;">
+            <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important; color:#555 !important;" class="w-100 " id="especialidade_select" >
+              <option value="">Selecione uma especialidade</option>
+              <!-- Opções de especialidade serão carregadas dinamicamente via JavaScript -->
             </select>
           </div>
           </form>
           <!-- Formulário para Estado -->
           <form id="estado_form"  class="mb-3" >
-            <div class="p-2" style="border:solid .3px #000; border-radius:4px;">
-              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !importantf;color:#555 !important;" class="w-100 " id="estado_select" >              
-              <!-- Opções de estado aqui -->
+            <div class="p-2 custom-select" style="border:solid 1px #555; border-radius:4px;">
+              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important;color:#555 !important;" class="w-100 " id="estado_select" >
+              <option value="">Selecione um estado</option>
+              <!-- Opções de estado serão carregadas dinamicamente via JavaScript -->
             </select>
           </div>
           </form>
@@ -37,9 +64,10 @@
           
           <!-- Formulário para Cidade -->
           <form id="cidade_form" class="mb-4">
-            <div class="p-2" style="border:solid .3px #000; border-radius:4px;">
-              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !importantf;color:#555 !important;" class="w-100 " id="cidade_select" >             
-              <!-- Opções de cidade aqui -->
+            <div class="p-2 custom-select" style="border:solid 1px #555; border-radius:4px;">
+              <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !important;color:#555 !important;" class="w-100 " id="cidade_select" >
+             <option value="">Selecione uma cidade</option>
+             <!-- Opções de cidade serão carregadas dinamicamente via JavaScript -->
             </select>
           </div>
           </form>
@@ -54,38 +82,38 @@
 
 </div>
 <div class="d-flex justify-content-center align-items-center mb-5" style=" margin-top:6rem; width:25rem; max-width:90%; gap:2rem;">
-  <span class="text-center"> Já possui conta? </span>  <div class="text-center"> <a href="{%url 'login'%}" class="text-center" style="text-decoration:none;">Entrar |</a> <a href="{% url 'registerCliente'%}" style="text-decoration:none">Cadastrar</a></div>
+  <span class="text-center"> Já possui conta? </span>  <div class="text-center"> <a href="{%url 'login'%}" style="text-decoration:none;" class="text-center">Entrar |</a> <a href="{% url 'registerCliente'%}" style="text-decoration:none">Cadastrar</a></div>
 
 </div>
 
 
 <div class="container d-flex justify-content-center mt-4 mb-4">
-    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner">
-            {% for banner in banners %}
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
-            </div>
-            {% endfor %}
-        </div>
-        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
-    </div>
-    <script>
-    
-        const carouselInner = document.querySelector('.carousel-inner');
-        images.forEach((image, index) => {
-            const isActive = index === 0 ? 'active' : '';
-        
-        });
-                    </script>
+  <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+          {% for banner in banners %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <img style="height:10rem !important; width:20rem!important; object-fit:cover !important;" src="{{ banner.foto.url }}" alt="{{ banner.nome }}">
+          </div>
+          {% endfor %}
+      </div>
+      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+      </a>
+  </div>
+  </div>
+  <script>
+  
+      const carouselInner = document.querySelector('.carousel-inner');
+      images.forEach((image, index) => {
+          const isActive = index === 0 ? 'active' : '';
+      
+      });
+                  </script>
 
 {% for profissional in profissionais %}
   <div class="mb-5">
