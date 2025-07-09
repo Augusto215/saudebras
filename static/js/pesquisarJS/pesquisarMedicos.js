@@ -71,11 +71,6 @@ function filterOptions(searchInputId, selectId) {
   
 
   
-    const especialidadeInitialOption = document.createElement("option");
-    especialidadeInitialOption.value = "";
-    especialidadeInitialOption.text = "Especialidades";
-    especialidadeSelect.appendChild(especialidadeInitialOption);
-  
     const estadoInitialOption = document.createElement("option");
     estadoInitialOption.value = "";
     estadoInitialOption.text = "Estados";
@@ -123,6 +118,16 @@ function filterOptions(searchInputId, selectId) {
   
   // Carrega Especialidades ao carregar a página
 fetchEspecialidades().then(especialidades => {
+    // Limpa o select antes de adicionar as opções para evitar duplicatas
+    especialidadeSelect.innerHTML = "";
+    
+    // Adiciona a opção inicial
+    const especialidadeInitialOption = document.createElement("option");
+    especialidadeInitialOption.value = "";
+    especialidadeInitialOption.text = "Selecione uma especialidade";
+    especialidadeSelect.appendChild(especialidadeInitialOption);
+    
+    // Adiciona as especialidades
     especialidades.forEach(especialidade => {
       const option = document.createElement("option");
       option.value = especialidade;

@@ -153,30 +153,30 @@ def pesquisarMedicos(request):
         is_active=True,
         email_verified=True,
         tipo_profissional='Médico'
-    ).values_list('especialidades__nome', flat=True).distinct().order_by('especialidades__nome')
+    ).values_list('especialidades__nome', flat=True).distinct()
     
-    # Filtrar valores nulos e vazios
-    especialidades_medicos = [esp for esp in especialidades_medicos if esp]
+    # Filtrar valores nulos e vazios e garantir unicidade
+    especialidades_medicos = sorted(list(set([esp for esp in especialidades_medicos if esp])))
     
     # Buscar estados únicos que têm médicos ativos
     estados_com_medicos = Profissional.objects.filter(
         is_active=True,
         email_verified=True,
         tipo_profissional='Médico'
-    ).values_list('estado__nome', flat=True).distinct().order_by('estado__nome')
+    ).values_list('estado__nome', flat=True).distinct()
     
-    # Filtrar valores nulos e vazios
-    estados_com_medicos = [estado for estado in estados_com_medicos if estado]
+    # Filtrar valores nulos e vazios e garantir unicidade
+    estados_com_medicos = sorted(list(set([estado for estado in estados_com_medicos if estado])))
     
     # Buscar cidades únicas que têm médicos ativos
     cidades_com_medicos = Profissional.objects.filter(
         is_active=True,
         email_verified=True,
         tipo_profissional='Médico'
-    ).values_list('cidade__nome', flat=True).distinct().order_by('cidade__nome')
+    ).values_list('cidade__nome', flat=True).distinct()
     
-    # Filtrar valores nulos e vazios
-    cidades_com_medicos = [cidade for cidade in cidades_com_medicos if cidade]
+    # Filtrar valores nulos e vazios e garantir unicidade
+    cidades_com_medicos = sorted(list(set([cidade for cidade in cidades_com_medicos if cidade])))
     
     context = {
         'banners': banners,
@@ -197,30 +197,30 @@ def pesquisarDentistas(request):
         is_active=True,
         email_verified=True,
         tipo_profissional='Dentista'
-    ).values_list('especialidades__nome', flat=True).distinct().order_by('especialidades__nome')
+    ).values_list('especialidades__nome', flat=True).distinct()
     
-    # Filtrar valores nulos e vazios
-    especialidades_dentistas = [esp for esp in especialidades_dentistas if esp]
+    # Filtrar valores nulos e vazios e garantir unicidade
+    especialidades_dentistas = sorted(list(set([esp for esp in especialidades_dentistas if esp])))
     
     # Buscar estados únicos que têm dentistas ativos
     estados_com_dentistas = Profissional.objects.filter(
         is_active=True,
         email_verified=True,
         tipo_profissional='Dentista'
-    ).values_list('estado__nome', flat=True).distinct().order_by('estado__nome')
+    ).values_list('estado__nome', flat=True).distinct()
     
-    # Filtrar valores nulos e vazios
-    estados_com_dentistas = [estado for estado in estados_com_dentistas if estado]
+    # Filtrar valores nulos e vazios e garantir unicidade
+    estados_com_dentistas = sorted(list(set([estado for estado in estados_com_dentistas if estado])))
     
     # Buscar cidades únicas que têm dentistas ativos
     cidades_com_dentistas = Profissional.objects.filter(
         is_active=True,
         email_verified=True,
         tipo_profissional='Dentista'
-    ).values_list('cidade__nome', flat=True).distinct().order_by('cidade__nome')
+    ).values_list('cidade__nome', flat=True).distinct()
     
-    # Filtrar valores nulos e vazios
-    cidades_com_dentistas = [cidade for cidade in cidades_com_dentistas if cidade]
+    # Filtrar valores nulos e vazios e garantir unicidade
+    cidades_com_dentistas = sorted(list(set([cidade for cidade in cidades_com_dentistas if cidade])))
     
     context = {
         'banners': banners,
