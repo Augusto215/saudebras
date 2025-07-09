@@ -188,7 +188,7 @@
                 <div class="d-flex" style="padding-right:2rem; border-right: dashed 1.6px #a3a3a3; gap:1rem" >
                   <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
                   <div class="d-flex flex-column">
-                    <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+                    <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr(a). {{ profissional.nome }} {{profissional.sobrenome}}</span>
                     <div class="d-flex mb-2 align-items-center">
      
                       <div class="d-flex align-items-end" style="gap:1rem;">
@@ -380,23 +380,17 @@
                 window.open(`https://web.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`, '_blank');
             });
         });
-        // JavaScript para botões "Ver Mapa" - abrir Google Maps
+
         let verMapaBtns = document.querySelectorAll('.open-google-maps');
         verMapaBtns.forEach(function(button) {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                let latitude = this.getAttribute('data-latitude');
-                let longitude = this.getAttribute('data-longitude');
-                let endereco = this.getAttribute('data-endereco');
-     
-                // Abre Google Maps em nova aba usando coordenadas
-                let googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-     
-                // Alternativa usando endereço (caso coordenadas falhem)
-                // let googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
-     
-                window.open(googleMapsUrl, '_blank');
-            });
+          button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let endereco = this.getAttribute('data-endereco');
+
+            // Abre Google Maps com base no endereço
+            let googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
+            window.open(googleMapsUrl, '_blank');
+          });
         });
      });
      
