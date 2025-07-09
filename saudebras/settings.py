@@ -44,6 +44,9 @@ PASSWORD_RESET_EMAIL_SUBJECT = 'Redefinição de Senha do Nosso Site'
 PASSWORD_RESET_TEMPLATE_NAME = 'core/mudarSenha.html'
 LOGIN_URL = 'login'
 
+USE_L10N = True
+LANGUAGE_CODE = 'pt-br'
+
 
 LOGGING = {
     'version': 1,
