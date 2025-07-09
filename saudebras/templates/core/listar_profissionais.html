@@ -59,29 +59,26 @@
             <div class="d-flex" style="gap:1rem;">
               <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
               <div class="d-flex flex-column">
-                <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
+                <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr(a). {{ profissional.nome }} {{profissional.sobrenome}}</span>
                 <div class="d-flex mb-2 align-items-center">
-                  <div class="d-flex" style="gap:1rem;">
+                  <div class="d-flex align-items-end" style="gap:1rem;">
 
                   {% for especialidade in profissional.especialidades.all %}
                   {% if forloop.first %}
                   <span style="color:#000 !important; font-size:1rem !important;">
-                    {{ especialidade.nome }}
-                    
+                    {{ especialidade.nome }}<br>
+                    Número de Registro: {{ profissional.codigo|default:"Não informado" }}
                   </span> 
                  
                   {%endif%}
                   {% endfor %}
                 <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Perfil</a>
+              </div>
               <div style="display:none;" class=" verProfMob">
                 <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Perfil</a>
               </div>
-            </div>
-
-            </div>
-              <span>
-                 CRM 134106 SP
-              </span>
+            </div>              </div>
+              <!-- Removido span duplicado do CRM -->
               {% load floor %}
 
               <span style="font-size:1rem; color:#000 !important;">
@@ -164,9 +161,11 @@
             {% for enderecos in profissional.enderecos.all %}
             {%if enderecos.latitude != None and enderecos.longitude != None %}
             {% if forloop.first %}
-            <a href="#" class="showMapModal" 
+            <a href="#" class="open-google-maps" 
             data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="width:7rem;  text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            data-longitude="{{ enderecos.longitude }}" 
+            data-endereco="{{ enderecos.rua }}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}"
+            style="width:7rem;  text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
             {% endif %}
                 {%endif%}
                 {% endfor %}
@@ -177,7 +176,7 @@
               <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
 
               {%if user.is_authenticated%}
-                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="#"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                 {%else%}
                 <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                 {%endif%}
@@ -196,19 +195,16 @@
                 <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr. {{ profissional.nome }} {{profissional.sobrenome}}</span>
                 <div class="d-flex mb-2 align-items-center">
                 
+                  <div class="d-flex align-items-end" style="gap:1rem;">
                   {% for especialidade in profissional.especialidades.all %}
                   {% if forloop.first %}
                   <span style="color:#000 !important; font-size:1rem !important;">
-                    {{ especialidade.nome }}
-                    
+                    {{ especialidade.nome }}<br>
+                    Número de Registro: {{ profissional.codigo|default:"Não informado" }}
                   </span> 
                   {%endif%}
                   {% endfor %}
                 
-              <div class="d-flex">
-              <span>
-                Número de Registro: CRM 134106 SP
-              </span>
               <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
             </div>
             <div style="display:none;" class="mb-2 verProfMob">
@@ -300,9 +296,11 @@
             {% for enderecos in profissional.enderecos.all %}
             {%if enderecos.latitude != None and enderecos.longitude != None %}
             {% if forloop.first %}
-            <a href="#" class="showMapModal" 
+            <a href="#" class="open-google-maps" 
             data-latitude="{{ enderecos.latitude }}" 
-            data-longitude="{{ enderecos.longitude }}" style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+            data-longitude="{{ enderecos.longitude }}" 
+            data-endereco="{{ enderecos.rua }}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}"
+            style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
             {% endif %}
                 {%endif%}
                 {% endfor %}
@@ -313,7 +311,7 @@
                 <span style="color:#00ae9d !important; font-weight:600;">R$ 180,00</span></div>
   
                 {%if user.is_authenticated%}
-                  <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{{profissional.telefone}}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
+                  <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="#"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                   {%else%}
                   <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
                   {%endif%}
@@ -379,15 +377,36 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    // JavaScript para botões de agendamento WhatsApp
     let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
     agendamentoBtns.forEach(function(button) {
         button.addEventListener('click', function(event) {
             event.preventDefault();
             let rawPhone = this.getAttribute('data-phone');
             let rawNome = this.getAttribute('data-nome');
-            let formattedPhone = rawPhone.replace('+', '');
+            let formattedPhone = rawPhone.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
             
-            window.location.href = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`;
+            // Abre o WhatsApp Web em uma nova aba
+            window.open(`https://web.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`, '_blank');
+        });
+    });
+
+    // JavaScript para botões "Ver Mapa" - abrir Google Maps
+    let verMapaBtns = document.querySelectorAll('.open-google-maps');
+    verMapaBtns.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let latitude = this.getAttribute('data-latitude');
+            let longitude = this.getAttribute('data-longitude');
+            let endereco = this.getAttribute('data-endereco');
+            
+            // Abre Google Maps em nova aba usando coordenadas
+            let googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            
+            // Alternativa usando endereço (caso coordenadas falhem)
+            // let googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
+            
+            window.open(googleMapsUrl, '_blank');
         });
     });
 });
@@ -395,6 +414,8 @@
 </script>
 
 <script>
+  // Script do Google Maps comentado pois agora abrimos diretamente no Google Maps
+  /*
   let map, mapStatic;
   let marker, markerStatic;
   
@@ -476,10 +497,12 @@
     const mapModal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
     mapModal.hide();
   }
+  */
   
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script>
+<!-- Script do Google Maps API removido pois agora abrimos diretamente no Google Maps -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script> -->
 
 
 <span id="dentistaImg" style="display:none;">{% static 'img\cuidado-dental.svg' %}</span>
