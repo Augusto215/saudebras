@@ -508,9 +508,14 @@ def registerClinica(request):
                                     endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
                                     latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
                                     
+
                                     complemento_atual = endereco_info.get('complemento', '')
-                                    numero = endereco_info.get('numero', '')
-                                    
+                                    numero_raw = endereco_info.get('numero', '')
+                                    try:
+                                        numero = int(numero_raw) if str(numero_raw).strip() != '' else None
+                                    except (ValueError, TypeError):
+                                        numero = None
+
                                     endereco, _ = Endereco.objects.get_or_create(
                                         rua=data['logradouro'],
                                         numero=numero,
@@ -566,9 +571,6 @@ def registerClinica(request):
                             enderecos.append(endereco)
                             ceps_list.append(cep_obj)
 
-                # Salve o usuário antes de adicionar relações
-                user.save()
-
                 user.set_password(form.cleaned_data['password1'])
                 user.email = form.cleaned_data['email']
                 user.telefone = form.cleaned_data['telefone']
@@ -581,7 +583,9 @@ def registerClinica(request):
                 selected_especialidades = form.cleaned_data['especialidades']
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
-              
+
+                 # Salve o usuário antes de adicionar relações
+                user.save()
                 
                 user.estados.set(estados)
                 user.cidades.set(cidades)
