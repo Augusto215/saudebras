@@ -1,15 +1,18 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block 'conteudo' %}
+
 <div class="container mt-5" style=" flex-grow:1;">
 
   <div class="d-flex mb-5">
 
     <form id="tipo_profissional_form" class="p-1"> 
-      <select id="tipo_profissional_select">
-        
-        <!-- Opções de especialidade aqui -->
-      </select>
+      <div style="position:relative; max-width: 20rem; width:100%;">
+        <select style="appearance:none; -webkit-appearance:none; -moz-appearance:none; max-width: 20rem; border-radius:4px; border:none; outline:none; background:#fff; width:100%; padding-right:2.5rem;" class="w-30 p-2" id="convenios_select">
+          <!-- Opções de especialidade aqui -->
+        </select>
+        <svg style="pointer-events:none; position:absolute; right:1rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; fill:#17ABA0;" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </div>
     </form>
     <!-- Formulário para Especialidade -->
 <form id="especialidade_form" class="p-1"> 
