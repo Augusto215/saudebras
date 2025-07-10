@@ -323,7 +323,18 @@ def registerProfissional(request):
                 user.codigo = form.cleaned_data['codigo']
                 user.foto = form.cleaned_data['foto']
                 user.diploma = form.cleaned_data['diploma']
-                selected_especialidades = form.cleaned_data['especialidades']
+
+                # Coletar especialidades de médico e dentista
+                especialidades_medico = request.POST.getlist('especialidades_medico')
+                especialidades_dentista = request.POST.getlist('especialidades_dentista')
+                
+                # Combinar as listas (apenas uma delas terá valores)
+                selected_especialidades_ids = especialidades_medico + especialidades_dentista
+                # Converter para inteiros e filtrar valores vazios
+                selected_especialidades_ids = [int(id) for id in selected_especialidades_ids if id]
+                # Buscar os objetos Especialidade
+                selected_especialidades = Especialidade.objects.filter(id__in=selected_especialidades_ids)
+
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
 
@@ -580,7 +591,20 @@ def registerClinica(request):
                 user.foto = form.cleaned_data['foto']
                 selected_tipo_profissional = form.cleaned_data['tipo_profissional']
                 selected_tipo_clinica = form.cleaned_data['tipo_clinica']
-                selected_especialidades = form.cleaned_data['especialidades']
+
+                # Coletar especialidades de médico e dentista
+                especialidades_medico = request.POST.getlist('especialidades_medico')
+                especialidades_dentista = request.POST.getlist('especialidades_dentista')
+                
+                # Combinar as listas (apenas uma delas terá valores)
+                selected_especialidades_ids = especialidades_medico + especialidades_dentista
+                
+                # Converter para inteiros e filtrar valores vazios
+                selected_especialidades_ids = [int(id) for id in selected_especialidades_ids if id]
+                
+                # Buscar os objetos Especialidade
+                selected_especialidades = Especialidade.objects.filter(id__in=selected_especialidades_ids)
+                
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
 
