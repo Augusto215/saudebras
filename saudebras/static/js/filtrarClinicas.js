@@ -6,17 +6,26 @@ console.log("URL atual: ", currentURL);
 // Parsing dos parâmetros
 console.log("Parsing dos parâmetros...");
 const urlObj = new URL(currentURL);
-const tipoClinica = urlObj.searchParams.get("tipo_clinica")
+
+const tipoClinica = urlObj.searchParams.get("tipo_clinica");
 const tipoProfissional = urlObj.searchParams.get("tipo_profissional");
-const estado = urlObj.searchParams.get("estados");
+const estado = urlObj.searchParams.get("estado");
 const especialidade = urlObj.searchParams.get("especialidade");
-const cidade = urlObj.searchParams.get("cidades");
-console.log(`Tipo Clinica: ${tipoClinica}, Estado: ${estado}, Cidade: ${cidade}`);
+const cidade = urlObj.searchParams.get("cidade");
+console.log(`Tipo Clinica: ${tipoClinica}, Estado: ${estado}, Especialidade: ${especialidade}, Cidade: ${cidade}`);
 
 // Fetch dos Convênios (exemplo)
-function fetchConvenios(estado, cidade) {
+function fetchConvenios(tipoClinica, tipoProfissional, estado, especialidade, cidade) {
   console.log("Iniciando fetch para obter convênios...");
-  return fetch(`/buscar_convenios_por_tipo_clinica/?tipo_clinica${tipoClinica}&estados=${estado}&cidades=${cidade}`)
+  // Ajuste a URL conforme o endpoint correto do seu backend
+  let url = `/buscar_convenios_por_tipo_clinica/?`;
+  if (tipoClinica) url += `tipo_clinica=${encodeURIComponent(tipoClinica)}&`;
+  if (tipoProfissional) url += `tipo_profissional=${encodeURIComponent(tipoProfissional)}&`;
+  if (estado) url += `estado=${encodeURIComponent(estado)}&`;
+  if (especialidade) url += `especialidade=${encodeURIComponent(especialidade)}&`;
+  if (cidade) url += `cidade=${encodeURIComponent(cidade)}&`;
+  url = url.replace(/&$/, "");
+  return fetch(url)
     .then(response => response.json())
     .then(data => {
       console.log("Dados recebidos para convênios: ", data);
@@ -25,7 +34,7 @@ function fetchConvenios(estado, cidade) {
 }
 
 // Obter os Convênios com base nos parâmetros atuais
-fetchConvenios(estado, cidade)
+fetchConvenios(tipoClinica, tipoProfissional, estado, especialidade, cidade)
 .then(convenios => {
   console.log("Convênios obtidos: ", convenios);
   const convenioSelect = document.getElementById("convenios_select");
@@ -45,22 +54,23 @@ convenios.forEach(convenio => {
 
 
  // Atualizando o DOM com base nos parâmetros da URL
+ document.getElementById("especialidadeSpan").innerHTML = ` ${especialidade || ''}`;
  document.getElementById("estadoSpan").innerHTML = ` ${estado || ''}`;
  document.getElementById("cidadeSpan").innerHTML = `${cidade || ''}`;
 
- // Lógica baseada no tipo_profissional
+ // Lógica baseada no tipo_clinica
  let imageSrc;
  if (tipoClinica === 'Emergência') {
-   document.getElementById("tipoClinicaSpan").innerHTML = "Urgências e Emergências 24h";
+   document.getElementById("tipoProfissionalSpan").innerHTML = "Urgências e Emergências 24h";
    imageSrc = document.getElementById("emergenciaImg").innerText;
  } else if (tipoClinica === 'Laboratório') {
-   document.getElementById("tipoClinicaSpan").innerHTML = "Exames e Laboratórios";
+   document.getElementById("tipoProfissionalSpan").innerHTML = "Exames e Laboratórios";
    imageSrc = document.getElementById("laboratorioImg").innerText;
 
 
  } else {
    // Outros casos
-   document.getElementById("tipoClinicaSpan").innerHTML = "Outro";
+   document.getElementById("tipoProfissionalSpan").innerHTML = "Outro";
    imageSrc = `http://alguma.url/imagem/Outro_${estado || ''}_${especialidade || ''}_${cidade || ''}.jpg`;
  }
  document.getElementById("suaImagem").src = imageSrc;
@@ -77,7 +87,6 @@ convenios.forEach(convenio => {
 
     // Adicionando novo parâmetro à URL
     urlObj.searchParams.set("convenios", selectedConvenio);
-    window.location.href = urlObj.toString();
     window.location.href = urlObj.toString();
   });
 });
