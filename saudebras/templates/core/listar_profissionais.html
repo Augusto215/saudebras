@@ -4,506 +4,765 @@
 {% load get_item %}
 {% load l10n %}
 
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+<style>
+  /* Responsividade geral */
+  @media (max-width: 768px) {
+    .container {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    
+    .fluid-container {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    
+    /* Header responsivo */
+    .listarHeader {
+      flex-direction: column;
+      align-items: center !important;
+      text-align: center;
+      gap: 1rem;
+    }
+    
+    .listarHeader > div:first-child {
+      align-items: center !important;
+    }
+    
+    #suaImagem {
+      max-height: 2.5rem !important;
+    }
+  }
 
- <div class="conteudo-com-footer" style="min-height: 100vh; display: flex; flex-direction: column; background-color:#EDF5F2;">
-   <div class="flex-grow-1">
-     <div class="fluid-container w-100">
-              <div class="mt-3 mb-3 container d-flex flex-column align-items-center justify-content-center">
-                <div class="listarHeader d-flex w-100 justify-content-between">
-     
-                  <div class="d-flex  justify-content-center flex-column align-items-start">
-                    <span style="color:#17ABA0; font-size:1.3rem; font-weight:600;" id="tipoProfissionalSpan">
-                    </span>
-                    <div class="d-flex align-items-center" style="gap:.5rem;">
-                       <span style="font-weight:600;color:gray; font-size:1.1rem;">&gt;</span><span id="especialidadeSpan" style="font-weight:600;color:gray;">
-              </span>
-     
-     
-     
-              </span>
+  @media (max-width: 576px) {
+    /* Cabeçalho ainda menor em telas muito pequenas */
+    .listarHeader span {
+      font-size: 1.1rem !important;
+    }
+    
+    #tipoProfissionalSpan {
+      font-size: 1.2rem !important;
+    }
+  }
+
+  /* Cards de profissionais responsivos */
+  .professional-card {
+    background: #fff;
+    padding: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto 1.5rem auto;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .professional-card {
+      flex-direction: column;
+      padding: 1rem;
+      margin: 0 10px 1.5rem 10px;
+      border-radius: 12px;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .professional-card {
+      padding: 0.75rem;
+      margin: 0 5px 1rem 5px;
+      gap: 0.75rem;
+    }
+  }
+
+  /* Conteúdo principal do card */
+  .card-main-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Seção do mapa */
+  .card-map-section {
+    flex: 0 0 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .card-map-section {
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  /* Mapa */
+  .professional-map {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+  }
+
+  @media (max-width: 768px) {
+    .professional-map {
+      height: 180px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .professional-map {
+      height: 160px;
+    }
+  }
+
+  /* Layout dos cards responsivo */
+  .prof-info-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .prof-info-container {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.75rem;
+    }
+  }
+
+  /* Imagens de perfil responsivas */
+  .profImg {
+    width: 8rem;
+    height: 8rem;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .profImg {
+      width: 6rem;
+      height: 6rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .profImg {
+      width: 5rem;
+      height: 5rem;
+      border-radius: 8px;
+    }
+  }
+
+  /* Informações do profissional */
+  .prof-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .prof-name {
+    color: #000 !important;
+    font-size: 1.2rem !important;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+  }
+
+  @media (max-width: 768px) {
+    .prof-name {
+      font-size: 1.1rem !important;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .prof-name {
+      font-size: 1rem !important;
+    }
+  }
+
+  /* Especialidade e registro */
+  .prof-specialty {
+    color: #000 !important;
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 576px) {
+    .prof-specialty {
+      font-size: 0.9rem !important;
+    }
+  }
+
+  /* Avaliações responsivas */
+  .rating-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 576px) {
+    .rating-display {
+      justify-content: center;
+    }
+  }
+
+  .star1 {
+    color: #00ae9d !important;
+    font-size: 1rem;
+  }
+
+  /* Convênios responsivos */
+  .convenios-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .convenios-container {
+      justify-content: center;
+    }
+  }
+
+  .convenio-item {
+    margin-right: 0.5rem !important;
+    text-decoration: underline;
+    word-break: break-word;
+  }
+
+  /* Endereço responsivo */
+  .address-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    .address-container {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  }
+
+  .address-text {
+    flex: 1;
+    word-wrap: break-word;
+  }
+
+  /* Seção de agendamento responsiva */
+  .booking-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    max-width: 100%;
+    border-top: dashed 2px gray;
+    padding-top: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .booking-section {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+
+  .price-info {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .price-value {
+    color: #00ae9d !important;
+    font-weight: 600;
+  }
+
+  /* Botão de agendamento responsivo */
+  .booking-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #00ae9d;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.7rem 2rem;
+    text-decoration: none !important;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+
+  @media (max-width: 768px) {
+    .booking-btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 0.8rem 1rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .booking-btn {
+      padding: 0.7rem 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Formulário de filtro responsivo */
+  .filter-form {
+    margin-bottom: 0 !important;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+  }
+
+  .filter-select-container {
+    position: relative;
+    max-width: 20rem;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .filter-form {
+      justify-content: center;
+    }
+    
+    .filter-select-container {
+      max-width: 100%;
+    }
+  }
+
+  .filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    background: #fff;
+    width: 100%;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  }
+
+  .filter-arrow {
+    pointer-events: none;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: #17ABA0;
+  }
+
+  /* Paginação responsiva */
+  .pagination {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .pagination .step-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .pagination a {
+    padding: 0.5rem 0.75rem;
+    text-decoration: none !important;
+    color: #fff;
+    background: #21BFA6 !important;
+    font-weight: 600;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 576px) {
+    .pagination a {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Modal responsivo */
+  @media (max-width: 576px) {
+    .modal-dialog {
+      margin: 0.5rem;
+    }
+    
+    .modal-content {
+      border-radius: 8px;
+    }
+  }
+
+  /* Footer responsivo */
+  footer {
+    background: #17ABA0;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+  }
+
+  @media (max-width: 576px) {
+    footer {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Container principal responsivo */
+  .conteudo-com-footer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #EDF5F2;
+  }
+
+  .flex-grow-1 {
+    flex-grow: 1;
+  }
+
+  /* Ajustes para o cabeçalho da página */
+  .page-header {
+    background: #17ABA0;
+    color: #fff;
+    padding: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 0.75rem 0.5rem;
+    }
+  }
+
+  /* Estilos específicos do mapa */
+  .map-address {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    margin-top: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .map-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem;
+  }
+</style>
+
+<div class="conteudo-com-footer">
+  <div class="flex-grow-1">
+    <div class="fluid-container w-100">
+      <!-- Cabeçalho da página -->
+      <div class="mt-3 mb-3 container d-flex flex-column align-items-center justify-content-center">
+        <div class="listarHeader d-flex w-100 justify-content-between align-items-center">
+          <div class="d-flex justify-content-center flex-column align-items-start">
+            <span style="color:#17ABA0; font-size:1.3rem; font-weight:600;" id="tipoProfissionalSpan"></span>
+            <div class="d-flex align-items-center" style="gap:.5rem;">
+              <span style="font-weight:600;color:gray; font-size:1.1rem;">&gt;</span>
+              <span id="especialidadeSpan" style="font-weight:600;color:gray;"></span>
             </div>
             <div class="d-flex" style="gap:.5rem;">
-            <span id="cidadeSpan" style="font-weight:600;color:gray;">
-            </span>
-            <span id="estadoSpan" style="font-weight:600;color:gray;">
-            </span>
+              <span id="cidadeSpan" style="font-weight:600;color:gray;"></span>
+              <span id="estadoSpan" style="font-weight:600;color:gray;"></span>
+            </div>
           </div>
+          <div class="d-flex align-items-center">
+            <img style="max-height:3rem;" id="suaImagem" src="">
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtro de convênios -->
+      <div class="page-header">
+        <div class="container">
+          <form id="cidade_form" class="filter-form">
+            <div class="filter-select-container">
+              <select class="filter-select" id="convenios_select">
+                <!-- Opções de cidade aqui -->
+              </select>
+              <svg class="filter-arrow" viewBox="0 0 20 20">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+              </svg>
             </div>
-             <div class="d-flex align-items-center">
-              <img style="max-height:3rem;" id="suaImagem" src="">
-             </div>
-              </div>
-     
-     
-            </div>
-            <div class="fluid-container p-2 d-flex align-items-center" style="background:#17ABA0; color:#fff;">
-              <div class="container">
-              <form id="cidade_form" style="margin-bottom:0 !important;"  class="mb-2 w-100 d-flex justify-content-end">
-                <div style="position:relative; max-width: 20rem; width:100%;">
-                  <select style="appearance:none; -webkit-appearance:none; -moz-appearance:none; max-width: 20rem; border-radius:4px; border:none; outline:none; background:#fff; width:100%; padding-right:2.5rem;" class="w-30 p-2" id="convenios_select">
-                    <!-- Opções de cidade aqui -->
-                  </select>
-                  <svg style="pointer-events:none; position:absolute; right:1rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; fill:#17ABA0;" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                </div>
-              </form>
-              </div>
-              </div>
-            </div>
-            <div class="fluid-container background-main" style="background:#f3f3f3;">
-            <div class="fluid-container d-flex justify-content-center" style=" flex-grow:1;">
-              <div class="profissionalDiv">
-              {% for profissional in profissionais %}
-              <div class="mb-4 mobile-prof" style="background:#fff; padding:1.5rem 6%; max-width:1000px; margin:0 auto; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                <div class="d-flex flex-column align-items-start justify-content-center">
-                <div class="d-flex" style="gap:1rem;">
-                  <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr(a). {{ profissional.nome }} {{profissional.sobrenome}}</span>
-                    <div class="d-flex mb-2 align-items-center">
-                      <div class="d-flex align-items-end" style="gap:1rem;">
-                      {% for especialidade in profissional.especialidades.all %}
-                      {% if forloop.first %}
-                      <span style="color:#000 !important; font-size:1rem !important;">
-                        {{ especialidade.nome }}<br>
-                        Número de Registro: {{ profissional.codigo|default:"Não informado" }}
-                      </span>
-     
-                      {%endif%}
-                      {% endfor %}
-                    <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Perfil</a>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de profissionais -->
+    <div class="fluid-container" style="background:#f3f3f3; padding: 1rem 0;">
+      <div class="fluid-container d-flex justify-content-center">
+        <div class="profissionalDiv w-100">
+          {% for profissional in profissionais %}
+          <div class="professional-card">
+            <!-- Conteúdo principal do card -->
+            <div class="card-main-content">
+              <!-- Informações principais do profissional -->
+              <div class="prof-info-container">
+                <img class="profImg" src="{{ profissional.foto.url }}" alt="Foto do Dr(a). {{ profissional.nome }}">
+                <div class="prof-details">
+                  <h3 class="prof-name">Dr(a). {{ profissional.nome }} {{profissional.sobrenome}}</h3>
+                  
+                  <!-- Especialidade e registro -->
+                  {% for especialidade in profissional.especialidades.all %}
+                  {% if forloop.first %}
+                  <div class="prof-specialty">
+                    {{ especialidade.nome }}<br>
+                    Número de Registro: {{ profissional.codigo|default:"Não informado" }}
                   </div>
-                  <div style="display:none;" class=" verProfMob">
-                    <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Perfil</a>
-                  </div>
-                </div>              
-              </div>
-                  <!-- Removido span duplicado do CRM -->
-                  {% load floor %}
-                  <span style="font-size:1rem; color:#000 !important;">
-                      <div class="rating-display d-flex align-items-center mb-1" style="gap:.5rem;">
-                          <div class="rating d-flex">
-                              {% if profissional.media %}
-                                  {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
-                                      {% for i in "12345"|make_list %}
-                                          {% if i|add:"0" <= full_stars|add:"0" %}
-                                              <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
-                                          {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
-                                              <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
-                                          {% else %}
-                                              <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                                          {% endif %}
-                                      {% endfor %}
-                                  {% endwith %}
-                              {% else %}
-                                  {% for i in "12345"|make_list %}
-                                      <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                                  {% endfor %}
-                              {% endif %}
-                          </div>
-     {% if profissional.total_avaliacoes %} <span class="totalAV d-flex"> {{ profissional.total_avaliacoes }} opiniões</span>  {% endif %}
-                      </div>
-                  </span>
-                </span>
-     
-                <div class="d-flex mb-1 align-items-center">
-                  {% for convenio in profissional.convenios.all %}
-                    {% if forloop.counter < 3 %}
-                      <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                    {% endif %}
-                  {% endfor %}
-     
-                  {% if profissional.convenios.all.count > 2 %}
-                    <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Mais</a>
                   {% endif %}
+                  {% endfor %}
+
+                  <!-- Link para perfil -->
+                  <a class="text-decoration-underline fw-bold" style="color:#17ABA0;" href="{% url 'perfil_profissional' profissional.id %}">
+                    Ver Perfil
+                  </a>
+
+                  <!-- Avaliações -->
+                  {% load floor %}
+                  <div class="rating-display">
+                    <div class="rating d-flex">
+                      {% if profissional.media %}
+                        {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
+                          {% for i in "12345"|make_list %}
+                            {% if i|add:"0" <= full_stars|add:"0" %}
+                              <span class="star1 full">&#9733;</span>
+                            {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
+                              <span class="star1 half">&#189;</span>
+                            {% else %}
+                              <span class="star1">&#9734;</span>
+                            {% endif %}
+                          {% endfor %}
+                        {% endwith %}
+                      {% else %}
+                        {% for i in "12345"|make_list %}
+                          <span class="star1">&#9734;</span>
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+                    {% if profissional.total_avaliacoes %}
+                    <span class="totalAV">{{ profissional.total_avaliacoes }} opiniões</span>
+                    {% endif %}
+                  </div>
                 </div>
-     
-                <!-- Modal com todos os convênios -->
-                <div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="conveniosModalLabel-{{ profissional.id }}">Convênios</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        {%for convenio in profissional.convenios.all%}
-                        <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                        {%endfor%}
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                      </div>
+              </div>
+
+              <!-- Convênios -->
+              <div class="convenios-container">
+                {% for convenio in profissional.convenios.all %}
+                  {% if forloop.counter < 3 %}
+                    <span class="convenio-item">{{ convenio.nome }}</span>
+                  {% endif %}
+                {% endfor %}
+
+                {% if profissional.convenios.all.count > 2 %}
+                  <a href="#" class="text-decoration-underline fw-bold" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">
+                    Ver todos os convênios
+                  </a>
+                {% endif %}
+              </div>
+
+              <!-- Modal com todos os convênios -->
+              <div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="conveniosModalLabel-{{ profissional.id }}">Convênios Aceitos</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      {% for convenio in profissional.convenios.all %}
+                      <span class="convenio-item d-inline-block mb-2">{{ convenio.nome }}</span>
+                      {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                     </div>
                   </div>
                 </div>
-     
-     
-     
-     
-     
-     
-     
-                  </div>
-                </div>
-                  <div class="d-flex mb-3" style="gap:.5rem">
-                    {% for enderecos in profissional.enderecos.all %}
-                    {% if forloop.first %}
-                  <span style=" width:100%; text-align:end;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
-                  {% endif %}
-     
-                {% endfor %}
-                {% for enderecos in profissional.enderecos.all %}
-                {%if enderecos.latitude != None and enderecos.longitude != None %}
-                {% if forloop.first %}
-                <a href="#" class="open-google-maps"
-                data-latitude="{{ enderecos.latitude }}"
-                data-longitude="{{ enderecos.longitude }}"
-                data-endereco="{{ enderecos.rua }}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}"
-                style="width:7rem;  text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
-                {% endif %}
-                    {%endif%}
-                    {% endfor %}
-                  </div>
-                  <div class="d-flex justify-content-center flex-column align-items-center w-100" style="gap:.5rem; max-width:100%; border-top: dashed 2px gray;
-                  padding-top: .5rem;">
-                  <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor da consulta:</span>
-                  <span style="color:#00ae9d !important; font-weight:600;">
+              </div>
+
+              <!-- Seção de agendamento -->
+              <div class="booking-section">
+                <div class="price-info">
+                  <span>Valor da consulta:</span>
+                  <span class="price-value">
                     {% if profissional.preco %}
                       R$ {{ profissional.preco|floatformat:2}}
                     {% else %}
                       Não informado
                     {% endif %}
-                  </span></div>
-                  {%if user.is_authenticated%}
-                    <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="#"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
-                    {%else%}
-                    <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600; padding:.7rem 2rem !important;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
-                    {%endif%}
-                  </div>
-                  <!-- Mapa Estático -->
-                </div>
-              </div>
-              <div class="mb-5 desk-prof mt-4" style="background:#fff; max-width:1000px; margin:0 auto; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                <div class="d-flex align-items-start justify-content-center desk-div">
-                <div class="d-flex" style="padding-right:2rem; border-right: dashed 1.6px #a3a3a3; gap:1rem" >
-                  <img class="profImg" style="width: 8rem; height:8rem; object-fit:cover; border-radius:12px;" src="{{ profissional.foto.url }}">
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold" style="color:#000 !important; font-size:1.2rem !important; font-weight:600;">Dr(a). {{ profissional.nome }} {{profissional.sobrenome}}</span>
-                    <div class="d-flex mb-2 align-items-center">
-     
-                      <div class="d-flex align-items-end" style="gap:1rem;">
-                      {% for especialidade in profissional.especialidades.all %}
-                      {% if forloop.first %}
-                      <span style="color:#000 !important; font-size:1rem !important;">
-                        {{ especialidade.nome }}<br>
-                        Número de Registro: {{ profissional.codigo|default:"Não informado" }}
-                      </span>
-                      {%endif%}
-                      {% endfor %}
-     
-                  <a class="verProf d-flex align-items-center text-center justify-content-center"  style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
-                </div>
-                <div style="display:none;" class="mb-2 verProfMob">
-                  <a style="text-decoration: underline !important; font-size:1rem; font-weight:600;" href="{% url 'perfil_profissional' profissional.id %}">Abrir Perfil</a>
-                </div>
-                </div>
-                  {% load floor %}
-                  <span style="font-size:1rem; color:#000 !important;">
-                      <div class="rating-display d-flex align-items-center mb-1" style="gap:1rem;">
-                          <div class="rating d-flex">
-                              {% if profissional.media %}
-                                  {% with full_stars=profissional.media|floor half_stars=profissional.media|floatformat:"-1"|slice:"-1" %}
-                                      {% for i in "12345"|make_list %}
-                                          {% if i|add:"0" <= full_stars|add:"0" %}
-                                              <span style="color:#00ae9d !important;" class="star1 full">&#9733;</span>
-                                          {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
-                                              <span style="color:#00ae9d !important;" class="star1 half">&#189;</span>
-                                          {% else %}
-                                              <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                                          {% endif %}
-                                      {% endfor %}
-                                  {% endwith %}
-                              {% else %}
-                                  {% for i in "12345"|make_list %}
-                                      <span style="color:#00ae9d !important;" class="star1">&#9734;</span>
-                                  {% endfor %}
-                              {% endif %}
-                          </div>
-     
-                          &nbsp;{% if profissional.total_avaliacoes %} <span class="totalAV d-flex"> {{ profissional.total_avaliacoes }} opiniões</span>
-     {% endif %}
-     
-                    </div>
                   </span>
-                </span>
-     
-                <div class="d-flex mb-3" >
-                  {% for convenio in profissional.convenios.all %}
-                    {% if forloop.counter < 3 %}
-                      <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                    {% endif %}
-                  {% endfor %}
-     
-                  {% if profissional.convenios.all.count > 2 %}
-                    <a href="#" style="text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ profissional.id }}">Mais</a>
-                  {% endif %}
                 </div>
-     
-                <!-- Modal com todos os convênios -->
-                <div class="modal fade" id="conveniosModal-{{ profissional.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ profissional.id }}" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="conveniosModalLabel-{{ profissional.id }}">Convênios</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        {%for convenio in profissional.convenios.all%}
-                        <span style="margin-right: .5rem !important; text-decoration:underline;">{{ convenio.nome }}</span>
-                        {%endfor%}
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-     
-     
-     
-     
-     
-     
-     
-                  </div>
-                </div>
-                  <div class="d-flex mb-3 flex-column" style="padding-left:2rem;">
-                    {% for enderecos in profissional.enderecos.all %}
-                    {% if forloop.first %}
-                  <span style="margin-right:  .7rem !important; width:100%;"><i class="bi bi-geo-alt-fill"></i>&nbsp;{{ enderecos.rua }},{%if enderecos.complemento%}&nbsp;{{enderecos.complemento}},{%endif%}<br>{{enderecos.bairro}},&nbsp;{{enderecos.cidade}}&nbsp;-&nbsp;{{enderecos.estado}}</span>
-                  {% endif %}
-     
-                {% endfor %}
-                {% for enderecos in profissional.enderecos.all %}
-                {%if enderecos.latitude != None and enderecos.longitude != None %}
-                {% if forloop.first %}
-                <a href="#" class="open-google-maps"
-                data-latitude="{{ enderecos.latitude }}"
-                data-longitude="{{ enderecos.longitude }}"
-                data-endereco="{{ enderecos.rua }}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}"
-                style="width:100%; text-decoration: underline !important; font-size:1rem; font-weight:600; margin-left:.5rem;">Ver Mapa</a>
+
+                {% if user.is_authenticated %}
+                  <a class="agendamento-btn booking-btn" 
+                     data-phone="{{ profissional.telefone }}" 
+                     data-nome="{{profissional.nome}}" 
+                     href="#">
+                    <i class="bi bi-whatsapp"></i> Agendar Consulta
+                  </a>
+                {% else %}
+                  <a class="booking-btn" href="{% url 'login' %}">
+                    <i class="bi bi-whatsapp"></i> Agendar Consulta
+                  </a>
                 {% endif %}
-                    {%endif%}
-                    {% endfor %}
-                    <div class="d-flex justify-content-start align-items-center" style="gap:1rem; max-width:100%;
-                    padding-top: 1.3rem;">
-                    <div class="d-flex valor-mobile flex-column justify-content-start text-end"> <span>Valor da consulta:</span>
-                    {% if profissional.preco %}
-                      R$ {{ profissional.preco|floatformat:2 }}
-                    {% else %}
-                      Não informado
-                    {% endif %}
-                  </span></div>
-     
-                    {%if user.is_authenticated%}
-                      <a class="agendamento-btn p-2 text-center" data-phone="{{ profissional.telefone }}" data-nome="{{profissional.nome}}" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="#"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
-                      {%else%}
-                      <a class=" p-2 text-center" style="display: flex; align-items: center; justify-content:center; gap: 0.5rem; background:#00ae9d ; max-width:100%; border-radius:4px; color:#fff; font-weight:600;" href="{% url 'login' %}"><i class="bi bi-whatsapp"></i> Agendar Consulta</a>
-                      {%endif%}
-                    </div>
-                    <!-- Mapa Estático -->
-                  </div>
-                  </div>
-     
               </div>
-     
-            {% endfor %}
             </div>
-     
-            <div class="d-none" id="mapStatic" ></div>
+
+            <!-- Seção do mapa à direita -->
+            <div class="card-map-section">
+              {% for enderecos in profissional.enderecos.all %}
+              {% if forloop.first %}
+                {% if enderecos.latitude != None and enderecos.longitude != None %}
+                  <div class="professional-map" 
+                       id="map-{{ profissional.id }}"
+                       data-latitude="{{ enderecos.latitude }}" 
+                       data-longitude="{{ enderecos.longitude }}"
+                       data-endereco="{{ enderecos.rua }}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}">
+                  </div>
+                {% else %}
+                  <div class="professional-map map-placeholder">
+                    <div>
+                      <i class="bi bi-geo-alt" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><br>
+                      Localização não disponível
+                    </div>
+                  </div>
+                {% endif %}
+                
+                <div class="map-address">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  {{ enderecos.rua }}{% if enderecos.complemento %}, {{enderecos.complemento}}{% endif %}<br>
+                  {{enderecos.bairro}}, {{enderecos.cidade}} - {{enderecos.estado}}
+                </div>
+              {% endif %}
+              {% endfor %}
+            </div>
           </div>
-          {% load url_filters %}
-          <div class="container p-2  mb-4 pagination">
-     
-          {% with queries=request.GET.copy %}
-          <div class="pagination">
-              <span class="step-links">
-                  {% if profissionais.has_previous %}
-                      <a class="p-2" style="text-decoration:none  !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt;</a>
-                      <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">&lt;</a>
-                  {% endif %}
-     
-                  <span class="current">
-                      Página {{ profissionais.number }} de {{ profissionais.paginator.num_pages }}.
-                  </span>
-     
-                  {% if profissionais.has_next %}
-                      <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;"  href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">&gt;</a>
-                      <a class="p-2" style="text-decoration:none !important; color: #fff; background:#21BFA6 !important; font-weight:600;" href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">&gt;&gt;</a>
-                  {% endif %}
-              </span>
-          </div>
-          {% endwith %}
-     
-          </div>
-        </div>
-           <!-- Mapa Modal -->
-     <!-- Mapa Modal -->
-     <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="mapModalLabel">Localização</h5>
-            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div id="map" style="height: 400px; width: 100%;"></div>
-          </div>
-     
+          {% endfor %}
         </div>
       </div>
-     
-     </div>
-     
-     <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        // JavaScript para botões de agendamento WhatsApp
-        let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
-        agendamentoBtns.forEach(function(button) {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                let rawPhone = this.getAttribute('data-phone');
-                let rawNome = this.getAttribute('data-nome');
-                let formattedPhone = rawPhone.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
-     
-                // Abre o WhatsApp Web em uma nova aba
-                window.open(`https://web.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`, '_blank');
-            });
-        });
+    </div>
 
-        let verMapaBtns = document.querySelectorAll('.open-google-maps');
-        verMapaBtns.forEach(function(button) {
-          button.addEventListener('click', function(event) {
-            event.preventDefault();
-            let endereco = this.getAttribute('data-endereco');
+    <!-- Paginação -->
+    {% load url_filters %}
+    <div class="container p-2 mb-4">
+      {% with queries=request.GET.copy %}
+      <div class="pagination">
+        <div class="step-links">
+          {% if profissionais.has_previous %}
+            <a href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt; Primeira</a>
+            <a href="?{{ request.GET|add_page_to_query:profissionais.previous_page_number }}">&lt; Anterior</a>
+          {% endif %}
 
-            // Abre Google Maps com base no endereço
-            let googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
-            window.open(googleMapsUrl, '_blank');
-          });
-        });
-     });
-     
-     </script>
-     
-     <script>
-      // Script do Google Maps comentado pois agora abrimos diretamente no Google Maps
-      /*
-      let map, mapStatic;
-      let marker, markerStatic;
-     
-      function initMap() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const estado = urlParams.get("estado");
-        const cidade = urlParams.get("cidade");
-        const location = `${cidade}, ${estado}`;
-     
-        fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE`)
-          .then((response) => response.json())
-          .then((data) => {
-            const initialPos = {
-              lat: data.results[0].geometry.location.lat,
-              lng: data.results[0].geometry.location.lng
-            };
-     
-            map = new google.maps.Map(document.getElementById("map"), {
-              center: initialPos,
-              zoom: 15,
-            });
-     
-            mapStatic = new google.maps.Map(document.getElementById("mapStatic"), {
-              center: initialPos,
-              zoom: 15,
-            });
-     
-            fetchActiveProfessionals();
-          });
-      }
-     
-      document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll(".showMapModal");
-     
-        buttons.forEach(function (button) {
-          button.addEventListener("click", function () {
-            let latitude = parseFloat(this.getAttribute("data-latitude").replace(",", "."));
-            let longitude = parseFloat(this.getAttribute("data-longitude").replace(",", "."));
-            showMapModal(latitude, longitude);
-          });
-        });
+          <span class="current px-3">
+            Página {{ profissionais.number }} de {{ profissionais.paginator.num_pages }}
+          </span>
+
+          {% if profissionais.has_next %}
+            <a href="?{{ request.GET|add_page_to_query:profissionais.next_page_number }}">Próxima &gt;</a>
+            <a href="?{{ request.GET|add_page_to_query:profissionais.paginator.num_pages }}">Última &gt;&gt;</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endwith %}
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Scripts -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // JavaScript para botões de agendamento WhatsApp
+  let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
+  agendamentoBtns.forEach(function(button) {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      let rawPhone = this.getAttribute('data-phone');
+      let rawNome = this.getAttribute('data-nome');
+      let formattedPhone = rawPhone.replace(/\D/g, '');
+
+      // Abre o WhatsApp Web em uma nova aba
+      window.open(`https://web.whatsapp.com/send?phone=${formattedPhone}&text=Olá ${rawNome}! Vim por meio do SaúdeBras e gostaria de saber mais sobre seu atendimento`, '_blank');
+    });
+  });
+
+  // Inicializar mapas para cada profissional
+  let mapElements = document.querySelectorAll('.professional-map[data-latitude]');
+  mapElements.forEach(function(mapElement) {
+    let lat = parseFloat(mapElement.getAttribute('data-latitude'));
+    let lng = parseFloat(mapElement.getAttribute('data-longitude'));
+    let endereco = mapElement.getAttribute('data-endereco');
+    
+    if (!isNaN(lat) && !isNaN(lng)) {
+      // Criar o mapa
+      let map = L.map(mapElement.id, {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([lat, lng], 10);
+
+      // Adicionar tiles do OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: false
+      }).addTo(map);
+
+      // Adicionar marcador
+      let marker = L.marker([lat, lng]).addTo(map);
+      
+      // Adicionar popup com o endereço
+      marker.bindPopup(`
+        <div style="text-align: center; padding: 5px;">
+          <strong>📍 Localização</strong><br>
+          <small>${endereco}</small><br>
+          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}" 
+             target="_blank" 
+             style="color: #17ABA0; text-decoration: none; font-weight: bold;">
+            Abrir no Google Maps
+          </a>
+        </div>
+      `);
+
+      // Fazer o mapa não ser focável por padrão (evita interferir com scroll da página)
+      map.scrollWheelZoom.disable();
+      map.on('click', function() {
+        map.scrollWheelZoom.enable();
       });
-     
-      function fetchActiveProfessionals() {
-        fetch("/get_enderecos/")
-          .then((response) => response.json())
-          .then((data) => {
-            data.forEach((prof) => {
-              if (prof.enderecos__latitude !== null && prof.enderecos__longitude !== null) {
-                const position = { lat: prof.enderecos__latitude, lng: prof.enderecos__longitude };
-                new google.maps.Marker({
-                  position,
-                  map: mapStatic,
-                });
-              }
-            });
-          });
-      }
-     
-      function showMapModal(latitude, longitude) {
-        const position = { lat: latitude, lng: longitude };
-     
-        map.setCenter(position);
-     
-        if (marker) {
-          marker.setPosition(position);
-        } else {
-          marker = new google.maps.Marker({
-            position,
-            map,
-          });
-        }
-     
-        const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
-        mapModal.show();
-      }
-     
-      function hideMapModal() {
-        const mapModal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
-        mapModal.hide();
-      }
-      */
-     
-     </script>
-     
-     <!-- Script do Google Maps API removido pois agora abrimos diretamente no Google Maps -->
-     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLZ8D6WJwaCql2h4-UGjibK4tx9MhZmXE&callback=initMap"></script> -->
-     
-     
-     <span id="dentistaImg" style="display:none;">{% static 'img\cuidado-dental.svg' %}</span>
-     
-     <span id="medicoImg" style="display:none;">{% static 'img\estetoscopio-instrumento-medico-1.svg' %}</span>
-     
-     </div>
-     
-     
-     
-     <script src="{%static 'js/filtrarProfissionais.js'%}">
-     </script>
-     
-     {% endblock %}
-   </div>
-     <!-- Footer fixado ao final da página -->
-  <footer style="background:#17ABA0; color:white; text-align:center; padding:1rem;">
-    <p>&copy; 2025 SaúdeBras. Todos os direitos reservados.</p>
-  </footer>
- </div>
+      map.on('mouseout', function() {
+        map.scrollWheelZoom.disable();
+      });
+    }
+  });
+});
+</script>
+
+<!-- Imagens de ícones ocultas -->
+<span id="dentistaImg" style="display:none;">{% static 'img/cuidado-dental.svg' %}</span>
+<span id="medicoImg" style="display:none;">{% static 'img/estetoscopio-instrumento-medico-1.svg' %}</span>
+
+<script src="{% static 'js/filtrarProfissionais.js' %}"></script>
+
+{% endblock %}
