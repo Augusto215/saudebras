@@ -592,23 +592,19 @@ def registerClinica(request):
                 selected_tipo_profissional = form.cleaned_data['tipo_profissional']
                 selected_tipo_clinica = form.cleaned_data['tipo_clinica']
 
-                # Coletar especialidades de médico e dentista
-                especialidades_medico = request.POST.getlist('especialidades_medico')
-                especialidades_dentista = request.POST.getlist('especialidades_dentista')
-                
-                # Combinar as listas (apenas uma delas terá valores)
-                selected_especialidades_ids = especialidades_medico + especialidades_dentista
-                
+                # Coletar especialidades
+                selected_especialidades_ids = request.POST.getlist('especialidades')
+
                 # Converter para inteiros e filtrar valores vazios
                 selected_especialidades_ids = [int(id) for id in selected_especialidades_ids if id]
-                
+
                 # Buscar os objetos Especialidade
                 selected_especialidades = Especialidade.objects.filter(id__in=selected_especialidades_ids)
-                
+
                 selected_convenios = form.cleaned_data['convenios']
                 selected_idiomas = form.cleaned_data['idiomas']
 
-                 # Salve o usuário antes de adicionar relações
+                # Salve o usuário antes de adicionar relações
                 user.save()
                 
                 user.estados.set(estados)
