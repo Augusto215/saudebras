@@ -4,6 +4,12 @@
 
 {% block 'conteudo' %}
 
+<style>
+  p {
+    color: #000 !important;
+  }
+</style>
+
 <!-- CSS específico para perfis -->
 <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
 
@@ -139,7 +145,7 @@
           <div class="price-info">
             <span class="price-label">Valor da consulta:</span>
             {% if profissional.preco %}
-            <span class="price-value">R$ {{profissional.preco}}</span>
+            <span class="price-value">R$ {{profissional.preco}},00</span>
             {% else %}
             <span class="price-value">Consultar</span>
             {% endif %}
@@ -198,10 +204,11 @@
                   <i class="bi bi-geo-alt-fill location-icon"></i>
                   <h4>Consultório {{ forloop.counter }}</h4>
                   {%if endereco.latitude != None and endereco.longitude != None %}
-                  <button class="map-btn showMapModal" data-latitude="{{ endereco.latitude }}" data-longitude="{{ endereco.longitude }}">
+                  <a class="map-btn" target="_blank"
+                     href="https://www.google.com/maps/search/?api=1&query={{ endereco.rua|urlencode }}{% if endereco.complemento %}, {{ endereco.complemento|urlencode }}{% endif %}, {{ endereco.bairro.nome|urlencode }}, {{ endereco.cidade.nome|urlencode }} - {{ endereco.estado.nome|urlencode }}">
                     <i class="bi bi-map"></i>
                     Ver no Mapa
-                  </button>
+                  </a>
                   {%endif%}
                 </div>
                 <div class="location-address">
