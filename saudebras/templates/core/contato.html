@@ -110,16 +110,19 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="assunto" class="form-label">Assunto *</label>
-                                <select class="form-control" id="assunto" name="assunto" required>
-                                    <option value="">Selecione um assunto</option>
-                                    <option value="duvidas">Dúvidas Gerais</option>
-                                    <option value="agendamento">Agendamento de Consulta</option>
-                                    <option value="suporte">Suporte Técnico</option>
-                                    <option value="reclamacao">Reclamação</option>
-                                    <option value="sugestao">Sugestão</option>
-                                    <option value="parceria">Parceria</option>
-                                    <option value="outros">Outros</option>
-                                </select>
+                                <div style="position:relative;">
+                                    <select class="form-control" id="assunto" name="assunto" required style="appearance:none; -webkit-appearance:none; -moz-appearance:none; padding-right:2.5rem;">
+                                        <option value="">Selecione um assunto</option>
+                                        <option value="duvidas">Dúvidas Gerais</option>
+                                        <option value="agendamento">Agendamento de Consulta</option>
+                                        <option value="suporte">Suporte Técnico</option>
+                                        <option value="reclamacao">Reclamação</option>
+                                        <option value="sugestao">Sugestão</option>
+                                        <option value="parceria">Parceria</option>
+                                        <option value="outros">Outros</option>
+                                    </select>
+                                    <svg style="pointer-events:none; position:absolute; right:1rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; fill:#00ae9d;" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                </div>
                                 <div class="invalid-feedback">Por favor, selecione um assunto.</div>
                             </div>
                         </div>
@@ -363,6 +366,10 @@
     min-height: 140px;
     max-height: 400px;
     overflow-y: hidden;
+}
+
+.contact-form select.form-control {
+    height: 50px;
 }
 
 .contact-form .form-label {
