@@ -1,103 +1,426 @@
 {%load static%}
 <!DOCTYPE html>
-<html lang="pt-br" >
+<html lang="pt-br">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>Painel</title>
+    <title>SaudeBras - Painel Administrativo</title>
 
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="/static/vendor/fontawesome-free/css/all.min.css">
-
-    <!-- Bootstrap and adminLTE -->
-    <link rel="stylesheet" href="/static/vendor/adminlte/css/adminlte.min.css">
-
-    <!-- Bootswatch theme -->
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    
+    <style>
+        :root {
+            --primary-color: #006135;
+            --primary-hover: #004a29;
+            --primary-light: #e8f5e8;
+            --secondary-color: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+            --shadow-light: 0 2px 10px rgba(0, 97, 53, 0.08);
+            --shadow-medium: 0 8px 30px rgba(0, 97, 53, 0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    <!-- Custom fixes for django -->
-    <link rel="stylesheet" href="/static/jazzmin/css/main.css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    <!-- favicons -->
-    <link rel="shortcut icon" href="/static/True" type="image/png">
-    <link rel="icon" href="/static/True" sizes="32x32" type="image/png">
+        /* Elementos decorativos de fundo */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 97, 53, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
 
-    
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-    
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 2rem;
+            position: relative;
+            z-index: 1;
+        }
 
-     
-     
-</head>
-<body class="hold-transition jazzmin-login-page">
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
 
-<div class="login-box">
-    <div class="login-logo">
-<h1>
-    <img src="/static/img/saudebras-logo.png" alt="SaudeBras" style="display: block; margin: 0 auto; max-width: 300px; height: auto;">
-</h1>
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+        }
 
+        .login-header {
+            text-align: center;
+            padding: 3rem 2rem 1rem;
+            position: relative;
+        }
 
-    </div>
+        .logo {
+            max-width: 240px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+            transition: var(--transition);
+        }
 
-    <div class="card">
-        <div class="card-body" style="text-align:center">
+        .logo:hover {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.15));
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .login-form {
+            padding: 1rem 2rem 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 400;
+            background: white;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 97, 53, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus + .input-icon {
+            color: var(--primary-color);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 97, 53, 0.3);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .back-link:hover {
+            color: var(--primary-hover);
+            background: var(--primary-light);
+            text-decoration: none;
+            transform: translateX(-2px);
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Loading state */
+        .login-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsivo */
+        @media (max-width: 576px) {
+            .login-container {
+                margin: 1rem;
+            }
             
-    <p class="login-box-msg">Painel de administrador</p>
-    <form action="/admin/login/?next=/admin/" method="post" style="margin-bottom:1.5rem">
-        {%csrf_token%}
-        
-        
-        <div class="input-group mb-3">
-            <input type="text" name="username" class="form-control" placeholder="Email" required>
-            <div class="input-group-append">
-                <div class="input-group-text">
-                    <span class="fas fa-user"></span>
-                </div>
+            .login-header {
+                padding: 2rem 1.5rem 1rem;
+            }
+            
+            .login-form {
+                padding: 1rem 1.5rem 2.5rem;
+            }
+            
+            .logo {
+                max-width: 200px;
+            }
+            
+            .login-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Estados de erro */
+        .form-control.error {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Modo escuro (opcional) */
+        @media (prefers-color-scheme: dark) {
+            .login-card {
+                background: rgba(30, 30, 30, 0.95);
+            }
+            
+            .login-title {
+                color: #f8f9fa;
+            }
+            
+            .form-control {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+            
+            .form-control::placeholder {
+                color: rgba(255, 255, 255, 0.6);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="/static/img/saudebras-logo.png" alt="SaudeBras" class="logo">
+                <h1 class="login-title">
+                    <i class="bi bi-shield-lock"></i>
+                    Painel Administrativo
+                </h1>
+                <p class="login-subtitle">Acesse o sistema de gerenciamento</p>
             </div>
-        </div>
-        <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Senha" required>
-            <div class="input-group-append">
-                <div class="input-group-text">
-                    <span class="fas fa-lock"></span>
+
+            <form class="login-form" action="/admin/login/?next=/admin/" method="post" id="loginForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <input type="text" name="username" class="form-control" placeholder="Email ou usuário" required autocomplete="username">
+                    <i class="bi bi-person input-icon"></i>
                 </div>
-            </div>
-        </div>
-        
-        
-        <div class="row">
-            <div class="col-12">
-                <button style="background:#006135 !important; border:none;" type="submit" class="btn btn-primary btn-block">
-                    Acessar
+
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control" placeholder="Senha" required autocomplete="current-password">
+                    <i class="bi bi-lock input-icon"></i>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Acessar Painel
                 </button>
-            </div>
-        </div>
-    </form>
 
-    <a style="color:#006135 !important; font-size:1rem !important;" href="{%url 'home'%}" style="margin:1rem auto">Voltar </a>
-
+                <div style="text-align: center;">
+                    <a href="{% url 'home' %}" class="back-link">
+                        <i class="bi bi-arrow-left"></i>
+                        Voltar ao Site
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<!-- jQuery -->
-<script src="/static/admin/js/vendor/jquery/jquery.js"></script>
-<!-- Bootstrap 4 -->
-<script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!-- AdminLTE App -->
-<script src="/static/vendor/adminlte/js/adminlte.min.js"></script>
+    <script>
+        // Adicionar efeitos interativos
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const btn = document.getElementById('loginBtn');
+            const inputs = document.querySelectorAll('.form-control');
 
+            // Efeito de loading no botão
+            form.addEventListener('submit', function() {
+                btn.classList.add('loading');
+                btn.innerHTML = '<span>Entrando...</span>';
+            });
 
-    <script src="/static/True"></script>
+            // Limpar estados de erro ao digitar
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('error');
+                    const errorMsg = this.parentNode.querySelector('.error-message');
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                });
 
+                // Efeito visual no foco
+                input.addEventListener('focus', function() {
+                    this.parentNode.style.transform = 'scale(1.02)';
+                });
 
+                input.addEventListener('blur', function() {
+                    this.parentNode.style.transform = 'scale(1)';
+                });
+            });
+
+            // Animação da logo
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('mouseover', function() {
+                this.style.transform = 'rotate(5deg) scale(1.05)';
+            });
+
+            logo.addEventListener('mouseout', function() {
+                this.style.transform = 'rotate(0deg) scale(1)';
+            });
+
+            // Efeito parallax suave
+            document.addEventListener('mousemove', function(e) {
+                const card = document.querySelector('.login-card');
+                const x = (e.clientX / window.innerWidth) * 10;
+                const y = (e.clientY / window.innerHeight) * 10;
+                card.style.transform = `rotateY(${x / 10}deg) rotateX(${-y / 10}deg)`;
+            });
+        });
+    </script>
 </body>
 </html>

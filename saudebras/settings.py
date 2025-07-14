@@ -1,3 +1,4 @@
+
 """
 Django settings for saudebras project.
 
@@ -11,92 +12,64 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
-STRIPE_SECRET_KEY = os.getenv('sk_test_51O4Zn5DVCQ3YDKzSxKAq7l1zmFFTGkBMy9C8ggrlsXjTD700ekVK2umWAzz6Y0tkXzh2tAD2sUC2t28t0IaGPqPp00tA2BStNs')
-STRIPE_PUBLISHABLE_KEY = os.getenv('pk_test_51O4Zn5DVCQ3YDKzSQyVYN3Slx8bRx9DEk1Zq5qDm0in8g0KNiAESSEKCVAZD7D3pUNrmPvRPClvIZY3EcY9IN3TK009iFxDvw5')
-
-from pathlib import Path
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/ 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%9zlaip=y$6^+4h384l^b!!t#%w2a7n!+92wn(a5eu3$kr92!e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True  # MUDANÇA AQUI
+if not DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
+ALLOWED_HOSTS = [
+    '127.0.0.1', 
+    'localhost', 
+    '14db-2804-1b3-6b00-a863-c1dd-ed33-5efd-eeab.ngrok-free.app', 
+    'saudebras.onrender.com', 
+    'saudebras.com.br',
+    '955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app', 
+    '3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app', 
+    'c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app', 
+    '010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app'
+]
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587  # ou 465 para SSL
-EMAIL_USE_TLS = True  # ou EMAIL_USE_SSL = True para SSL
-EMAIL_HOST_USER = 'augusto.dataanalysis@gmail.com'
-EMAIL_HOST_PASSWORD = 'muel jqer xnpw slqq'
-DEFAULT_FROM_EMAIL = 'augusto.webdeveloping@gmail.com'
-PASSWORD_RESET_EMAIL_SUBJECT = 'Redefinição de Senha do Nosso Site'
-PASSWORD_RESET_TEMPLATE_NAME = 'core/mudarSenha.html'
-LOGIN_URL = 'login'
+CSRF_TRUSTED_ORIGINS = [
+    'https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app', 
+    'https://14db-2804-1b3-6b00-a863-c1dd-ed33-5efd-eeab.ngrok-free.app', 
+    'https://3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app', 
+    'https://955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app', 
+    'https://saudebras.com.br', 
+    'https://010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app'
+]
 
-USE_L10N = True
-LANGUAGE_CODE = 'pt-br'
-
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        '': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-        },
-    },
-}
-
-
-DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '14db-2804-1b3-6b00-a863-c1dd-ed33-5efd-eeab.ngrok-free.app', 'saudebras.onrender.com', 'saudebras.com.br','955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app', '3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app' , 'c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app', '010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app']
-CSRF_TRUSTED_ORIGINS = ['https://c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app/*', 'https://14db-2804-1b3-6b00-a863-c1dd-ed33-5efd-eeab.ngrok-free.app/*', 'https://3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app/*', 'https://955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app/*', 'https://saudebras.com.br/*', 'https://010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app/*']
 CORS_ALLOWED_ORIGINS = ['*']
 
-
 # Application definition
-
 INSTALLED_APPS = [
-    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',  # Para Supabase Storage
     'saudebras',
     'usuarios',
     'home',
     'core',
-    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ADICIONADO AQUI
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -105,11 +78,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'saudebras.middleware.ProfissionalMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-
-
-    
-    
-
 ]
 
 ROOT_URLCONF = 'saudebras.urls'
@@ -132,19 +100,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'saudebras.wsgi.application'
 
-
-AUTHENTICATION_BACKENDS = [
-    'usuarios.backends.EmailOrCpfAuthenticationBackend',
-    'usuarios.backends.CaseInsensitiveModelBackend',  # Substitua 'my_app' pelo nome da sua app
-    'django.contrib.auth.backends.ModelBackend',
-]
-
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# Configuração do banco de dados Supabase usando variáveis de ambiente
+# Database - Supabase PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -159,13 +115,16 @@ DATABASES = {
     }
 }
 
-#DATABASES["default"] = dj_database_url.parse("postgres://dbsaudebras_user:NkuYOEeI2W8kMUn0H58NS63LuQS48Z79@dpg-ckvoa6a37rbc739lbie0-a/dbsaudebras")
+# Authentication
+AUTHENTICATION_BACKENDS = [
+    'usuarios.backends.EmailOrCpfAuthenticationBackend',
+    'usuarios.backends.CaseInsensitiveModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
-
+AUTH_USER_MODEL = 'usuarios.CustomUser'
 
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -181,180 +140,151 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-AUTH_USER_MODEL = 'usuarios.CustomUser'
-
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'pt-br'
-
 TIME_ZONE = 'America/Sao_Paulo'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# ============ CONFIGURAÇÃO DE ARQUIVOS ESTÁTICOS ============
 
+# Diretórios onde estão os arquivos estáticos
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'saudebras', 'static'),  # static do app saudebras
+    os.path.join(BASE_DIR, 'usuarios', 'static'),   # static do app usuarios (se existir)
+    os.path.join(BASE_DIR, 'home', 'static'),       # static do app home (se existir)
+    os.path.join(BASE_DIR, 'core', 'static'),       # static do app core (se existir)
+]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# URL para acessar arquivos estáticos
+STATIC_URL = '/static/'
 
+# Configuração mais simples para teste
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # usar pasta diferente
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
+# ============ CONFIGURAÇÃO DE MEDIA FILES ============
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Supabase Storage Configuration
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME', 'media')
 
+# AWS S3 Settings for Supabase (S3 Compatible)
+AWS_ACCESS_KEY_ID = os.getenv('SUPABASE_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.getenv('SUPABASE_SECRET_KEY')
+AWS_STORAGE_BUCKET_NAME = SUPABASE_BUCKET_NAME
 
+# Verifica se as variáveis do Supabase estão configuradas
+if SUPABASE_URL and AWS_ACCESS_KEY_ID:
+    AWS_S3_ENDPOINT_URL = f"{SUPABASE_URL}/storage/v1/s3"
+    AWS_S3_REGION_NAME = os.getenv('SUPABASE_REGION', 'us-east-1')
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_CUSTOM_DOMAIN = None
+    
+    # Storage backends para media files
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET_NAME}/"
+else:
+    # Fallback para armazenamento local se Supabase não estiver configurado
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    MEDIA_URL = "/media/"
+
+# Login/Logout
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = '/'
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'augusto.dataanalysis@gmail.com'
+EMAIL_HOST_PASSWORD = 'muel jqer xnpw slqq'
+DEFAULT_FROM_EMAIL = 'augusto.webdeveloping@gmail.com'
+PASSWORD_RESET_EMAIL_SUBJECT = 'Redefinição de Senha do Nosso Site'
+PASSWORD_RESET_TEMPLATE_NAME = 'core/mudarSenha.html'
+
+# Stripe Configuration
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'production.log',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
+    },
+}
+
+# Jazzmin Configuration (Django Admin)
 JAZZMIN_SETTINGS = {
-    
-    # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "SAUDEBRAS",
-
-    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_header": "SAUDEBRAS",
-
-    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_brand": "SAUDEBRAS",
-
-    # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": None,
-    
-    # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
     "login_logo": None,
-
-    # Logo to use for login form in dark themes (defaults to login_logo)
     "login_logo_dark": None,
-
-    # CSS classes that are applied to the logo above
     "site_logo_classes": None,
-
-    # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
     "site_icon": True,
-
-    # Welcome text on the login screen
     "welcome_sign": "Admin SAUDEBRAS",
-
-    # Copyright on the footer
     "copyright": "SAUDEBRAS",
-
-    # List of model admins to search from the search bar, search bar omitted if excluded
-    # If you want to use a single search field you dont need to use a list, you can use a simple string 
     "search_model": ["auth.User", "auth.Group"],
-
-    # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,
-
-    ############
-    # Top Menu #
-    ############
-
-    # Links to put along the top menu
+    
     "topmenu_links": [
-
-        # Url that gets reversed (Permissions can be added)
-        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
-
-        # external url that opens in a new window (Permissions can be added)
-        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
-
-        # model admin to link to (Permissions checked against model)
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"model": "auth.User"},
-
-        # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "books"},
     ],
-
-    #############
-    # User Menu #
-    #############
-
-    # Additional links to include in the user menu on the top right ("app" url type is not allowed)
+    
     "usermenu_links": [
-        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
         {"model": "auth.user"}
     ],
-
-    #############
-    # Side Menu #
-    #############
-
-    # Whether to display the side menu
+    
     "show_sidebar": True,
-
-    # Whether to aut expand the menu
     "navigation_expanded": True,
-
-    # Hide these apps when generating side menu e.g (auth)
     "hide_apps": [],
-
-    # Hide these models when generating side menu (e.g auth.user)
     "hide_models": [],
-
-    # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-    "order_with_respect_to": ["auth", "books", "books.author", "books.book"],
-
-    # Custom links to append to app groups, keyed on app name
-    "custom_links": {
-        "books": [{
-            "name": "Make Messages", 
-            "url": "make_messages", 
-            "icon": "fas fa-comments",
-            "permissions": ["books.view_book"]
-        }]
-    },
-
-    # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
-    # for the full list of 5.13.0 free icon classes
+    
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
     },
-    # Icons that are used when one is not manually specified
+    
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
-
-    #################
-    # Related Modal #
-    #################
-    # Use modals instead of popups
     "related_modal_active": True,
-
-    #############
-    # UI Tweaks #
-    #############
-    # Relative paths to custom CSS/JS scripts (must be present in static files)
     "custom_css": False,
     "custom_js": True,
-    # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,
-    # Whether to show the UI customizer on the sidebar
-    "show_ui_builder": True,
-
-    ###############
-    # Change view #
-    ###############
-    # Render out the change view as a single form, or in tabs, current options are
-    # - single
-    # - horizontal_tabs (default)
-    # - vertical_tabs
-    # - collapsible
-    # - carousel
+    "show_ui_builder": False,  # Desabilitar em produção
     "changeform_format": "horizontal_tabs",
-    # override change forms on a per modeladmin basis
     "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
-    # Add a language dropdown into the admin
     "language_chooser": False,
-    
-    
 }
 
 JAZZMIN_UI_TWEAKS = {

@@ -2,7 +2,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 * {
-    
+    font-family: 'Arial' !important;
 }
 
 :root {
@@ -1209,21 +1209,14 @@ header {
       padding-right: 0; /* Remove o padding lateral no mobile */
     }
     
-    .navbar-collapse .nav-item:hover
-    {
-        background:#00ae9d;
-    }
+    
 
     .navbar-collapse li a
     {
         color:#00ae9d !important;
 
     }
-    .navbar-collapse li:hover .nav-link
-    {
-        color:#fff !important;
-
-    }
+  
 
 
     .subtext
