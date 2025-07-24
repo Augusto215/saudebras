@@ -3,7 +3,28 @@
 {% block  'conteudo' %}
       
      
+<style>
+.card-responsive {
+  width: 25rem !important;
+  max-width: 25rem !important;
+  background: #fff !important;
+  box-shadow: 0 15px 30px 5px rgba(0, 0, 0, 0.089) !important;
+  border-radius: 12px !important;
+}
 
+@media (max-width: 480px) {
+  .card-responsive {
+    width: 20rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .card-responsive {
+    width: 18rem !important;
+  }
+}
+
+</style>
        
 
       
@@ -255,7 +276,7 @@
                  <span class="mb-3" style="font-size:1.5rem; color:#fff !important; font-weight:800; font-family:'Daxline', sans-serif !important;" id="elementTxt">OS MELHORES MÉDICOS E ESPECIALISTAS NA SUA CIDADE</span>
               <div class="grid-items" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
             {%for profissional in profissionais_ativos_aleatorios%}
-            <div class="p-3 d-flex flex-column align-items-start justify-content-start" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
+            <div class="p-3 d-flex flex-column align-items-start justify-content-start card-responsive">
             <div class="d-flex justify-content-start align-items-start mb-3">
               <div class="d-flex flex-column">
                 <div class="d-flex align-items-start mb-2" style="gap:.5rem">
@@ -301,11 +322,11 @@
                    DEPOIMENTOS
                   
                 </span>
-                   <span style="font-size:1.5rem; font-family:'Daxline' !important; color:#00AB9B !important; !important; font-weight:800;" id="elementTxt">SUA SATISFAÇÃO É NOSSA MAIOR RECOMPENSA</span>
+                   <span style="font-size:1.5rem; font-family:'Daxline' !important; color:#00AB9B !important; font-weight:800 !important;" id="elementTxt">SUA SATISFAÇÃO É NOSSA MAIOR RECOMPENSA</span>
                 </div>
                 <div class="grid-items" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
               {%for depoimento in depoimentos%}
-              <div class="p-3 d-flex flex-column align-items-start justify-content-start" style="max-width:25rem; background:#fff; box-shadow:0 15px 30px 5px rgba(0, 0, 0, 0.089); border-radius:12px; width:100%;">
+              <div class="p-3 d-flex flex-column align-items-start justify-content-start card-responsive">
               <div class="d-flex justify-content-start align-items-start mb-3" style="gap:.5rem;">
                 <img style="height:6rem; width:6rem; object-fit:cover; border-radius:12px;" src="{{depoimento.profissional.foto.url}}">
                 <div class="d-flex flex-column align-items-start">
