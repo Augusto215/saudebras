@@ -772,7 +772,7 @@ def user_login(request):
             return redirect(next_page)
         else:
             print("Falha na autenticação")
-            messages.error(request, "Email ou senha inválidos.")
+            messages.error(request, "CPF/CNPJ ou senha inválidos.")
     else:
         form = LoginForm()
 
