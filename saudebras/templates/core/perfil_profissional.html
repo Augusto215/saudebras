@@ -152,12 +152,12 @@
           </div>
           
           {%if user.is_authenticated%}
-          <a class="appointment-btn" href="https://wa.me/55{{profissional.ddd}}{{profissional.telefone}}?text=Olá, Dr. {{profissional.nome}}! Gostaria de agendar uma consulta." target="_blank">
+          <a class="appointment-btn" style="border-radius: 4px;" href="https://wa.me/55{{profissional.ddd}}{{profissional.telefone}}?text=Olá, Dr(a). {{profissional.nome}}! Gostaria de agendar uma consulta." target="_blank">
             <i class="bi bi-whatsapp"></i>
             <span>Agendar Consulta</span>
           </a>
           {%else%}
-          <a class="appointment-btn" href="{% url 'login' %}">
+          <a class="appointment-btn" style="border-radius: 4px;" href="{% url 'login' %}">
             <i class="bi bi-whatsapp"></i>
             <span>Agendar Consulta</span>
           </a>
