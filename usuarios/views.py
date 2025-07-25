@@ -82,11 +82,17 @@ def registerCliente(request):
                 return JsonResponse({'cpf_exists': cpf_exists})
             return JsonResponse({'cpf_exists': False})
         
-        # Verificar se é uma requisição AJAX para verificar Email
-        if request.POST.get('action') == 'verificar_email':
+        # Verificar se é uma requisição AJAX para verificar Email (em todos os tipos de usuário)
+        if request.POST.get('action') == 'verificar_email_todos':
             email = request.POST.get('email')
             if email:
-                email_exists = Cliente.objects.filter(email=email).exists()
+                # Verifica em Cliente, Profissional e Clinica
+                from usuarios.models import Cliente, Profissional, Clinica
+                email_exists = (
+                    Cliente.objects.filter(email=email).exists() or
+                    Profissional.objects.filter(email=email).exists() or
+                    Clinica.objects.filter(email=email).exists()
+                )
                 return JsonResponse({'email_exists': email_exists})
             return JsonResponse({'email_exists': False})
         
@@ -215,10 +221,14 @@ def registerProfissional(request):
             return JsonResponse({'cpf_exists': False})
         
         # Verificar se é uma requisição AJAX para verificar Email
-        if request.POST.get('action') == 'verificar_email':
+        if request.POST.get('action') == 'verificar_email_todos':
             email = request.POST.get('email')
             if email:
-                email_exists = Profissional.objects.filter(email=email).exists()
+                email_exists = (
+                    Cliente.objects.filter(email=email).exists() or
+                    Profissional.objects.filter(email=email).exists() or
+                    Clinica.objects.filter(email=email).exists()
+                )
                 return JsonResponse({'email_exists': email_exists})
             return JsonResponse({'email_exists': False})
         
@@ -479,10 +489,14 @@ def registerClinica(request):
             return JsonResponse({'cnpj_exists': False})
         
         # Verificar se é uma requisição AJAX para verificar Email
-        if request.POST.get('action') == 'verificar_email':
+        if request.POST.get('action') == 'verificar_email_todos':
             email = request.POST.get('email')
             if email:
-                email_exists = Clinica.objects.filter(email=email).exists()
+                email_exists = (
+                    Cliente.objects.filter(email=email).exists() or
+                    Profissional.objects.filter(email=email).exists() or
+                    Clinica.objects.filter(email=email).exists()
+                )
                 return JsonResponse({'email_exists': email_exists})
             return JsonResponse({'email_exists': False})
         

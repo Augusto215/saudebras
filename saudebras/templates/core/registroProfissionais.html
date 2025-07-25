@@ -2887,7 +2887,7 @@ input[required]:focus {
             var xhr = new XMLHttpRequest();
             var formData = new FormData();
             formData.append('email', email);
-            formData.append('action', 'verificar_email');
+            formData.append('action', 'verificar_email_todos');
             formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
             
             xhr.open('POST', window.location.href, false); // Requisição síncrona

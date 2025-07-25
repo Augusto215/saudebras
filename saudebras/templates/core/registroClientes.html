@@ -782,14 +782,15 @@ function verificarEmailExistente(email) {
         var xhr = new XMLHttpRequest();
         var formData = new FormData();
         formData.append('email', email);
-        formData.append('action', 'verificar_email');
+        formData.append('action', 'verificar_email_todos'); 
         formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-        
+
         xhr.open('POST', window.location.href, false); // Requisição síncrona
         xhr.send(formData);
-        
+
         if (xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
+            // email_exists será true se o email existir em qualquer tipo de usuário
             if (response.email_exists) {
                 showEmailExistenteModal();
                 return false;
@@ -801,7 +802,7 @@ function verificarEmailExistente(email) {
         // Em caso de erro na requisição, permitir continuar
         return true;
     }
-    
+
     return true;
 }
 
