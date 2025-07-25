@@ -649,8 +649,7 @@
                 {% endif %}
                 <div class="map-address">
                   <i class="bi bi-geo-alt-fill"></i>
-                  {{ enderecos.rua }}{% if enderecos.complemento %}, {{enderecos.complemento}}{% endif %}<br>
-                  {{enderecos.bairro}}, {{enderecos.cidade}} - {{enderecos.estado}}
+                  {{ enderecos.rua }}{% if enderecos.numero %}, {{ enderecos.numero }}{% endif %}, <br> {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}
                 </div>
               {% endif %}
               {% endfor %}
