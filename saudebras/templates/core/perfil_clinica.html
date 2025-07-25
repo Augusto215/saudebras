@@ -99,7 +99,7 @@
       <div class="profile-card">
         <div class="profile-header">
           <div class="profile-image-container">
-            <img class="profile-image" src="{{ clinica.foto.url }}" alt="Foto da {{ clinica.nome }}">
+            <img class="profile-image" style="border-radius: 12px;" src="{{ clinica.foto.url }}" alt="Foto da {{ clinica.nome }}">
           </div>
           
           <div class="profile-info">
@@ -188,12 +188,12 @@
           {% endif %}
           
           {%if user.is_authenticated%}
-          <a class="contact-btn" href="https://wa.me/55{{clinica.ddd}}{{clinica.telefone}}?text=Olá! Gostaria de mais informações sobre os serviços da {{clinica.nome}}." target="_blank">
+          <a class="contact-btn" style="border-radius: 4px;" href="https://wa.me/55{{clinica.ddd}}{{clinica.telefone}}?text=Olá! Gostaria de mais informações sobre os serviços da {{clinica.nome}}." target="_blank">
             <i class="bi bi-whatsapp"></i>
             <span>Entrar em Contato</span>
           </a>
           {%else%}
-          <a class="contact-btn" href="{% url 'login' %}">
+          <a class="contact-btn" style="border-radius: 4px;" href="{% url 'login' %}">
             <i class="bi bi-whatsapp"></i>
             <span>Entrar em Contato</span>
           </a>
@@ -248,7 +248,7 @@
                   <h4>Unidade {{ forloop.counter }}</h4>
                   {%if endereco.latitude != None and endereco.longitude != None %}
                   <button class="map-btn showMapModal" data-latitude="{{ endereco.latitude }}" data-longitude="{{ endereco.longitude }}">
-                    <i class="bi bi-map"></i>
+                    <i class="bi bi-geo-alt-fill"></i>
                     Ver no Mapa
                   </button>
                   {%endif%}

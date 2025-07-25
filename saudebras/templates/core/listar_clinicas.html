@@ -294,7 +294,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: #00ae9d;
+    background: #21BFA6;
     border-radius: 4px;
     color: #fff;
     font-weight: 600;
@@ -608,8 +608,8 @@
                 <div class="price-info">
                   <span>Valor da consulta:</span>
                   <span class="price-value">
-                    {% if clinica.preco %}
-                      R$ {{ clinica.preco|floatformat:2}}
+                    {% if clinica.preco and profissional.preco|floatformat %}
+                        R$ {{ clinica.preco|floatformat:2 }}
                     {% else %}
                       Não informado
                     {% endif %}
@@ -636,12 +636,9 @@
               {% for enderecos in clinica.enderecos.all %}
               {% if forloop.first %}
                 {% if enderecos.latitude != None and enderecos.longitude != None %}
-                  <div class="professional-map" 
-                       id="map-{{ clinica.id }}"
-                       data-latitude="{{ enderecos.latitude }}" 
-                       data-longitude="{{ enderecos.longitude }}"
-                       data-endereco="{{ enderecos.rua }}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}">
-                  </div>
+                  <a class="btn w-100" href="https://www.google.com/maps/search/?api=1&query={{ enderecos.rua }}{% if enderecos.numero %}, {{ enderecos.numero }}{% endif %}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}" target="_blank" style="border-radius:8px; font-weight:600; color: #fff; background-color: #21BFA6;">
+                    <i class="bi bi-geo-alt-fill"></i> Ver no mapa
+                  </a>
                 {% else %}
                   <div class="professional-map map-placeholder">
                     <div>
@@ -650,7 +647,6 @@
                     </div>
                   </div>
                 {% endif %}
-                
                 <div class="map-address">
                   <i class="bi bi-geo-alt-fill"></i>
                   {{ enderecos.rua }}{% if enderecos.complemento %}, {{enderecos.complemento}}{% endif %}<br>

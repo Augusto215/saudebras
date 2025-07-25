@@ -152,7 +152,7 @@
           </div>
           
           {%if user.is_authenticated%}
-          <a class="appointment-btn" style="border-radius: 4px;" href="https://wa.me/55{{profissional.ddd}}{{profissional.telefone}}?text=Olá, Dr(a). {{profissional.nome}}! Gostaria de agendar uma consulta." target="_blank">
+          <a class="appointment-btn" href="https://wa.me/55{{profissional.ddd}}{{profissional.telefone}}?text=Olá, Dr(a). {{profissional.nome}}! Gostaria de agendar uma consulta." target="_blank">
             <i class="bi bi-whatsapp"></i>
             <span>Agendar Consulta</span>
           </a>
@@ -206,7 +206,7 @@
                   {%if endereco.latitude != None and endereco.longitude != None %}
                   <a class="map-btn" target="_blank"
                      href="https://www.google.com/maps/search/?api=1&query={{ endereco.rua|urlencode }}{% if endereco.complemento %}, {{ endereco.complemento|urlencode }}{% endif %}, {{ endereco.bairro.nome|urlencode }}, {{ endereco.cidade.nome|urlencode }} - {{ endereco.estado.nome|urlencode }}">
-                    <i class="bi bi-map"></i>
+                    <i class="bi bi-geo-alt-fill"></i>
                     Ver no Mapa
                   </a>
                   {%endif%}
