@@ -1473,58 +1473,131 @@ def alterar_Clinica(request):
         'days_remaining': days_remaining
   
     })
-    
+
 def editar_cliente(request):
     try:
         user = request.user.cliente
-        print('cliente encontrado')
-        password = user.password
-        print(password)
+        print(f'Cliente encontrado: {user.id} - {user.email}')
     except:
         print('cliente não encontrado')
         messages.error(request, 'Usuário não encontrado')
         return redirect('home')
-
+    
+    # Inicializar os formulários
+    cliente_form = ClienteForm(instance=user)
+    foto_form = FotoForm(instance=user)
+    
     if request.method == 'POST':
-        if 'clienteForm' in request.POST:
-            cliente_form = ClienteForm(request.POST, instance=user)
-            if cliente_form.is_valid():
-                cep = cliente_form.cleaned_data['cep']
+        action = request.POST.get('action')
+        
+        if action == 'update_profile':
+
+            # Atualizar diretamente os campos do modelo, sem usar o form.save()
+            try:
+                # Campos básicos
+                nome = request.POST.get('nome', '').strip()
+                if nome:
+                    user.nome = nome
+
+                telefone = request.POST.get('telefone', '').strip()
+                if telefone:
+                    user.telefone = telefone
+                
+                numero = request.POST.get('numero', '').strip()
+                if numero:
+                    user.numero = numero
+                
+                rua = request.POST.get('rua', '').strip()
+                cep = request.POST.get('cep', '').strip()
+                bairro_digit = request.POST.get('bairro', '').strip()
+                
+                if not cep:
+                    messages.error(request, 'CEP é obrigatório')
+                    return redirect('editar_cliente')
+                
+                # Remover hífen do CEP
+                cep = cep.replace('-', '')
+                
+                # Consultar ViaCEP
                 response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
                 data = response.json()
                 
                 if response.status_code == 200 and not data.get('erro'):
-                    estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                    cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                    bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                    # Buscar ou criar estado, cidade, bairro
+                    estado, created_estado = Estado.objects.get_or_create(nome=data['uf'])
+                    cidade, created_cidade = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
+                    bairro, created_bairro = Bairro.objects.get_or_create(nome=bairro_digit, cidade=cidade)
 
-                    user.estado = estado
-                    user.cidade = cidade
-                    user.bairro = bairro
+                    # Atualizar campos do cliente
                     user.cep = cep
-                    user.rua = data['logradouro']
+                    user.estado = estado
+                    user.cidade = cidade  
+                    user.bairro = bairro
+                    user.rua = rua
+                    user.numero = numero
                     
-                    cliente_form.save()
+                    # Salvar todas as alterações
+                    user.save()
+                    
+                    # Verificar se realmente salvou
+                    user.refresh_from_db()
+
                     messages.success(request, 'Perfil atualizado com sucesso!')
                     return redirect('editar_cliente')
                 else:
                     messages.error(request, 'CEP inválido')
-            else:
-                messages.error(request, 'Erro ao atualizar perfil')
-
-        elif 'fotoForm' in request.POST:
-            foto_form = FotoForm(request.POST, request.FILES, instance=user)
-            if foto_form.is_valid():
-                foto_form.save()
-                messages.success(request, 'Foto atualizada com sucesso')
+                    return redirect('editar_cliente')
+                    
+            except requests.RequestException as e:
+                print(f"Erro na requisição do ViaCEP: {e}")
+                messages.error(request, 'Erro ao consultar CEP')
                 return redirect('editar_cliente')
-            else:
-                messages.error(request, 'Erro ao atualizar foto')
-
-    else:
-        cliente_form = ClienteForm(instance=user)
-        foto_form = FotoForm(instance=user)
-
+            except Exception as e:
+                print(f"Erro inesperado: {e}")
+                import traceback
+                traceback.print_exc()
+                messages.error(request, 'Erro inesperado ao processar dados')
+                return redirect('editar_cliente')
+                
+        elif action == 'update_photo':
+            print("Processando atualização de foto")
+            
+            # Verificar se um arquivo foi enviado
+            if 'foto' not in request.FILES or not request.FILES['foto']:
+                messages.error(request, 'Nenhum arquivo foi selecionado. Por favor, escolha uma imagem.')
+                return redirect('editar_cliente')
+            
+            uploaded_file = request.FILES['foto']
+            
+            # Validações básicas
+            allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+            if uploaded_file.content_type not in allowed_types:
+                messages.error(request, 'Formato de arquivo não suportado. Use JPG, PNG ou GIF.')
+                return redirect('editar_cliente')
+            
+            # Verificar tamanho do arquivo (5MB máximo)
+            max_size = 5 * 1024 * 1024  # 5MB
+            if uploaded_file.size > max_size:
+                messages.error(request, 'Arquivo muito grande. O tamanho máximo é 5MB.')
+                return redirect('editar_cliente')
+            
+            try:
+                # Atualizar foto diretamente
+                user.foto = uploaded_file
+                user.save()
+                
+                messages.success(request, 'Foto de perfil atualizada com sucesso!')
+                return redirect('editar_cliente')
+                
+            except Exception as e:
+                print(f"Erro ao salvar foto: {e}")
+                messages.error(request, 'Erro ao processar a foto. Tente novamente.')
+                return redirect('editar_cliente')
+    
+    # Recriar os formulários com os dados atualizados
+    cliente_form = ClienteForm(instance=user)
+    foto_form = FotoForm(instance=user)
+    
     context = {
         'cliente_form': cliente_form,
         'foto_form': foto_form

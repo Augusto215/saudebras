@@ -278,7 +278,7 @@
         <li class="nav-item">
           <a href="{%url 'editar_clinica' %}" class="nav-link">Meu Perfil</a>
         </li>
-        {%elif user_cliente%}
+        {%elif request.is_cliente%}
         <li class="nav-item">
           <a href="{%url 'editar_cliente' %}" class="nav-link">Meu Perfil</a>
         </li>
@@ -352,6 +352,10 @@
                 {%elif request.is_clinica%}
                 <li class="nav-item">
                   <a href="{%url 'editar_clinica' %}" class="nav-link">Meu Perfil</a>
+                </li>
+                {%elif request.is_cliente %}
+                <li class="nav-item">
+                  <a href="{%url 'editar_cliente' %}" class="nav-link">Meu Perfil</a>
                 </li>
               {% endif %}
                 

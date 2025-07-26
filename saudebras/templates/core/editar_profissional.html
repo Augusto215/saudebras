@@ -990,7 +990,7 @@
       <div id="conteudo1" class="conteudo active">
         <div class="profile-section-title">Configurações da Conta</div>
         
-        <form id="editarPerfil" enctype="multipart/form-data" method="post" action="{% url 'alterar_Profissional' %}">
+        <form id="profile-form" method="post" id="regForm" action="{% url 'alterar_Profissional' %}">
           {% csrf_token %}
           
           <!-- Seção da foto -->

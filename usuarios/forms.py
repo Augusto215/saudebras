@@ -263,11 +263,22 @@ class CustomPasswordResetForm(forms.Form):
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = ['email', 'ddd',  'telefone', 'cep', 'numero']
+        fields = ['email', 'telefone', 'cep', 'numero', 'estado', 'cidade', 'bairro', 'rua']
         widgets = {
-            'username': forms.TextInput(attrs={'disabled': 'disabled'}),
             'email': forms.EmailInput(attrs={'disabled': 'disabled'}),
+            'estado': forms.TextInput(attrs={'disabled': 'disabled'}),
+            'cidade': forms.TextInput(attrs={'disabled': 'disabled'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Campos opcionais não são obrigatórios
+        self.fields['telefone'].required = False
+        self.fields['numero'].required = False
+        self.fields['estado'].required = False
+        self.fields['cidade'].required = False
+        self.fields['bairro'].required = False
+        self.fields['rua'].required = False
 
 class FotoForm(forms.ModelForm):
     class Meta:

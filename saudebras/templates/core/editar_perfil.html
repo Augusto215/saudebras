@@ -2,206 +2,528 @@
 {% load static %}
 {% block 'conteudo' %}
 <style>
+  /* Reset de estilos para inputs */
+  .profile-settings-card input,
+  .profile-settings-card textarea {
+    text-decoration: none !important;
+    border-bottom: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+  }
+  
+  /* Estilos para mensagens de alerta */
+  .alert {
+    border-radius: 12px;
+    border: none;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #059669;
+  }
+  
+  .alert-error,
+  .alert-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #dc2626;
+  }
+  
+  .alert-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .alert-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: inherit;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+  
+  .btn-close:hover {
+    opacity: 1;
+  }
+  
+  /* Botão verde personalizado */
+  .btn-success {
+    background: #00ae9d !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+  }
+  
+  .btn-success:hover:not(:disabled) {
+    background: #008e7a !important;
+  }
+  
+  .btn-success:disabled {
+    background: #a1a1aa !important;
+    cursor: not-allowed !important;
+  }
+  
+  .profile-settings-container {
+    background: #f8fafc;
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
   .profile-settings-card {
     background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 2.5rem 2rem 2rem 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .profile-sidebar {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    padding: 2rem 1.5rem;
+    min-height: 600px;
+    width: 250px;
+  }
+  .sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-nav li {
+    margin-bottom: 0.5rem;
+  }
+  .sidebar-nav button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .sidebar-nav button:hover,
+  .sidebar-nav button.active {
+    background: #00ae9d;
+    color: #fff;
+  }
+  .profile-content {
+    padding: 2.5rem;
+    flex: 1;
   }
   .profile-section-title {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    color: #00ae9d;
-    margin-bottom: 1.2rem;
-    letter-spacing: 0.5px;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #00ae9d;
+    padding-bottom: 0.5rem;
+    display: inline-block;
   }
-  .profile-img-edit {
+  .profile-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: visible;
+  }
+  .profile-img-section {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
-  .profile-img-edit img {
+  .profile-img-section img {
     border-radius: 50%;
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
-    border: 3px solid #e9ecef;
+    border: 4px solid #e2e8f0;
   }
-  .profile-img-edit .btn {
+  .profile-img-section .edit-btn {
     background: #00ae9d;
     color: #fff;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    padding: 0.5rem 1.2rem;
     border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
     transition: background 0.2s;
   }
-  .profile-img-edit .btn:hover {
+  .profile-img-section .edit-btn:hover {
     background: #008e7a;
   }
-  .profile-form label {
-    font-size: 0.98rem;
-    color: #6D6875;
-    margin-bottom: 0.2rem;
-    font-weight: 500;
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
   }
-  .profile-form input {
-    border-radius: 8px !important;
-    border: 1px solid #d1d5db !important;
-    padding: 0.7rem 1rem;
-    font-size: 1rem;
-    margin-bottom: 1.1rem;
-    width: 100%;
-    background: #f8fafc;
-    color: #222;
-    transition: border 0.2s;
-  }
-  .profile-form input:focus {
-    border: 1.5px solid #00ae9d !important;
-    outline: none;
-    background: #fff;
-  }
-  .profile-form .form-row {
+  .form-group {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
   }
-  .profile-form .form-row > * {
-    flex: 1;
+  .form-group label {
+    font-size: 0.9rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
   }
-  .profile-form .btn-primary {
+  .form-group input,
+  .form-group textarea {
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    background: #f9fafb !important;
+    transition: all 0.2s;
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid #d1d5db !important;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: #00ae9d !important;
+    outline: none !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 174, 157, 0.1) !important;
+    border-bottom: 1px solid #00ae9d !important;
+  }
+  .form-group input:disabled {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+    cursor: not-allowed;
+  }
+  .btn-primary {
     background: #00ae9d;
     border: none;
-    border-radius: 6px;
-    font-size: 1.05rem;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
     font-weight: 600;
-    padding: 0.7rem 2.2rem;
-    margin-top: 0.5rem;
-    float: right;
+    padding: 0.8rem 2rem;
+    cursor: pointer;
     transition: background 0.2s;
+    margin-top: 1rem;
   }
-  .profile-form .btn-primary:hover {
+  .btn-primary:hover {
     background: #008e7a;
   }
-  .profile-form .edit-password-link {
-    color: #6D6875;
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
+  
+  /* Botões menores para ações secundárias */
+  .btn-small {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    min-width: auto !important;
+  }
+  
+  /* Botões das abas da sidebar menores */
+  .sidebar-nav button {
+    padding: 0.7rem 1.2rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .conteudo {
+    display: none;
+  }
+  .conteudo.active {
+    display: block;
+  }
+  
+  .edit-password-link {
+    color: #00ae9d;
     text-decoration: underline;
     cursor: pointer;
-    font-size: 1rem;
-    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
     display: inline-block;
+    font-weight: 500;
   }
-  @media (max-width: 700px) {
+  .edit-password-link:hover {
+    color: #008e7a;
+  }
+  
+  @media (max-width: 768px) {
     .profile-settings-card {
-      padding: 1.2rem 0.5rem;
+      margin: 0 1rem;
+      flex-direction: column;
+    }
+    .profile-sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .profile-content {
+      padding: 1.5rem;
+    }
+  }
+  
+  /* Estilos para mensagens de erro */
+  .error-message {
+    display: block;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    color: #dc2626 !important;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Estilos para modal de confirmação da foto */
+  .confirmation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1060;
+    opacity: 0;
+    animation: fadeInOverlay 0.3s ease-out forwards;
+  }
+  
+  .confirmation-modal {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    width: 90%;
+    max-height: 90vh;
+    margin: 2rem;
+    overflow: hidden;
+    transform: scale(0.9) translateY(20px);
+    animation: slideInModal 0.3s ease-out forwards;
+  }
+  
+  .confirmation-modal-header {
+    padding: 1.5rem 2rem 1rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .confirmation-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .confirmation-modal-body {
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+  
+  .confirmation-modal-body p {
+    margin: 0 0 1.5rem 0;
+    color: #6b7280;
+    font-size: 1rem;
+  }
+  
+  .preview-section {
+    margin: 1rem 0;
+  }
+  
+  .preview-section img {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+  }
+  
+  .confirmation-modal-footer {
+    padding: 1rem 2rem 1.5rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .confirmation-modal-footer .btn-secondary {
+    background: #6b7280;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .confirmation-modal-footer .btn-secondary:hover {
+    background: #4b5563;
+  }
+  
+  .confirmation-modal-footer .btn-primary {
+    background: #00ae9d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .confirmation-modal-footer .btn-primary:hover {
+    background: #008e7a;
+  }
+  
+  /* Estilos para o campo de senha com ícone */
+  .password-field {
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+  }
+  
+  .password-field:focus-within {
+    border-color: #00ae9d;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 174, 157, 0.1);
+  }
+  
+  .password-field input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0.8rem 1rem;
+    flex: 1;
+  }
+  
+  .password-field span {
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s;
+  }
+  
+  .password-field span:hover {
+    color: #00ae9d;
+  }
+  
+  @keyframes fadeInOverlay {
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideInModal {
+    to { 
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  /* Estilos específicos para campos de três colunas */
+  .form-row-three {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Responsividade para campos de três colunas */
+  @media (max-width: 768px) {
+    .form-row-three {
+      grid-template-columns: 1fr;
+      gap: 1rem;
     }
   }
 </style>
-<div class="profile-settings-card">
-  <!-- Seção de foto e nome -->
-  <form id="fotoForm" method="post" action="{% url 'editar_cliente' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="hidden" name="fotoForm" value="true">
-    <div class="profile-img-edit">
-      <img id="profileImage" src="{{ user.cliente.foto.url }}">
-      <div>
-        <label for="inputImage" class="btn">Alterar Imagem</label>
-        <input type="file" id="inputImage" name="foto" accept="image/*" style="display:none;">
-      </div>
-    </div>
-  </form>
 
-  <!-- Formulário principal -->
-  <form class="profile-form" method="post" id="regForm" action="{% url 'editar_cliente' %}">
-    {% csrf_token %}
-    <input type="hidden" name="clienteForm" value="true">
-    <div>
-      <div class="profile-section-title">Meu Perfil</div>
-      <div class="form-row">
-        <div>
-          <label>Nome</label>
-          <input type="text" value="{{ user.cliente.nome }}" disabled>
-        </div>
-        <div>
-          <label>CPF</label>
-          <input type="text" value="{{ user.username }}" disabled>
-        </div>
+<!-- Modal para editar foto -->
+<div class="modal fade" id="editarFoto" tabindex="-1" aria-labelledby="editarFotoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editarFoto">Editar Foto de Perfil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="form-row">
-        <div>
-          <label for="emailId">E-mail</label>
-          <input type="email" id="emailId" placeholder="E-mail" value="{{ cliente_form.initial.email }}" name="email">
-        </div>
-        <div>
-          <label for="ddd">DDD</label>
-          <input type="text" id="ddd" placeholder="DDD" name="ddd" maxlength="2" value="{{ cliente_form.initial.ddd }}">
-        </div>
-        <div>
-          <label for="telefone">Celular/Whatsapp</label>
-          <input type="text" id="telefone" placeholder="Celular/Whatsapp" name="telefone" value="{{ cliente_form.initial.telefone }}">
-        </div>
+      <div class="modal-body">
+        <form id="formEditarFoto" enctype="multipart/form-data" method="post" action="{% url 'editar_cliente' %}">
+          {% csrf_token %}
+          <input type="hidden" name="fotoForm" value="true">
+          <div class="form-group mb-3">
+            <label for="inputFoto" class="form-label">Selecionar nova foto</label>
+            <input type="file" id="inputFoto" name="foto" class="form-control" accept="image/*" required>
+            <div class="form-text text-muted">
+              Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+            </div>
+            <div id="preview-container" class="mt-3" style="display: none;">
+              <img id="preview-image" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+            </div>
+            <div id="error-message" class="text-danger mt-2" style="display: none;"></div>
+          </div>
+        </form>
       </div>
-    </div>
-    <div>
-      <div class="profile-section-title">Endereço</div>
-      <div class="form-row">
-        <div>
-          <label for="cep">CEP</label>
-          <input type="text" id="cep" placeholder="CEP" name="cep" value="{{ user.cliente.cep|default_if_none:'' }}" oninput="buscarCEP(this.value)">
-        </div>
-        <div>
-          <label for="complemento">Número</label>
-          <input type="text" id="complemento" placeholder="Número" name="numero" value="{{ user.cliente.numero|default_if_none:'' }}">
-        </div>
-      </div>
-      <div class="form-row">
-        <div>
-          <label for="estado">Estado</label>
-          <input type="text" id="estado" placeholder="Estado" name="estado" value="{{ user.cliente.estado|default_if_none:'' }}" disabled>
-        </div>
-        <div>
-          <label for="cidade">Cidade</label>
-          <input type="text" id="cidade" placeholder="Cidade" name="cidade" value="{{ user.cliente.cidade|default_if_none:'' }}" disabled>
-        </div>
-        <div>
-          <label for="bairro">Bairro</label>
-          <input type="text" id="bairro" placeholder="Bairro" name="bairro" value="{{ user.cliente.bairro|default_if_none:'' }}" disabled>
-        </div>
-      </div>
-      <div>
-        <label for="logradouro">Rua</label>
-        <input type="text" id="logradouro" placeholder="Rua" name="logradouro" value="{{ user.cliente.rua|default_if_none:'' }}" disabled>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnSalvarFoto" class="btn-success" disabled>Salvar Foto</button>
       </div>
     </div>
-    <div style="margin-top:2.5rem;">
-      <div class="profile-section-title">Segurança</div>
-      <div class="form-row">
-        <div>
-          <label>Senha</label>
-          <input type="password" value="********" disabled>
-        </div>
-        <div style="display:flex; align-items:end;">
-          <span class="edit-password-link" data-bs-toggle="modal" data-bs-target="#editPasswordModal">Editar senha</span>
-        </div>
-      </div>
-    </div>
-    <div class="form-group" style="border:none !important; margin-top:2.5rem;">
-      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-    </div>
-  </form>
+  </div>
 </div>
+
+<!-- Modal de confirmação para alteração de foto -->
+<div class="confirmation-modal-overlay" id="confirmPhotoModal" style="display: none;">
+  <div class="confirmation-modal">
+    <div class="confirmation-modal-header">
+      <h3>Confirmar Alteração de Foto</h3>
+    </div>
+    <div class="confirmation-modal-body">
+      <p>Tem certeza que deseja alterar sua foto de perfil?</p>
+      <div class="preview-section">
+        <img id="confirmPreviewImage" src="" alt="Nova foto" style="max-width: 150px; max-height: 150px; border-radius: 8px;">
+      </div>
+    </div>
+    <div class="confirmation-modal-footer">
+      <button type="button" id="cancelPhotoChange" class="btn-secondary">Cancelar</button>
+      <button type="button" id="confirmPhotoChange" class="btn-primary">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal para editar a senha -->
 <div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header position-relative" style="min-height: 56px;">
                 <h3 class="mb-4 mt-4 text-start" style="color:#00ae9d !important;">Editar senha</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Fechar" style="z-index:2;"></button>
             </div>
             <div class="modal-body">
                 <!-- Formulário para edição de senha -->
@@ -209,174 +531,551 @@
                     {% csrf_token %}
                     <div id="step1">
                         <label for="password-field" class="form-label">Senha atual</label>
-
-                        <div  id="password-field" class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;     ">
+                        <div id="password-field" class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;">
                             <input class="w-100 d-flex m-0" style="font-size:17px; border-radius:4px; background:transparent !important; border:none !important; outline:none !important;" type="password" class="form-control" id="currentPassword" name="current_password" required>
                             <span class="p-2" onclick="togglePasswordVisibility('currentPassword', 'current-eye-icon')">
                                 <i style="font-size:17px !important;" id="current-eye-icon" class="bi bi-eye-slash"></i>
                             </span>
                         </div>
-                        <button type="button" style="background-color: #04AA6D; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer;" class="btn btn-primary" onclick="validateCurrentPassword()">Próximo</button>
+                        <button type="button" style="background-color: #00ae9d; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer; border-radius: 8px;" class="btn btn-primary" onclick="validateCurrentPassword()">Próximo</button>
                     </div>
                     <div id="step2" style="display: none;">
                         <label for="newPassword" class="form-label">Nova senha</label>
-
-                        <div class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;  ">
+                        <div class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;">
                             <input class="w-100 d-flex m-0" style="font-size:17px;  border-radius:4px; border:none !important;background:transparent !important; outline:none !important;" type="password" class="form-control" id="newPassword" name="new_password" required>
                             <span class="p-2" onclick="togglePasswordVisibility('newPassword', 'new-eye-icon')">
                                 <i style="font-size:17px !important;" id="new-eye-icon" class="bi bi-eye-slash"></i>
                             </span>
                         </div>
+                        <!-- Lista de requisitos da senha -->
+                        <div id="password-requirements-edit" style="margin-bottom: 1.5rem; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #21BFA6;">
+                            <h6 style="color: #333; margin-bottom: 10px; font-size: 14px;">Requisitos da senha:</h6>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                <li id="req-length-edit" style="margin-bottom: 5px; font-size: 13px; display: flex; align-items: center;">
+                                    <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+                                    Mínimo de 8 caracteres
+                                </li>
+                                <li id="req-uppercase-edit" style="margin-bottom: 5px; font-size: 13px; display: flex; align-items: center;">
+                                    <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+                                    Pelo menos uma letra maiúscula
+                                </li>
+                                <li id="req-number-edit" style="margin-bottom: 5px; font-size: 13px; display: flex; align-items: center;">
+                                    <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+                                    Pelo menos um número
+                                </li>
+                                <li id="req-symbol-edit" style="margin-bottom: 0; font-size: 13px; display: flex; align-items: center;">
+                                    <i class="bi bi-x-circle-fill" style="color: #dc3545; margin-right: 8px;"></i>
+                                    Pelo menos um símbolo (!@#$%^&*()_+)
+                                </li>
+                            </ul>
+                        </div>
                         <label for="confirmPassword1" class="form-label">Confirme a nova senha</label>
-                        
-                        <div id="confirmPassword1" class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;  ">
+                        <div id="confirmPassword1" class="mb-3 password-field d-flex align-items-center justify-content-center" style="padding:10px;">
                             <input class="w-100 d-flex m-0" id="confirmPassword" style="font-size:17px; border-radius:4px; border: none !important; outline:none !important;" type="password" class="form-control"  name="confirm_password" required>
                             <span class="p-2"  onclick="togglePasswordVisibility('confirmPassword', 'confirm-new-eye-icon')">
                                 <i style="font-size:17px !important;" id="confirm-new-eye-icon" class="bi bi-eye-slash"></i>
                             </span>
                         </div>
-                        <button type="submit" style="background-color: #04AA6D; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer;" class="btn btn-primary">Salvar</button>
+                        <button id="btnSalvarSenha" type="submit" style="background-color: #00ae9d; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer; border-radius: 8px;" class="btn btn-primary" disabled>Salvar</button>
                     </div>
                 </form>
-                <script>
-                    function togglePasswordVisibility(inputId, iconId) {
-                        var input = document.getElementById(inputId);
-                        var icon = document.getElementById(iconId);
-                        if (input.type === "password") {
-                            input.type = "text";
-                            icon.classList.remove("bi-eye-slash");
-                            icon.classList.add("bi-eye");
-                        } else {
-                            input.type = "password";
-                            icon.classList.remove("bi-eye");
-                            icon.classList.add("bi-eye-slash");
-                        }
-                    }
-                </script>
                 
-                <div id="passwordError" class="alert alert-danger mt-3" style="display: none;"></div>
+                <!-- Modal de erro de senha -->
+                <div class="modal fade" id="senhaIncorretaModal" tabindex="-1" aria-labelledby="senhaIncorretaModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="senhaIncorretaModalLabel">Senha Incorreta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                      </div>
+                      <div class="modal-body">
+                        A senha atual informada está incorreta. Tente novamente.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de visualização da imagem -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form>
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">Visualizar Imagem</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex justify-content-center align-items-center">
-                    <img id="previewImage" src="" style="border-radius:12px; height:10rem; width:10rem; object-fit:cover;">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" style="background: #6c757d;     color: #ffffff;
-                    border: none;
-                    padding: 10px 20px;
-                    font-size: 17px;
-                    font-family: Raleway;
-                    cursor: pointer;" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="saveButton" style="background-color: #04AA6D;
-                    color: #ffffff;
-                    border: none;
-                    padding: 10px 20px;
-                    font-size: 17px;
-                    font-family: Raleway;
-                    cursor: pointer;" class="btn btn-primary">Salvar</button>
-                </div>
-            </form>
-        </div>
+<div class="profile-settings-container">
+  <div class="profile-settings-card d-flex">
+    <!-- Sidebar -->
+    <div class="profile-sidebar">
+      <ul class="sidebar-nav">
+        <li><button onclick="alterarConteudo('conteudo1')" class="tab-btn active">Editar Perfil</button></li>
+        <li><button onclick="alterarConteudo('conteudo2')" class="tab-btn">Segurança</button></li>
+      </ul>
     </div>
+
+    <!-- Content Area -->
+    <div class="profile-content">
+      <!-- Conteúdo 1: Editar Perfil -->
+      <div id="conteudo1" class="conteudo active">
+        <div class="profile-section-title">Configurações da Conta</div>
+
+        <!-- Formulário principal -->
+        <form id="profile-form" method="post" id="regForm" action="{% url 'editar_cliente' %}">
+          {% csrf_token %}
+        
+        <!-- Seção da foto -->
+        <div class="profile-card">
+          <h6 class="mb-3">Meu Perfil</h6>
+          <div class="profile-img-section">
+            <img {% if user.cliente.foto %}src="{{user.cliente.foto.url}}"{% else %}src="https://via.placeholder.com/100"{% endif %} alt="Foto do perfil">
+            <div>
+              <h5>{{user.cliente.nome}}</h5>
+              <button type="button" class="edit-btn" data-bs-toggle="modal" data-bs-target="#editarFoto">
+                Alterar Imagem
+              </button>
+            </div>
+          </div>
+        </div>
+
+          
+          <!-- Informações básicas -->
+          <div class="profile-card">
+            <h6 class="mb-3">Informações Básicas</h6>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="nome" name="nome" value="{{ user.cliente.nome }}">
+              </div>
+              <div class="form-group">
+                <label>CPF</label>
+                <input type="text" id="cpf" name="cpf" value="{{ user.username }}" disabled>
+              </div>
+            </div>
+            <div class="form-row-two">
+              <div class="form-group">
+                <label for="emailId">E-mail</label>
+                <input type="email" id="email" name="email" value="{{ user.cliente.email }}" disabled>
+              </div>
+              <div class="form-group">
+                <label for="telefone">Celular/Whatsapp</label>
+                <input type="text" id="telefone" name="telefone" value="{{ user.cliente.telefone|default_if_none:'' }}">
+              </div>
+            </div>
+          </div>
+
+          <!-- Endereço -->
+          <div class="profile-card">
+            <h6 class="mb-3">Endereço</h6>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cep">CEP</label>
+                <input type="text" id="cep" name="cep" value="{{ user.cliente.cep|default_if_none:'' }}" oninput="buscarCEP(this.value)">
+              </div>
+              <div class="form-group">
+                <label for="numero">Número</label>
+                <input type="text" id="numero" name="numero" value="{{ user.cliente.numero|default_if_none:'' }}" placeholder="Número">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="estado">Estado</label>
+                <input type="text" id="estado" name="estado" value="{{ user.cliente.estado|default_if_none:'' }}" disabled>
+              </div>
+              <div class="form-group">
+                <label for="cidade">Cidade</label>
+                <input type="text" id="cidade" name="cidade" value="{{ user.cliente.cidade|default_if_none:'' }}" disabled>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="bairro">Bairro</label>
+                <input type="text" id="bairro" name="bairro" value="{{ user.cliente.bairro.nome|default_if_none:'' }}" placeholder="Bairro">
+              </div>
+              <div class="form-group">
+                <label for="logradouro">Logradouro</label>
+                <input type="text" id="rua" name="rua" value="{{ user.cliente.rua|default_if_none:'' }}" placeholder="Rua/Avenida">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" name="action" value="update_profile" class="btn-primary">Salvar Alterações</button>
+        </form>
+      </div>
+
+      <!-- Conteúdo 2: Segurança -->
+      <div id="conteudo2" class="conteudo">
+        <div class="profile-section-title">Segurança</div>
+        
+        <div class="profile-card">
+          <h6 class="mb-3">Alterar Senha</h6>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Senha Atual</label>
+              <input type="password" value="********" disabled>
+            </div>
+            <div class="form-group" style="display:flex; align-items:end;">
+              <span class="edit-password-link" data-bs-toggle="modal" data-bs-target="#editPasswordModal">Editar senha</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-    // Função para buscar CEP
-    function buscarCEP(cep) {
-        if (cep.length === 8) {
-            fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.erro) {
-                        document.getElementById('estado').value = data.uf;
-                        document.getElementById('cidade').value = data.localidade;
-                        document.getElementById('bairro').value = data.bairro;
-                        document.getElementById('logradouro').value = data.logradouro;
-                    } else {
-                        alert('CEP não encontrado!');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar o CEP:', error);
-                    alert('Erro ao buscar o CEP!');
-                });
-        }
-    }
+// Funções para navegação das abas
+function alterarConteudo(conteudoId) {
+  // Esconder todos os conteúdos
+  const conteudos = document.querySelectorAll('.conteudo');
+  conteudos.forEach(c => c.classList.remove('active'));
+  
+  // Remover classe active de todos os botões
+  const botoes = document.querySelectorAll('.tab-btn');
+  botoes.forEach(b => b.classList.remove('active'));
+  
+  // Mostrar o conteúdo selecionado
+  document.getElementById(conteudoId).classList.add('active');
+  
+  // Adicionar classe active ao botão clicado
+  event.target.classList.add('active');
+}
 
-    // Quando a página estiver carregada
-    document.addEventListener("DOMContentLoaded", function () {
-        // Modal de imagem
-        var saveButton = document.getElementById('saveButton');
-        var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
-
-        saveButton.addEventListener('click', function () {
-            var fotoForm = document.getElementById('fotoForm');
-            fotoForm.submit();
-        });
-
-        // Modal de edição de senha
-        var editPasswordModal = new bootstrap.Modal(document.getElementById('editPasswordModal'));
-
-        // Validação da senha atual
-        window.validateCurrentPassword = function() {
-            var currentPassword = document.getElementById('currentPassword').value;
-            fetch("{% url 'validate_password' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ current_password: currentPassword })
-            })
+// Função para buscar CEP
+function buscarCEP(cep) {
+    if (cep.length === 8) {
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(response => response.json())
             .then(data => {
-                if (data.valid) {
-                    document.getElementById('step1').style.display = 'none';
-                    document.getElementById('step2').style.display = 'block';
+                if (!data.erro) {
+                    document.getElementById('estado').value = data.uf;
+                    document.getElementById('cidade').value = data.localidade;
+                    document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('rua').value = data.logradouro;
                 } else {
-                    var passwordError = document.getElementById('passwordError');
-                    passwordError.innerText = 'Senha atual incorreta!';
-                    passwordError.style.display = 'block';
+                    alert('CEP não encontrado!');
                 }
             })
             .catch(error => {
-                console.error('Erro ao validar a senha atual:', error);
-                alert('Erro ao validar a senha atual!');
+                console.error('Erro ao buscar o CEP:', error);
+                alert('Erro ao buscar o CEP!');
             });
+    }
+}
+
+function togglePasswordVisibility(inputId, iconId) {
+    var input = document.getElementById(inputId);
+    var icon = document.getElementById(iconId);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+    } else {
+        input.type = "password";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+    }
+}
+
+// Validação e controle de modais para foto
+document.addEventListener('DOMContentLoaded', function() {
+    const inputFoto = document.getElementById('inputFoto');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const errorMessage = document.getElementById('error-message');
+    const btnSalvarFoto = document.getElementById('btnSalvarFoto');
+    const confirmPhotoModal = document.getElementById('confirmPhotoModal');
+    const confirmPreviewImage = document.getElementById('confirmPreviewImage');
+    const cancelPhotoChange = document.getElementById('cancelPhotoChange');
+    const confirmPhotoChange = document.getElementById('confirmPhotoChange');
+    const formEditarFoto = document.getElementById('formEditarFoto');
+    
+    let selectedFile = null;
+    
+    // Validação de arquivo
+    function validateFile(file) {
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!allowedTypes.includes(file.type)) {
+            return 'Formato de arquivo não suportado. Use JPG, PNG ou GIF.';
         }
+        
+        if (file.size > maxSize) {
+            return 'Arquivo muito grande. O tamanho máximo é 5MB.';
+        }
+        
+        return null;
+    }
+    
+    // Preview da imagem
+    function showPreview(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            confirmPreviewImage.src = e.target.result;
+            previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    // Event listener para seleção de arquivo
+    inputFoto.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (!file) {
+            previewContainer.style.display = 'none';
+            errorMessage.style.display = 'none';
+            btnSalvarFoto.disabled = true;
+            selectedFile = null;
+            return;
+        }
+        
+        const error = validateFile(file);
+        
+        if (error) {
+            errorMessage.textContent = error;
+            errorMessage.style.display = 'block';
+            previewContainer.style.display = 'none';
+            btnSalvarFoto.disabled = true;
+            selectedFile = null;
+        } else {
+            errorMessage.style.display = 'none';
+            showPreview(file);
+            btnSalvarFoto.disabled = false;
+            selectedFile = file;
+        }
+    });
+    
+    // Event listener para botão "Salvar Foto"
+    btnSalvarFoto.addEventListener('click', function() {
+        if (selectedFile) {
+            // Fechar modal de edição
+            try {
+                const editModal = document.getElementById('editarFoto');
+                const bsModal = bootstrap.Modal.getInstance(editModal);
+                if (bsModal) {
+                    bsModal.hide();
+                } else {
+                    // Fallback usando jQuery
+                    $('#editarFoto').modal('hide');
+                }
+            } catch (e) {
+                $('#editarFoto').modal('hide');
+            }
+            
+            setTimeout(() => {
+                confirmPhotoModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }, 300);
+        }
+    });
+    
+    // Event listener para cancelar alteração
+    cancelPhotoChange.addEventListener('click', function() {
+        confirmPhotoModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Reabrir modal de edição
+        setTimeout(() => {
+            $('#editarFoto').modal('show');
+        }, 100);
+    });
+    
+    // Event listener para confirmar alteração
+    confirmPhotoChange.addEventListener('click', function() {
+        if (selectedFile) {
+            // Submeter formulário
+            formEditarFoto.submit();
+        }
+    });
+    
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && confirmPhotoModal.style.display === 'flex') {
+            cancelPhotoChange.click();
+        }
+    });
+    
+    // Fechar modal clicando fora
+    confirmPhotoModal.addEventListener('click', function(e) {
+        if (e.target === confirmPhotoModal) {
+            cancelPhotoChange.click();
+        }
+    });
+    
+    // Reset do formulário quando modal de edição for fechado
+    document.getElementById('editarFoto').addEventListener('hidden.bs.modal', function() {
+        if (confirmPhotoModal.style.display !== 'flex') {
+            inputFoto.value = '';
+            previewContainer.style.display = 'none';
+            errorMessage.style.display = 'none';
+            btnSalvarFoto.disabled = true;
+            selectedFile = null;
+        }
+    });
+    
+    // Auto-hide mensagens de sucesso após 5 segundos
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        if (alert.classList.contains('alert-success')) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 500);
+            }, 5000); // 5 segundos
+        }
+    });
+    
+    // Validação da senha atual
+    window.validateCurrentPassword = function() {
+        var currentPassword = document.getElementById('currentPassword').value;
+        fetch("{% url 'validate_password' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ current_password: currentPassword })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            } else {
+                // Esconder step1 ao mostrar modal de erro
+                document.getElementById('step1').style.display = 'none';
+                var senhaModalEl = document.getElementById('senhaIncorretaModal');
+                var senhaModal = new bootstrap.Modal(senhaModalEl);
+                senhaModal.show();
 
-        document.getElementById('editPhotoLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('inputImage').click();
+                // Ao fechar a modal, resetar step1, esconder step2, limpar input e focar
+                senhaModalEl.addEventListener('hidden.bs.modal', function handler() {
+                    document.getElementById('step1').style.display = 'block';
+                    document.getElementById('step2').style.display = 'none';
+                    var input = document.getElementById('currentPassword');
+                    input.value = '';
+                    input.focus();
+                    senhaModalEl.removeEventListener('hidden.bs.modal', handler);
+                });
+
+                // Também resetar ao clicar em QUALQUER botão de fechar da modal
+                var btnsFechar = senhaModalEl.querySelectorAll('.btn-close, .btn-secondary');
+                btnsFechar.forEach(function(btn) {
+                    btn.addEventListener('click', function handlerBtn(e) {
+                        // Fechar a modal programaticamente
+                        var modalInstance = bootstrap.Modal.getInstance(senhaModalEl);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                        // Resetar o formulário (será feito também no hidden.bs.modal)
+                        document.getElementById('step1').style.display = 'block';
+                        document.getElementById('step2').style.display = 'none';
+                        var input = document.getElementById('currentPassword');
+                        input.value = '';
+                        input.focus();
+                        btn.removeEventListener('click', handlerBtn);
+                        // Prevenir submit se for <button type="submit">
+                        if (e) e.preventDefault();
+                    });
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao validar a senha atual:', error);
+            alert('Erro ao validar a senha atual!');
         });
+    }
+});
+</script>
+<script>
+// --- Validação em tempo real dos requisitos da nova senha na edição de senha ---
+function validatePasswordRequirementsEdit(password) {
+    return {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        number: /\d/.test(password),
+        symbol: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    };
+}
 
-        var inputImage = document.getElementById('inputImage');
-        var previewImage = document.getElementById('previewImage');
-        var profileImage = document.getElementById('profileImage');
+function updatePasswordRequirementsEdit(password) {
+    const reqs = validatePasswordRequirementsEdit(password);
+    updateRequirementEdit('req-length-edit', reqs.length);
+    updateRequirementEdit('req-uppercase-edit', reqs.uppercase);
+    updateRequirementEdit('req-number-edit', reqs.number);
+    updateRequirementEdit('req-symbol-edit', reqs.symbol);
+}
 
-        inputImage.addEventListener('change', function(e) {
-            var files = e.target.files;
-            if (files && files.length > 0) {
-                var file = files[0];
-                previewImage.src = URL.createObjectURL(file);
-                previewImage.onload = function() {
-                    imageModal.show();
-                };
+function updateRequirementEdit(elementId, isValid) {
+    const element = document.getElementById(elementId);
+    const icon = element.querySelector('i');
+    if (isValid) {
+        icon.className = 'bi bi-check-circle-fill';
+        icon.style.color = '#28a745';
+        element.style.color = '#28a745';
+    } else {
+        icon.className = 'bi bi-x-circle-fill';
+        icon.style.color = '#dc3545';
+        element.style.color = '#dc3545';
+    }
+}
+
+function isPasswordValidEdit(password) {
+    const reqs = validatePasswordRequirementsEdit(password);
+    return reqs.length && reqs.uppercase && reqs.number && reqs.symbol;
+}
+
+function validatePasswordMatchEdit() {
+    const passwordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    if (passwordInput && confirmPasswordInput) {
+        return passwordInput.value === confirmPasswordInput.value && passwordInput.value.length > 0;
+    }
+    return false;
+}
+
+function updateSalvarSenhaButton() {
+    const btn = document.getElementById('btnSalvarSenha');
+    const passwordInput = document.getElementById('newPassword');
+    if (btn && passwordInput) {
+        btn.disabled = !(isPasswordValidEdit(passwordInput.value) && validatePasswordMatchEdit());
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            updatePasswordRequirementsEdit(this.value);
+            updateSalvarSenhaButton();
+            // Atualiza visual do campo de confirmação
+            if (confirmPasswordInput && confirmPasswordInput.value) {
+                updateSalvarSenhaButton();
             }
         });
-    });
+    }
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', function() {
+            updateSalvarSenhaButton();
+        });
+    }
+    // Inicializa requisitos ao abrir modal
+    var editPasswordModal = document.getElementById('editPasswordModal');
+    if (editPasswordModal) {
+        editPasswordModal.addEventListener('shown.bs.modal', function() {
+            if (passwordInput) {
+                updatePasswordRequirementsEdit(passwordInput.value);
+                updateSalvarSenhaButton();
+            }
+        });
+    }
+});
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
