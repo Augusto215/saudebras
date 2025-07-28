@@ -215,6 +215,31 @@
     color: #6b7280 !important;
     cursor: not-allowed;
   }
+  .btn-secondary-alteration,
+  .btn-primary-alteration {
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 1rem;
+  }
+  .btn-secondary-alteration {
+    background: #6b7280;
+  }
+  .btn-secondary-alteration:hover {
+    background: #4b5563;
+  }
+  .btn-primary-alteration {
+    background: #00ae9d;
+  }
+  .btn-primary-alteration:hover {
+    background: #008e7a;
+  }
+
   .btn-primary {
     background: #00ae9d;
     border: none;
@@ -463,6 +488,63 @@
       gap: 1rem;
     }
   }
+
+  /* Estilos melhorados para o botão de fechar do modal de senha */
+  .password-modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+  
+  .password-modal-close-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  
+  .password-modal-close-btn:focus {
+    outline: 2px solid #00ae9d;
+    outline-offset: 2px;
+  }
+
+  /* Melhorar a posição do header do modal de senha */
+  .password-modal-header {
+    position: relative;
+    padding: 1.5rem 3rem 1rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  /* Cursor bloqueado para botão desabilitado */
+  /* Cursor bloqueado para botão desabilitado - com máxima especificidade */
+  button#btnSalvarSenha[disabled],
+  button#btnSalvarSenha.btn-disabled-cursor,
+  button#btnSalvarSenha.btn-disabled-cursor:hover,
+  button#btnSalvarSenha.btn-disabled-cursor:focus,
+  button#btnSalvarSenha.btn-disabled-cursor:active {
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
+  }
+  
+  button#btnSalvarSenha:not([disabled]):not(.btn-disabled-cursor) {
+    cursor: pointer !important;
+  }
+  
+  /* Força o cursor em todos os estados */
+  .force-not-allowed * {
+    cursor: not-allowed !important;
+  }
 </style>
 
 <!-- Modal para editar foto -->
@@ -470,13 +552,13 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editarFoto">Editar Foto de Perfil</h5>
+        <h5 class="modal-title" id="editarFotoLabel">Editar Foto de Perfil</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="formEditarFoto" enctype="multipart/form-data" method="post" action="{% url 'editar_cliente' %}">
           {% csrf_token %}
-          <input type="hidden" name="fotoForm" value="true">
+          <input type="hidden" name="action" value="update_photo">
           <div class="form-group mb-3">
             <label for="inputFoto" class="form-label">Selecionar nova foto</label>
             <input type="file" id="inputFoto" name="foto" class="form-control" accept="image/*" required>
@@ -511,8 +593,8 @@
       </div>
     </div>
     <div class="confirmation-modal-footer">
-      <button type="button" id="cancelPhotoChange" class="btn-secondary">Cancelar</button>
-      <button type="button" id="confirmPhotoChange" class="btn-primary">Confirmar</button>
+      <button type="button" id="cancelPhotoChange" class="btn-secondary-alteration">Cancelar</button>
+      <button type="button" id="confirmPhotoChange" class="btn-primary-alteration">Confirmar</button>
     </div>
   </div>
 </div>
@@ -521,9 +603,11 @@
 <div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header position-relative" style="min-height: 56px;">
-                <h3 class="mb-4 mt-4 text-start" style="color:#00ae9d !important;">Editar senha</h3>
-                <button type="button" class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Fechar" style="z-index:2;"></button>
+            <div class="password-modal-header">
+                <h3 class="mb-0" style="color:#00ae9d !important;">Editar senha</h3>
+                <button type="button" class="password-modal-close-btn" data-bs-dismiss="modal" aria-label="Fechar">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <!-- Formulário para edição de senha -->
@@ -576,7 +660,7 @@
                                 <i style="font-size:17px !important;" id="confirm-new-eye-icon" class="bi bi-eye-slash"></i>
                             </span>
                         </div>
-                        <button id="btnSalvarSenha" type="submit" style="background-color: #00ae9d; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer; border-radius: 8px;" class="btn btn-primary" disabled>Salvar</button>
+                        <button id="btnSalvarSenha" type="submit" style="background-color: #00ae9d; color: #ffffff; border: none; padding: 10px 20px; font-size: 17px; font-family: Raleway; cursor: pointer; border-radius: 8px;" class="btn btn-primary btn-disabled-cursor" disabled>Salvar</button>
                     </div>
                 </form>
                 
@@ -884,8 +968,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener para confirmar alteração
     confirmPhotoChange.addEventListener('click', function() {
         if (selectedFile) {
+            console.log('Enviando formulário de foto...');
+            
+            // Garantir que o arquivo está no formulário
+            const fileInput = document.getElementById('inputFoto');
+            if (fileInput.files.length === 0) {
+                console.error('Nenhum arquivo selecionado no input');
+                alert('Erro: Nenhum arquivo selecionado. Tente novamente.');
+                return;
+            }
+            
+            // Fechar modal de confirmação
+            confirmPhotoModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
             // Submeter formulário
+            console.log('Submetendo formulário...');
             formEditarFoto.submit();
+        } else {
+            console.error('selectedFile é null');
+            alert('Erro: Arquivo não encontrado. Tente selecionar novamente.');
         }
     });
     
@@ -928,6 +1030,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 500);
             }, 5000); // 5 segundos
         }
+    });
+
+    // ===========================================
+    // MELHORIAS NO MODAL DE EDITAR SENHA
+    // ===========================================
+    
+    const editPasswordModal = document.getElementById('editPasswordModal');
+    
+    // Função para resetar o modal de senha
+    function resetPasswordModal() {
+        document.getElementById('step1').style.display = 'block';
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        // Reset dos requisitos de senha
+        updatePasswordRequirementsEdit('');
+        updateSalvarSenhaButton();
+        
+        // Garantir que o botão inicie com cursor bloqueado
+        const btn = document.getElementById('btnSalvarSenha');
+        if (btn) {
+            btn.classList.add('btn-disabled-cursor');
+        }
+    }
+    
+    // Event listener para fechar modal com botão X
+    const passwordCloseBtn = editPasswordModal.querySelector('.password-modal-close-btn');
+    if (passwordCloseBtn) {
+        passwordCloseBtn.addEventListener('click', function() {
+            const modalInstance = bootstrap.Modal.getInstance(editPasswordModal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        });
+    }
+    
+    // Event listener para fechar modal clicando fora
+    editPasswordModal.addEventListener('click', function(e) {
+        // Verifica se clicou no backdrop (área escura fora do modal)
+        if (e.target === editPasswordModal) {
+            const modalInstance = bootstrap.Modal.getInstance(editPasswordModal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        }
+    });
+    
+    // Event listener para fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modalInstance = bootstrap.Modal.getInstance(editPasswordModal);
+            if (modalInstance && editPasswordModal.classList.contains('show')) {
+                modalInstance.hide();
+            }
+        }
+    });
+    
+    // Event listener para resetar modal quando for fechado
+    editPasswordModal.addEventListener('hidden.bs.modal', function() {
+        resetPasswordModal();
     });
     
     // Validação da senha atual
@@ -1043,7 +1206,15 @@ function updateSalvarSenhaButton() {
     const btn = document.getElementById('btnSalvarSenha');
     const passwordInput = document.getElementById('newPassword');
     if (btn && passwordInput) {
-        btn.disabled = !(isPasswordValidEdit(passwordInput.value) && validatePasswordMatchEdit());
+        const isDisabled = !(isPasswordValidEdit(passwordInput.value) && validatePasswordMatchEdit());
+        btn.disabled = isDisabled;
+        
+        // Adicionar/remover classe de cursor bloqueado
+        if (isDisabled) {
+            btn.classList.add('btn-disabled-cursor');
+        } else {
+            btn.classList.remove('btn-disabled-cursor');
+        }
     }
 }
 
@@ -1071,13 +1242,63 @@ document.addEventListener('DOMContentLoaded', function() {
         editPasswordModal.addEventListener('shown.bs.modal', function() {
             if (passwordInput) {
                 updatePasswordRequirementsEdit(passwordInput.value);
+                
+                // Garantir cursor bloqueado inicial
+                const btn = document.getElementById('btnSalvarSenha');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add('btn-disabled-cursor');
+                    btn.classList.add('force-not-allowed');
+                    btn.style.backgroundColor = '#a1a1aa';
+                    btn.style.cursor = 'not-allowed';
+                    btn.setAttribute('data-cursor', 'not-allowed');
+                    
+                    // Event listener adicional para garantir o cursor
+                    btn.addEventListener('mouseenter', forceNotAllowedCursor);
+                    btn.addEventListener('mouseover', forceNotAllowedCursor);
+                }
+                
                 updateSalvarSenhaButton();
             }
         });
     }
+    
+    // Debug - adicionar console.log para verificar se está funcionando
+    document.addEventListener('mouseover', function(e) {
+        if (e.target.id === 'btnSalvarSenha') {
+            console.log('Mouse over botão - Disabled:', e.target.disabled, 'Cursor:', window.getComputedStyle(e.target).cursor);
+        }
+    });
 });
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+function maskTelefone(telefoneField) {
+    var telefoneValue = telefoneField.value;
+    telefoneValue = telefoneValue.replace(/\D/g, '');
+    telefoneValue = telefoneValue.slice(0, 11);
+    if (telefoneValue.length <= 2) {
+        telefoneValue = telefoneValue;
+    } else if (telefoneValue.length <= 7) {
+        telefoneValue = telefoneValue.replace(/(\d{2})(\d+)/, '($1) $2');
+    } else if (telefoneValue.length <= 10) {
+        telefoneValue = telefoneValue.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
+    } else {
+        telefoneValue = telefoneValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+    telefoneField.value = telefoneValue;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var telefoneField = document.getElementById('telefone');
+    if (telefoneField) {
+        telefoneField.addEventListener('input', function() {
+          maskTelefone(this);
+        });
+    }
+});
+</script>
+
 {% endblock %}
