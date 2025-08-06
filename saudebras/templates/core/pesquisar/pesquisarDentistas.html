@@ -52,7 +52,7 @@
           </div>
           </form>
           <!-- Formulário para Estado -->
-          <form id="estado_form"  class="mb-3" >
+          <form id="estado_form"  class="mb-3" style="display: none;">
             <div class="p-2 custom-select" style="border:solid 1px #555; border-radius:4px;">
               <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto; background:#fff !important;color:#555 !important;" class="w-100 " id="estado_select" >
               <option value="">Selecione um estado</option>
@@ -64,7 +64,7 @@
           
           
           <!-- Formulário para Cidade -->
-          <form id="cidade_form" class="mb-4">
+          <form id="cidade_form" class="mb-4" style="display: none;">
             <div class="p-2 custom-select" style="border:solid 1px #555; border-radius:4px;">
               <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !important;color:#555 !important;" class="w-100 " id="cidade_select" >
              <option value="">Selecione uma cidade</option>
@@ -130,7 +130,42 @@
 
 
 <script>
+  // Controle de exibição sequencial dos campos
+document.addEventListener('DOMContentLoaded', function() {
+    const especialidadeSelect = document.getElementById('especialidade_select');
+    const estadoForm = document.getElementById('estado_form');
+    const estadoSelect = document.getElementById('estado_select');
+    const cidadeForm = document.getElementById('cidade_form');
+    const cidadeSelect = document.getElementById('cidade_select');
 
+    // Quando especialidade for selecionada, mostrar campo de estado
+    especialidadeSelect.addEventListener('change', function() {
+        if (this.value !== '') {
+            estadoForm.style.display = 'block';
+            // Reset dos campos subsequentes
+            estadoSelect.value = '';
+            cidadeForm.style.display = 'none';
+            cidadeSelect.value = '';
+        } else {
+            estadoForm.style.display = 'none';
+            cidadeForm.style.display = 'none';
+            estadoSelect.value = '';
+            cidadeSelect.value = '';
+        }
+    });
+
+    // Quando estado for selecionado, mostrar campo de cidade
+    estadoSelect.addEventListener('change', function() {
+        if (this.value !== '') {
+            cidadeForm.style.display = 'block';
+            // Reset do campo de cidade
+            cidadeSelect.value = '';
+        } else {
+            cidadeForm.style.display = 'none';
+            cidadeSelect.value = '';
+        }
+    });
+});
 </script>
 
 

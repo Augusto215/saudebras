@@ -1251,21 +1251,49 @@ def get_especialidades(request):
     estado = request.GET.get('estado', None)
     tipo_profissional = request.GET.get('tipo_profissional', None)  # novo campo
 
-    q_objects = Q(is_active=True) & Q(email_verified=True)
+    if tipo_profissional:
+        # Filtrar especialidades diretamente pelo tipo_profissional
+        especialidades_queryset = Especialidade.objects.filter(tipo_profissional=tipo_profissional)
+        
+        if estado:
+            # Se um estado for especificado, filtrar também por profissionais ativos nesse estado
+            profissionais_ativos = Profissional.objects.filter(
+                is_active=True,
+                email_verified=True,
+                tipo_profissional=tipo_profissional,
+                estado__nome__icontains=estado
+            ).prefetch_related('especialidades')
+            
+            especialidades_ids = set()
+            for profissional in profissionais_ativos:
+                for especialidade in profissional.especialidades.all():
+                    especialidades_ids.add(especialidade.id)
+            
+            especialidades_queryset = especialidades_queryset.filter(id__in=especialidades_ids)
+        
+        especialidades_nomes = [esp.nome for esp in especialidades_queryset]
+        
+    else:
+        # Fallback para o comportamento antigo se tipo_profissional não for especificado
+        q_objects = Q(is_active=True) & Q(email_verified=True)
 
-    if estado:
-        q_objects &= Q(estado__nome__icontains=estado)
-    if tipo_profissional:  # novo condicional
-        q_objects &= Q(tipo_profissional=tipo_profissional)
+        if estado:
+            q_objects &= Q(estado__nome__icontains=estado)
 
-    profissionais_ativos = Profissional.objects.filter(q_objects).prefetch_related('especialidades')
-    especialidades_ativas = set()
+        profissionais_ativos = Profissional.objects.filter(q_objects).prefetch_related('especialidades')
+        especialidades_ativas = set()
 
-    for profissional in profissionais_ativos:
-        for especialidade in profissional.especialidades.all():
-            especialidades_ativas.add(especialidade.nome)
+        for profissional in profissionais_ativos:
+            for especialidade in profissional.especialidades.all():
+                especialidades_ativas.add(especialidade.nome)
+        
+        especialidades_nomes = list(especialidades_ativas)
 
-    especialidades_filtradas = [especialidade for especialidade in especialidades_ativas if query.lower() in especialidade.lower()]
+    # Aplicar filtro de query se fornecido
+    if query:
+        especialidades_filtradas = [especialidade for especialidade in especialidades_nomes if query.lower() in especialidade.lower()]
+    else:
+        especialidades_filtradas = especialidades_nomes
 
     return JsonResponse({'especialidades': sorted(especialidades_filtradas)})
 

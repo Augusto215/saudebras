@@ -58,7 +58,7 @@
           
           
           <!-- Formulário para Cidade -->
-          <form id="cidade_form" class="mb-4">
+          <form id="cidade_form" class="mb-4" style="display: none;">
             <div class="p-2 custom-select" style="border:solid .3px #000; border-radius:4px;">
               <select style="border:none; outline:none; height:2.5rem; max-height: 100px;  overflow-y: auto;background:#fff !important;color:#555 !important;" class="w-100 " id="cidade_select" >        
                 
@@ -123,7 +123,24 @@
 </div>
 
 <script>
+  // Controle de exibição sequencial dos campos
+document.addEventListener('DOMContentLoaded', function() {
+    const estadoSelect = document.getElementById('estado_select');
+    const cidadeForm = document.getElementById('cidade_form');
+    const cidadeSelect = document.getElementById('cidade_select');
 
+    // Quando estado for selecionado, mostrar campo de cidade
+    estadoSelect.addEventListener('change', function() {
+        if (this.value !== '') {
+            cidadeForm.style.display = 'block';
+            // Reset do campo de cidade
+            cidadeSelect.value = '';
+        } else {
+            cidadeForm.style.display = 'none';
+            cidadeSelect.value = '';
+        }
+    });
+});
 </script>
 
 <script src="{%static 'js/pesquisarJS/pesquisarEmergencias.js'%}">
