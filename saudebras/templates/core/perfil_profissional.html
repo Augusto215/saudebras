@@ -8,6 +8,37 @@
   p {
     color: #000 !important;
   }
+  
+  /* CSS adicional para garantir que as abas nunca tenham texto cortado */
+  .tab-button {
+    overflow: visible !important;
+    text-overflow: visible !important;
+    white-space: nowrap !important;
+  }
+  
+  .tab-button span {
+    overflow: visible !important;
+    text-overflow: visible !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    width: auto !important;
+  }
+  
+  .tabs-nav {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Força a visibilidade dos textos em qualquer dispositivo */
+  .tab-text-full,
+  .tab-text-short {
+    overflow: visible !important;
+    text-overflow: visible !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    width: auto !important;
+  }
 </style>
 
 <!-- CSS específico para perfis -->
@@ -167,26 +198,31 @@
       
         <!-- Navegação por abas -->
         <div class="tabs-container">
-          <nav class="tabs-nav">
-            <button class="tab-button active" data-tab="0">
-              <i class="bi bi-geo-alt"></i>
-              <span>Consultórios</span>
+          <nav class="tabs-nav" style="overflow-x: auto; overflow-y: hidden; white-space: nowrap; scroll-behavior: smooth;">
+            <button class="tab-button active" data-tab="0" style="flex-shrink: 0; min-width: fit-content; overflow: visible;">
+              <i class="bi bi-geo-alt local-icon"></i>
+              <span class="tab-text-full" style="white-space: nowrap; overflow: visible;">Consultórios</span>
+              <span class="tab-text-short" style="display: none; white-space: nowrap; overflow: visible;">Local</span>
             </button>
-            <button class="tab-button" data-tab="1">
+            <button class="tab-button" data-tab="1" style="flex-shrink: 0; min-width: fit-content; overflow: visible;">
               <i class="bi bi-heart-pulse"></i>
-              <span>Serviços</span>
+              <span class="tab-text-full" style="white-space: nowrap; overflow: visible;">Serviços</span>
+              <span class="tab-text-short" style="display: none; white-space: nowrap; overflow: visible;">Serviços</span>
             </button>
-            <button class="tab-button" data-tab="2">
+            <button class="tab-button" data-tab="2" style="flex-shrink: 0; min-width: fit-content; overflow: visible;">
               <i class="bi bi-star"></i>
-              <span>Avaliações</span>
+              <span class="tab-text-full" style="white-space: nowrap; overflow: visible;">Avaliações</span>
+              <span class="tab-text-short" style="display: none; white-space: nowrap; overflow: visible;">Notas</span>
             </button>
-            <button class="tab-button" data-tab="3">
+            <button class="tab-button" data-tab="3" style="flex-shrink: 0; min-width: fit-content; overflow: visible;">
               <i class="bi bi-question-circle"></i>
-              <span>Dúvidas</span>
+              <span class="tab-text-full" style="white-space: nowrap; overflow: visible;">Dúvidas</span>
+              <span class="tab-text-short" style="display: none; white-space: nowrap; overflow: visible;">FAQ</span>
             </button>
-            <button class="tab-button" data-tab="4">
+            <button class="tab-button" data-tab="4" style="flex-shrink: 0; min-width: fit-content; overflow: visible;">
               <i class="bi bi-person-badge"></i>
-              <span>Experiência</span>
+              <span class="tab-text-full" style="white-space: nowrap; overflow: visible;">Experiência</span>
+              <span class="tab-text-short" style="display: none; white-space: nowrap; overflow: visible;">Sobre</span>
             </button>
           </nav>
         
@@ -526,6 +562,64 @@ function loadFAQ() {
 
 // Inicialização quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
+    // Função para ajustar texto das abas baseado no tamanho da tela
+    function adjustTabTexts() {
+        const windowWidth = window.innerWidth;
+        const isMobile = windowWidth <= 576;
+        const isSmallMobile = windowWidth <= 480;
+        const isVerySmallMobile = windowWidth <= 360;
+        const isExtremelySmallMobile = windowWidth <= 320;
+        
+        console.log('Ajustando textos das abas para largura:', windowWidth);
+        
+        document.querySelectorAll('.tab-button').forEach((button, index) => {
+            const fullText = button.querySelector('.tab-text-full');
+            const shortText = button.querySelector('.tab-text-short');
+            
+            // Para telas pequenas, usar texto abreviado
+            if (isMobile || isSmallMobile || isVerySmallMobile || isExtremelySmallMobile) {
+                if (fullText) {
+                    fullText.style.display = 'none';
+                    fullText.style.visibility = 'hidden';
+                }
+                if (shortText) {
+                    shortText.style.display = 'block';
+                    shortText.style.visibility = 'visible';
+                }
+                console.log(`Aba ${index}: Usando texto curto`);
+            } else {
+                // Para telas grandes, usar texto completo
+                if (fullText) {
+                    fullText.style.display = 'block';
+                    fullText.style.visibility = 'visible';
+                }
+                if (shortText) {
+                    shortText.style.display = 'none';
+                    shortText.style.visibility = 'hidden';
+                }
+                console.log(`Aba ${index}: Usando texto completo`);
+            }
+        });
+    }
+    
+    // Ajustar textos no carregamento
+    adjustTabTexts();
+    
+    // Ajustar textos quando a janela for redimensionada
+    window.addEventListener('resize', function() {
+        setTimeout(adjustTabTexts, 100); // Pequeno delay para garantir que o resize foi processado
+    });
+    
+    // Ajustar textos quando houver mudança de orientação
+    window.addEventListener('orientationchange', function() {
+        setTimeout(adjustTabTexts, 300); // Delay maior para mudança de orientação
+    });
+    
+    // Força ajuste após carregamento completo
+    window.addEventListener('load', function() {
+        setTimeout(adjustTabTexts, 500);
+    });
+    
     // Configurar event listeners para as abas
     const tabButtons = document.querySelectorAll('.tab-button');
     

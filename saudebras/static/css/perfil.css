@@ -410,10 +410,16 @@
   display: flex;
   background: var(--light-gray);
   overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--primary-color) var(--light-gray);
   scroll-behavior: smooth;
+  scroll-padding: 1rem;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+  min-height: fit-content;
 }
 
 /* Melhor visualização da barra de scroll em dispositivos móveis */
@@ -449,16 +455,35 @@
   white-space: nowrap;
   min-width: 120px;
   border-bottom: 3px solid transparent;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: visible;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .tab-button span {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: visible;
   white-space: nowrap;
-  width: 100%;
+  width: auto;
+  max-width: none;
   text-align: center;
+  display: block;
+}
+
+/* Por padrão, mostrar texto completo */
+.tab-text-full {
+  display: block;
+  overflow: visible !important;
+  text-overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+.tab-text-short {
+  display: none;
+  overflow: visible !important;
+  text-overflow: visible !important;
+  white-space: nowrap !important;
 }
 
 .tab-button:hover {
@@ -930,12 +955,23 @@
   
   .tab-button {
     min-width: 90px;
-    padding: 0.8rem 0.6rem;
+    padding: 0.7rem 0.4rem;
     font-size: 0.75rem;
+    flex-shrink: 0;
+    overflow: visible;
   }
   
   .tab-button i {
-    font-size: 1.2rem;
+    font-size: 1.0rem;
+  }
+  
+  .tab-button span {
+    word-break: keep-all;
+    hyphens: none;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: visible;
+    white-space: nowrap;
   }
   
   .services-grid {
@@ -953,6 +989,34 @@
   
   .map-btn {
     align-self: flex-start;
+  }
+}
+
+/* Breakpoint intermediário para celulares maiores */
+@media (max-width: 576px) {
+  .tabs-nav {
+    padding: 0 0.5rem;
+  }
+  
+  .tab-button {
+    min-width: 78px;
+    padding: 0.7rem 0.4rem;
+    font-size: 0.65rem;
+    gap: 0.3rem;
+  }
+  
+  .tab-text-full {
+    display: none !important;
+  }
+  
+  .tab-text-short {
+    display: block !important;
+    font-size: 0.65rem;
+    line-height: 1.2;
+  }
+  
+  .tab-button i {
+    font-size: 1rem;
   }
 }
 
@@ -974,19 +1038,28 @@
   }
   
   .tab-button {
-    min-width: 80px;
-    padding: 0.6rem 0.4rem;
-    font-size: 0.7rem;
+    min-width: 70px;
+    padding: 0.6rem 0.3rem;
+    font-size: 0.6rem;
     gap: 0.3rem;
+    flex-shrink: 0;
   }
   
   .tab-button i {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
   }
   
-  .tab-button span {
+  .tab-text-full {
+    display: none !important;
+  }
+  
+  .tab-text-short {
+    display: block !important;
+    font-size: 0.6rem;
     line-height: 1.1;
     text-align: center;
+    word-break: break-word;
+    max-width: 100%;
   }
   
   .convenios-grid,
@@ -998,24 +1071,127 @@
 /* Media query para dispositivos muito pequenos */
 @media (max-width: 360px) {
   .tabs-nav {
-    padding: 0 0.5rem;
+    padding: 0 0.2rem;
+    gap: 0.1rem;
   }
   
   .tab-button {
-    min-width: 70px;
-    padding: 0.5rem 0.3rem;
-    font-size: 0.65rem;
-    gap: 0.2rem;
+    min-width: 65px;
+    max-width: 70px;
+    padding: 0.4rem 0.1rem;
+    font-size: 0.6rem;
+    gap: 0.1rem;
+    flex-shrink: 0;
+    overflow: visible;
   }
   
   .tab-button i {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.1rem;
+  }
+  
+  .tab-text-full {
+    display: none !important;
+  }
+  
+  .tab-text-short {
+    display: block !important;
+    font-size: 0.58rem !important;
+    line-height: 1.1;
+    text-align: center;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: visible;
+    font-weight: 600;
+    padding-left: 10px;
+  }
+  
+  .local-icon {
+    padding-left: 10px;
   }
   
   .tab-button span {
+    overflow: visible !important;
+    text-overflow: visible !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Media query para dispositivos extremamente pequenos */
+@media (max-width: 320px) {
+  .tabs-nav {
+    padding: 0 0.1rem;
+    gap: 0;
+  }
+  
+  .tab-button {
+    min-width: 55px;
+    max-width: 60px;
+    padding: 0.3rem 0.05rem;
+    font-size: 0.55rem;
+    gap: 0.1rem;
+    flex-shrink: 0;
+  }
+  
+  .tab-button i {
+    font-size: 0.8rem;
+    margin-bottom: 0.05rem;
+  }
+  
+  .tab-text-short {
+    font-size: 0.55rem !important;
     line-height: 1;
-    word-wrap: break-word;
-    hyphens: auto;
+    font-weight: 700;
+  }
+
+  .local-icon {
+    padding-left: 10px;
+  }
+}
+
+/* Media query para dispositivos ultra pequenos (menos de 280px) */
+@media (max-width: 280px) {
+  .tabs-nav {
+    padding: 0;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+  
+  .tab-button {
+    min-width: 50px !important;
+    max-width: 55px !important;
+    padding: 0.25rem 0.02rem !important;
+    font-size: 0.5rem !important;
+    gap: 0.05rem !important;
+    overflow: visible !important;
+  }
+  
+  .tab-button i {
+    font-size: 0.7rem !important;
+    margin-bottom: 0.02rem !important;
+  }
+  
+  .tab-text-short {
+    font-size: 0.5rem !important;
+    line-height: 1 !important;
+    font-weight: 700 !important;
+    overflow: visible !important;
+    text-overflow: visible !important;
+    white-space: nowrap !important;
+  }
+
+  .local-icon {
+    padding-left: 10px;
+  }
+  
+  .tab-button span {
+    overflow: visible !important;
+    text-overflow: visible !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    width: auto !important;
   }
 }
 
