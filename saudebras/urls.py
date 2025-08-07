@@ -20,11 +20,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
+from core.views import handler404, handler500, handler403
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
-    path('', include('usuarios.urls')),
+    path('', include('usuarios.urls')),  # URLs de usuários primeiro (mais específicas)
+    path('', include('core.urls')),     # URLs do core por último (mais genéricas)
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 
 ]
@@ -39,6 +40,11 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Configuração dos handlers de erro personalizados
+handler404 = 'core.views.handler404'
+handler500 = 'core.views.handler500'
+handler403 = 'core.views.handler403'
     
 
 

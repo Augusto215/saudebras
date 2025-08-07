@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from core.views import *
 from django.conf import settings
 from django.conf.urls.static import static
@@ -42,11 +42,11 @@ urlpatterns = [
     path('create-payment-intent/',  create_payment_intent, name='create-payment-intent'),
     path('pesquisarMedicos/', pesquisarMedicos, name='pesquisarMedicos'),
     path('pesquisarDentistas/', pesquisarDentistas, name='pesquisarDentistas'),
-
-
-
-
     
+    # URLs de teste para páginas de erro (apenas para desenvolvimento)
+    path('test-404/', test_404, name='test_404'),
+    path('test-500/', test_500, name='test_500'),
+    path('test-403/', test_403, name='test_403'),
 
     # Aqui estamos definindo a rota para a sua view home
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

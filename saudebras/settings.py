@@ -1,4 +1,3 @@
-
 """
 Django settings for saudebras project.
 
@@ -24,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%9zlaip=y$6^+4h384l^b!!t#%w2a7n!+92wn(a5eu3$kr92!e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # MUDANÇA AQUI
+DEBUG = False  # Reativado temporariamente para debug
 if not DEBUG:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
     WHITENOISE_USE_FINDERS = True
@@ -38,7 +37,8 @@ ALLOWED_HOSTS = [
     '955a-2804-1b3-6b00-3286-8531-64bf-c6b2-f400.ngrok-free.app', 
     '3712-2804-1b3-6b00-3286-a180-52eb-879f-bb46.ngrok-free.app', 
     'c5c4-2804-1b3-6b03-a3e5-386a-900c-bb86-8a8b.ngrok-free.app', 
-    '010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app'
+    '010e-2804-1b3-6b00-1a92-6dcf-220d-cc9-f30f.ngrok-free.app',
+    '*'  # Permite qualquer host (usado para desenvolvimento)
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'saudebras.middleware.ProfissionalMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    # 'core.middleware.ErrorHandlingMiddleware',  # Middleware desabilitado temporariamente
 ]
 
 ROOT_URLCONF = 'saudebras.urls'
@@ -217,26 +218,39 @@ STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': 'production.log',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'formatter': 'verbose',
         },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['file', 'console'],
-            'level': 'INFO',
+            'level': 'ERROR',
             'propagate': True,
         },
-        '': {
-            'handlers': ['file'],
-            'level': 'INFO',
+        'core.middleware': {
+            'handlers': ['file', 'console'],
+            'level': 'WARNING',
+            'propagate': True,
         },
     },
 }

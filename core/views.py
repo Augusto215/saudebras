@@ -1352,7 +1352,32 @@ def buscar_bairros(request):
     ).values('bairro__nome').distinct()  # Troquei o campo 'bairro' por 'bairro__nome'
     
     bairros_list = [b['bairro__nome'] for b in bairros]  # Extração dos nomes dos bairros
-    return JsonResponse({'bairros': bairros_list})  
+    return JsonResponse({'bairros': bairros_list})
+
+# Views para páginas de erro personalizadas
+def handler404(request, exception=None):
+    """View personalizada para erro 404 - Página não encontrada"""
+    return render(request, '404.html', status=404)
+
+def handler500(request):
+    """View personalizada para erro 500 - Erro interno do servidor"""
+    return render(request, '500.html', status=500)
+
+def handler403(request, exception=None):
+    """View personalizada para erro 403 - Acesso negado"""
+    return render(request, '403.html', status=403)
+
+# View de teste para páginas de erro (apenas para desenvolvimento)
+def test_404(request):
+    """View para testar página 404"""
+    return render(request, '404.html', status=404)
+
+def test_500(request):
+    """View para testar página 500"""
+    return render(request, '500.html', status=500)
+
+def test_403(request):
+    """View para testar página 403"""
+    return render(request, '403.html', status=403)
 
 
-    
