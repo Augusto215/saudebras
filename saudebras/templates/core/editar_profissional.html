@@ -440,12 +440,44 @@
       width: 100%;
       border-right: none;
       border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 1.5rem; /* Reduzido de 2rem para 1rem */
+      min-height: auto; /* Removido altura mínima fixa */
     }
     .form-row {
       grid-template-columns: 1fr;
     }
     .profile-content {
-      padding: 1.5rem;
+      padding: 1rem 1.5rem; /* Reduzido de 1.5rem para 1rem no topo */
+    }
+    .profile-section-title {
+      margin-bottom: 1rem; /* Reduzido de 2rem para 1rem */
+      font-size: 1.2rem; /* Ligeiramente menor no mobile */
+    }
+    /* Reduzir espaçamento dos botões da sidebar no mobile */
+    .sidebar-nav li {
+      margin-bottom: 0.3rem; /* Reduzido de 0.5rem */
+    }
+    .sidebar-nav button {
+      padding: 0.6rem 1rem; /* Reduzido o padding vertical */
+      font-size: 0.85rem; /* Fonte ligeiramente menor */
+    }
+  }
+  
+  /* Media query adicional para dispositivos móveis menores */
+  @media (max-width: 480px) {
+    .profile-sidebar {
+      padding: 0.8rem 1rem; /* Ainda menor para telas pequenas */
+    }
+    .profile-content {
+      padding: 0.8rem 1rem; /* Padding ainda menor */
+    }
+    .profile-section-title {
+      margin-bottom: 0.8rem; /* Gap ainda menor */
+      font-size: 1.1rem;
+    }
+    .sidebar-nav button {
+      padding: 0.5rem 0.8rem; /* Botões mais compactos */
+      font-size: 0.8rem;
     }
   }
   
