@@ -78,7 +78,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'saudebras.middleware.ProfissionalMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    # 'core.middleware.ErrorHandlingMiddleware',  # Middleware desabilitado temporariamente
+    'core.middleware.ErrorHandlingMiddleware' # Middleware desabilitado temporariamente
 ]
 
 ROOT_URLCONF = 'saudebras.urls'
