@@ -1040,6 +1040,16 @@ margin:0 !important;}
 
 }
 }
+
+@media(max-width:786px)
+{
+    #salvarEndereco {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+        min-width: auto !important;
+    }
+}
+
 header {
     position: relative;
     z-index: 1000; /* Assegura que a header fique sobre os outros elementos */
