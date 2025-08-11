@@ -230,83 +230,23 @@
           <li class="nav-item">
             <a href="{% url 'home' %}" class="nav-link">Início</a>
           </li>
- 
-          {% if user.is_authenticated == False %}
 
-          <li class="contato-li-ul nav-item" style="list-style: none; display: none; align-items: center;">
-            <a  href="{%url 'login' %}" class="nav-link" ><i style="font-size:1.3rem;" class="bi bi-box-arrow-in-right"></i>
-              &nbsp; Entrar</a>
-    </li>
-
-      {% else %}
-     <li class="contato-li-ul" style="list-style: none; display: none; align-items: center;">
-    <form method="POST" action="{% url 'logout' %}" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" class="nav-link logout-link" style="background: none; border: none; padding: 0.7rem 1rem; font-size: 16px; font-weight: 800; cursor: pointer;">
-            Sair <img src="">
-        </button>
-    </form>
-</li>
-
-      {%endif%}
-        
-        {%if user.is_authenticated != True %}  <li class="nav-item">
-          <div class="dropdown">
-            <a class="d-flex nav-link dropdown-toggle criarConta" style="color:#00ae9d;" type="button" id="dropdownMenuButton" aria-expanded="false"> 
-              <i style="font-size:1.3rem !important;" class="bi bi-person"></i>
- &nbsp;<span>Criar Conta</span>
-            </a>
-            <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
-              <li>
-               
-                <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerProfissional'%}">Sou Profissional</a>
-              </li>
-              <li>
-                <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
-              </li>
-            </ul>
-          </div>
-        </li>
-        {%endif%}
-        {% if request.is_profissional %}
-
-        <li class="nav-item">
-          <a href="{%url 'editar_perfil' %}" class="nav-link">Meu Perfil</a>
-        </li>
-        {%elif request.is_clinica%}
-        <li class="nav-item">
-          <a href="{%url 'editar_clinica' %}" class="nav-link">Meu Perfil</a>
-        </li>
-        {%elif request.is_cliente%}
-        <li class="nav-item">
-          <a href="{%url 'editar_cliente' %}" class="nav-link">Meu Perfil</a>
-        </li>
-      {% endif %}
-        
-<script>
-  
-  let criarConta = document.querySelector('.criarConta')
-  let contaModal = document.querySelector('.contaModal')
-
-  criarConta.addEventListener('click', function()
-  {
-    contaModal.classList.add('active')
-
-  })
-
-  contaModal.addEventListener('click', function(event)
-  {
-    event.stopPropagation()
-    if(event.target === contaModal)
-    {
-      contaModal.classList.remove('active')
-    }
-  })
-</script>
+          {% if request.is_profissional %}
+          <li class="nav-item">
+            <a href="{%url 'editar_perfil' %}" class="nav-link">Meu Perfil</a>
+          </li>
+          {%elif request.is_clinica%}
+          <li class="nav-item">
+            <a href="{%url 'editar_clinica' %}" class="nav-link">Meu Perfil</a>
+          </li>
+          {%elif request.is_cliente%}
+          <li class="nav-item">
+            <a href="{%url 'editar_cliente' %}" class="nav-link">Meu Perfil</a>
+          </li>
+          {% endif %}
    
       <li class="nav-item">
-        <a href="{%url 'sobre' %}" class="nav-link" >Quem Somos</a>
+        <a href="{%url 'sobre' %}" class="nav-link" >Sobre</a>
       </li>
 
       <li class="nav-item">
@@ -318,8 +258,40 @@
       </li>
 
       <li class="nav-item">
-        <a href="{% url 'contato' %}" class="nav-link">Fale Conosco</a>
+        <a href="{% url 'contato' %}" class="nav-link">Contato</a>
       </li>
+
+      {% if user.is_authenticated == False %}
+      <li class="nav-item">
+        <div class="dropdown">
+          <a class="d-flex nav-link dropdown-toggle criarConta" style="color:#00ae9d;" type="button" id="dropdownMenuButton" aria-expanded="false"> 
+            <i style="font-size:1.3rem !important;" class="bi bi-person"></i>
+            &nbsp;<span>Criar Conta</span>
+          </a>
+          <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
+            <li>
+              <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerProfissional'%}">Sou Profissional</a>
+            </li>
+            <li>
+              <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="nav-item">
+        <a href="{%url 'login' %}" class="nav-link"><i style="font-size:1.3rem;" class="bi bi-box-arrow-in-right"></i>
+          &nbsp; Entrar</a>
+      </li>
+
+      {% else %}
+
+      <li class="nav-item">
+        <a class="nav-link logout-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Sair</a>
+      </li>
+
+      {%endif%}
 
       </ul>
 
@@ -437,6 +409,26 @@
       </div>
     
           </nav>
+
+<script>
+  let criarConta = document.querySelector('.criarConta')
+  let contaModal = document.querySelector('.contaModal')
+
+  criarConta.addEventListener('click', function()
+  {
+    contaModal.classList.add('active')
+
+  })
+
+  contaModal.addEventListener('click', function(event)
+  {
+    event.stopPropagation()
+    if(event.target === contaModal)
+    {
+      contaModal.classList.remove('active')
+    }
+  })
+</script>
       
     </header>
 
@@ -483,8 +475,6 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="logoutForm" method="POST" action="{% url 'logout' %}" style="display: none;">
-              {% csrf_token %}
                   <div class="mb-3">
                       <label for="loginEmail" class="form-label">Email</label>
                       <input type="text" class="form-control" name="username" placeholder="Email" id="loginEmail">
@@ -497,7 +487,6 @@
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                       <button type="submit" class="btn btn-primary">Login</button>
                   </div>
-              </form>
           </div>
          
       </div>
@@ -629,6 +618,11 @@
               });
             </script>
 
+<!-- Formulário oculto para logout -->
+<form id="logoutForm" method="POST" action="{% url 'logout' %}" style="display: none;">
+  {% csrf_token %}
+</form>
+
 <!-- Modal de Confirmação de Logout -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" style="z-index: 9999;">
   <div class="modal-dialog modal-dialog-centered">
@@ -640,7 +634,7 @@
       <div class="modal-body" style="padding: 1rem 2rem;">
         <div class="d-flex flex-column align-items-center text-center" style="gap: 1rem;">
           <div style="width: 64px; height: 64px; background-color: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-sign-out-alt" style="font-size: 24px; color: #dc2626;"></i>
+            <i class="bi bi-box-arrow-left" style="font-size: 24px; color: #dc2626;"></i>
           </div>
           <p style="margin: 0; font-size: 16px; color: #6b7280;">Tem certeza de que deseja sair da sua conta?</p>
         </div>
