@@ -454,14 +454,14 @@
         }, 3000); // 3 seconds
       });
       
-      {% if messages %}
-        {% for message in messages %}
-          {% if message.tags == 'error' %}
-            var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-            errorModal.show();
-          {% endif %}
-        {% endfor %}
-      {% endif %}
+      // {% if messages %}
+      //   {% for message in messages %}
+      //     {% if message.tags == 'error' %}
+      //       var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+      //       errorModal.show();
+      //     {% endif %}
+      //   {% endfor %}
+      // {% endif %}
     });
   </script>
 
