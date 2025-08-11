@@ -10,7 +10,8 @@ const tipoProfissional = urlObj.searchParams.get("tipo_profissional");
 const estado = urlObj.searchParams.get("estado");
 const especialidade = urlObj.searchParams.get("especialidade");
 const cidade = urlObj.searchParams.get("cidade");
-console.log(`Tipo profissional: ${tipoProfissional}, Estado: ${estado}, Especialidade: ${especialidade}, Cidade: ${cidade}`);
+const convenioAtual = urlObj.searchParams.get("convenios"); // Recupera o convênio atual da URL
+console.log(`Tipo profissional: ${tipoProfissional}, Estado: ${estado}, Especialidade: ${especialidade}, Cidade: ${cidade}, Convênio: ${convenioAtual}`);
 
 // Fetch dos Convênios (exemplo)
 function fetchConvenios(tipoProfissional, estado, especialidade, cidade) {
@@ -29,18 +30,27 @@ fetchConvenios(tipoProfissional, estado, especialidade, cidade)
   console.log("Convênios obtidos: ", convenios);
   const convenioSelect = document.getElementById("convenios_select");
 
-  const initialOption = document.createElement("option");
-initialOption.value = "";
-initialOption.text = "Convênios";
-convenioSelect.appendChild(initialOption);
+  // Limpar opções existentes
+  convenioSelect.innerHTML = "";
 
-// Adicionando as opções ao select com base nos convênios obtidos
-convenios.forEach(convenio => {
-  const option = document.createElement("option");
-  option.value = convenio;
-  option.text = convenio;
-  convenioSelect.appendChild(option);
-});
+  const initialOption = document.createElement("option");
+  initialOption.value = "";
+  initialOption.text = "Filtrar por convênio...";
+  convenioSelect.appendChild(initialOption);
+
+  // Adicionando as opções ao select com base nos convênios obtidos
+  convenios.forEach(convenio => {
+    const option = document.createElement("option");
+    option.value = convenio;
+    option.text = convenio;
+    convenioSelect.appendChild(option);
+  });
+
+  // Definir o valor selecionado com base na URL atual
+  if (convenioAtual) {
+    convenioSelect.value = convenioAtual;
+    console.log("Convênio selecionado recuperado da URL: ", convenioAtual);
+  }
 
 
  // Atualizando o DOM com base nos parâmetros da URL
@@ -75,9 +85,19 @@ convenios.forEach(convenio => {
     const selectedConvenio = convenioSelect.value;
     console.log("Convênio selecionado: ", selectedConvenio);
 
-    // Adicionando novo parâmetro à URL
-    urlObj.searchParams.set("convenios", selectedConvenio);
-    window.location.href = urlObj.toString();
-    window.location.href = urlObj.toString();
+    // Criar nova URL com o convênio selecionado
+    const newUrlObj = new URL(window.location.href);
+    
+    if (selectedConvenio) {
+      newUrlObj.searchParams.set("convenios", selectedConvenio);
+    } else {
+      newUrlObj.searchParams.delete("convenios"); // Remove o parâmetro se vazio
+    }
+    
+    // Remover parâmetro de página para voltar à primeira página
+    newUrlObj.searchParams.delete("page");
+    
+    console.log("Nova URL: ", newUrlObj.toString());
+    window.location.href = newUrlObj.toString();
   });
 });
