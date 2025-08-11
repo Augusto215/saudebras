@@ -35,7 +35,7 @@ fetchConvenios(tipoProfissional, estado, especialidade, cidade)
 
   const initialOption = document.createElement("option");
   initialOption.value = "";
-  initialOption.text = "Filtrar por convênio...";
+  initialOption.text = "Todos os convênios";
   convenioSelect.appendChild(initialOption);
 
   // Adicionando as opções ao select com base nos convênios obtidos

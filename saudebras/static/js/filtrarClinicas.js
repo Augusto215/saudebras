@@ -12,12 +12,12 @@ const tipoProfissional = urlObj.searchParams.get("tipo_profissional");
 const estado = urlObj.searchParams.get("estado");
 const especialidade = urlObj.searchParams.get("especialidade");
 const cidade = urlObj.searchParams.get("cidade");
-console.log(`Tipo Clinica: ${tipoClinica}, Estado: ${estado}, Especialidade: ${especialidade}, Cidade: ${cidade}`);
+const convenioAtual = urlObj.searchParams.get("convenios");
+console.log(`Tipo Clinica: ${tipoClinica}, Estado: ${estado}, Especialidade: ${especialidade}, Cidade: ${cidade}, Convênio: ${convenioAtual}`);
 
-// Fetch dos Convênios (exemplo)
+// Fetch dos Convênios
 function fetchConvenios(tipoClinica, tipoProfissional, estado, especialidade, cidade) {
   console.log("Iniciando fetch para obter convênios...");
-  // Ajuste a URL conforme o endpoint correto do seu backend
   let url = `/buscar_convenios_por_tipo_clinica/?`;
   if (tipoClinica) url += `tipo_clinica=${encodeURIComponent(tipoClinica)}&`;
   if (tipoProfissional) url += `tipo_profissional=${encodeURIComponent(tipoProfissional)}&`;
@@ -30,6 +30,10 @@ function fetchConvenios(tipoClinica, tipoProfissional, estado, especialidade, ci
     .then(data => {
       console.log("Dados recebidos para convênios: ", data);
       return data.convenios;
+    })
+    .catch(error => {
+      console.error("Erro ao buscar convênios:", error);
+      return [];
     });
 }
 
@@ -39,54 +43,80 @@ fetchConvenios(tipoClinica, tipoProfissional, estado, especialidade, cidade)
   console.log("Convênios obtidos: ", convenios);
   const convenioSelect = document.getElementById("convenios_select");
 
+  // Limpar opções existentes
+  convenioSelect.innerHTML = '';
+
+  // Opção padrão
   const initialOption = document.createElement("option");
-initialOption.value = "";
-initialOption.text = "Convênios";
-convenioSelect.appendChild(initialOption);
+  initialOption.value = "";
+  initialOption.text = "Todos os convênios";
+  convenioSelect.appendChild(initialOption);
 
-// Adicionando as opções ao select com base nos convênios obtidos
-convenios.forEach(convenio => {
-  const option = document.createElement("option");
-  option.value = convenio;
-  option.text = convenio;
-  convenioSelect.appendChild(option);
-});
+  // Adicionando as opções ao select com base nos convênios obtidos
+  convenios.forEach(convenio => {
+    const option = document.createElement("option");
+    option.value = convenio;
+    option.text = convenio;
+    convenioSelect.appendChild(option);
+  });
 
+  // Definir o valor selecionado baseado no parâmetro da URL
+  if (convenioAtual) {
+    convenioSelect.value = convenioAtual;
+  }
 
- // Atualizando o DOM com base nos parâmetros da URL
- document.getElementById("especialidadeSpan").innerHTML = ` ${especialidade || ''}`;
- document.getElementById("estadoSpan").innerHTML = ` ${estado || ''}`;
- document.getElementById("cidadeSpan").innerHTML = `${cidade || ''}`;
+  // Atualizando o DOM com base nos parâmetros da URL
+  document.getElementById("especialidadeSpan").innerHTML = ` ${especialidade || 'Todas as especialidades'}`;
+  document.getElementById("estadoSpan").innerHTML = ` ${estado || ''}`;
+  document.getElementById("cidadeSpan").innerHTML = `${cidade || 'Todas as cidades'}`;
 
- // Lógica baseada no tipo_clinica
- let imageSrc;
- if (tipoClinica === 'Emergência') {
-   document.getElementById("tipoProfissionalSpan").innerHTML = "Urgências e Emergências 24h";
-   imageSrc = document.getElementById("emergenciaImg").innerText;
- } else if (tipoClinica === 'Laboratório') {
-   document.getElementById("tipoProfissionalSpan").innerHTML = "Exames e Laboratórios";
-   imageSrc = document.getElementById("laboratorioImg").innerText;
+  // Lógica baseada no tipo_clinica
+  let tipoDisplay = "Clínicas";
+  if (tipoClinica === 'Emergência') {
+    tipoDisplay = "Urgências e Emergências 24h";
+  } else if (tipoClinica === 'Laboratório') {
+    tipoDisplay = "Exames e Laboratórios";
+  } else if (tipoClinica) {
+    tipoDisplay = tipoClinica;
+  }
+  
+  document.getElementById("tipoProfissionalSpan").innerHTML = tipoDisplay;
 
-
- } else {
-   // Outros casos
-   document.getElementById("tipoProfissionalSpan").innerHTML = "Outro";
-   imageSrc = `http://alguma.url/imagem/Outro_${estado || ''}_${especialidade || ''}_${cidade || ''}.jpg`;
- }
- document.getElementById("suaImagem").src = imageSrc;
-
- // O restante do seu código...
-
-
-
-
-  // Evento para adicionar o novo filtro à URL
+  // Evento para filtrar por convênio
   convenioSelect.addEventListener("change", function() {
     const selectedConvenio = convenioSelect.value;
     console.log("Convênio selecionado: ", selectedConvenio);
 
-    // Adicionando novo parâmetro à URL
-    urlObj.searchParams.set("convenios", selectedConvenio);
-    window.location.href = urlObj.toString();
+    // Criando nova URL
+    const newUrlObj = new URL(currentURL);
+    
+    if (selectedConvenio) {
+      newUrlObj.searchParams.set("convenios", selectedConvenio);
+    } else {
+      newUrlObj.searchParams.delete("convenios");
+    }
+    
+    // Remover o parâmetro de página ao filtrar
+    newUrlObj.searchParams.delete("page");
+    
+    window.location.href = newUrlObj.toString();
   });
+})
+.catch(error => {
+  console.error("Erro ao carregar convênios:", error);
+  // Mesmo em caso de erro, atualizar o DOM básico
+  document.getElementById("especialidadeSpan").innerHTML = ` ${especialidade || 'Todas as especialidades'}`;
+  document.getElementById("estadoSpan").innerHTML = ` ${estado || ''}`;
+  document.getElementById("cidadeSpan").innerHTML = `${cidade || 'Todas as cidades'}`;
+  
+  let tipoDisplay = "Clínicas";
+  if (tipoClinica === 'Emergência') {
+    tipoDisplay = "Urgências e Emergências 24h";
+  } else if (tipoClinica === 'Laboratório') {
+    tipoDisplay = "Exames e Laboratórios";
+  } else if (tipoClinica) {
+    tipoDisplay = tipoClinica;
+  }
+  
+  document.getElementById("tipoProfissionalSpan").innerHTML = tipoDisplay;
 });

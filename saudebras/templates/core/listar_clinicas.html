@@ -8,122 +8,174 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-  /* Responsividade geral */
-  @media (max-width: 768px) {
-    .container {
-      padding-left: 15px;
-      padding-right: 15px;
-    }
-    
-    .fluid-container {
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-    
-    /* Header responsivo */
-    .listarHeader {
-      flex-direction: column;
-      align-items: center !important;
-      text-align: center;
-      gap: 1rem;
-    }
-    
-    .listarHeader > div:first-child {
-      align-items: center !important;
-    }
-    
-    #suaImagem {
-      max-height: 2.5rem !important;
-    }
+  /* Reset e fonte geral */
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
-  @media (max-width: 576px) {
-    /* Cabeçalho ainda menor em telas muito pequenas */
-    .listarHeader span {
-      font-size: 1.1rem !important;
-    }
-    
-    #tipoProfissionalSpan {
-      font-size: 1.2rem !important;
-    }
+  /* Container principal moderno */
+  .modern-container {
+    background: linear-gradient(135deg, #f8fffe 0%, #eef9f7 100%);
+    min-height: 100vh;
   }
 
-  /* Cards de profissionais responsivos */
-  .professional-card {
-    background: #fff;
-    padding: 1.5rem;
-    max-width: 1000px;
-    margin: 0 auto 1.5rem auto;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  /* Header moderno */
+  .modern-header {
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%);
+    color: white;
+    padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modern-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 2;
     display: flex;
-    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
-  @media (max-width: 768px) {
-    .professional-card {
-      flex-direction: column;
-      padding: 1rem;
-      margin: 0 10px 1.5rem 10px;
-      border-radius: 12px;
-      gap: 1rem;
-    }
-  }
-
-  @media (max-width: 576px) {
-    .professional-card {
-      padding: 0.75rem;
-      margin: 0 5px 1rem 5px;
-      gap: 0.75rem;
-    }
-  }
-
-  /* Conteúdo principal do card */
-  .card-main-content {
-    flex: 1;
-    min-width: 0;
-  }
-
-  /* Seção do mapa */
-  .card-map-section {
-    flex: 0 0 300px;
+  .breadcrumb-modern {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
 
+  .specialist-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .breadcrumb-path {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+
+  .breadcrumb-separator {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  .header-icon {
+    font-size: 3rem;
+    opacity: 0.8;
+  }
+
+  /* Responsividade do header */
   @media (max-width: 768px) {
-    .card-map-section {
-      flex: none;
-      width: 100%;
+    .modern-header {
+      padding: 1.5rem 0;
     }
-  }
-
-  /* Mapa */
-  .professional-map {
-    width: 100%;
-    height: 200px;
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-  }
-
-  @media (max-width: 768px) {
-    .professional-map {
-      height: 180px;
+    
+    .header-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+    
+    .specialist-title {
+      font-size: 1.5rem;
+    }
+    
+    .header-icon {
+      font-size: 2.5rem;
     }
   }
 
   @media (max-width: 576px) {
-    .professional-map {
-      height: 160px;
+    .specialist-title {
+      font-size: 1.3rem;
+    }
+    
+    .breadcrumb-path {
+      font-size: 0.9rem;
     }
   }
 
-  /* Layout dos cards responsivo */
+  /* Cards modernos */
+  .professional-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 0 auto 2rem auto;
+    max-width: 1200px;
+    box-shadow: 0 8px 32px rgba(0, 174, 157, 0.08);
+    border: 1px solid rgba(0, 174, 157, 0.1);
+    display: flex;
+    gap: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .professional-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00ae9d 0%, #17ABA0 100%);
+  }
+
+  .professional-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 174, 157, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .professional-card {
+      flex-direction: column;
+      padding: 1.5rem;
+      margin: 0 1rem 1.5rem 1rem;
+      border-radius: 16px;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .professional-card {
+      padding: 1rem;
+      margin: 0 0.5rem 1rem 0.5rem;
+      gap: 1rem;
+      border-radius: 12px;
+    }
+  }
+
+  /* Conteúdo principal moderno */
+  .card-main-content {
+    flex: 1;
+    min-width: 0;
+  }
+
   .prof-info-container {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   @media (max-width: 768px) {
@@ -131,65 +183,69 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 0.75rem;
+      gap: 1rem;
     }
   }
 
-  /* Imagens de perfil responsivas */
+  /* Imagem do profissional moderna */
   .profImg {
-    width: 8rem;
-    height: 8rem;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 20px;
     flex-shrink: 0;
+    border: 3px solid #f0f9f8;
+    box-shadow: 0 4px 12px rgba(0, 174, 157, 0.15);
   }
 
   @media (max-width: 768px) {
     .profImg {
-      width: 6rem;
-      height: 6rem;
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
     }
   }
 
   @media (max-width: 576px) {
     .profImg {
-      width: 5rem;
-      height: 5rem;
-      border-radius: 8px;
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
     }
   }
 
-  /* Informações do profissional */
+  /* Informações do profissional modernas */
   .prof-details {
     flex: 1;
     min-width: 0;
   }
 
   .prof-name {
-    color: #000 !important;
-    font-size: 1.2rem !important;
-    font-weight: 600;
+    color: #1a1a1a !important;
+    font-size: 1.4rem !important;
+    font-weight: 700;
     margin-bottom: 0.5rem;
     word-wrap: break-word;
+    line-height: 1.3;
   }
 
   @media (max-width: 768px) {
     .prof-name {
-      font-size: 1.1rem !important;
+      font-size: 1.2rem !important;
     }
   }
 
   @media (max-width: 576px) {
     .prof-name {
-      font-size: 1rem !important;
+      font-size: 1.1rem !important;
     }
   }
 
-  /* Especialidade e registro */
   .prof-specialty {
-    color: #000 !important;
+    color: #666 !important;
     font-size: 1rem !important;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
   }
 
   @media (max-width: 576px) {
@@ -198,12 +254,30 @@
     }
   }
 
-  /* Avaliações responsivas */
+  /* Link para perfil moderno */
+  .profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #00ae9d !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+  }
+
+  .profile-link:hover {
+    color: #17ABA0 !important;
+    transform: translateX(4px);
+  }
+
+  /* Avaliações modernas */
   .rating-display {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
     flex-wrap: wrap;
   }
 
@@ -213,17 +287,29 @@
     }
   }
 
-  .star1 {
-    color: #00ae9d !important;
-    font-size: 1rem;
+  .rating {
+    display: flex;
+    gap: 2px;
   }
 
-  /* Convênios responsivos */
+  .star1 {
+    color: #ffd700 !important;
+    font-size: 1.1rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .totalAV {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* Convênios modernos */
   .convenios-container {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   @media (max-width: 768px) {
@@ -233,143 +319,371 @@
   }
 
   .convenio-item {
-    margin-right: 0.5rem !important;
-    text-decoration: underline;
-    word-break: break-word;
+    background: linear-gradient(135deg, #f0f9f8 0%, #e6f7f5 100%);
+    color: #00ae9d !important;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    border: 1px solid rgba(0, 174, 157, 0.2);
+    transition: all 0.2s ease;
   }
 
-  /* Endereço responsivo */
-  .address-container {
+  .convenio-item:hover {
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%);
+    color: white !important;
+    transform: translateY(-1px);
+  }
+
+  .convenios-link {
+    color: #00ae9d !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  .convenios-link:hover {
+    color: #17ABA0 !important;
+  }
+
+  /* Seção do mapa moderna */
+  .card-map-section {
+    flex: 0 0 320px;
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   @media (max-width: 768px) {
-    .address-container {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+    .card-map-section {
+      flex: none;
+      width: 100%;
     }
   }
 
-  .address-text {
-    flex: 1;
-    word-wrap: break-word;
+  .map-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%) !important;
+    border-radius: 12px;
+    color: #fff !important;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none !important;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 174, 157, 0.25);
   }
 
-  /* Seção de agendamento responsiva */
+  .map-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 174, 157, 0.35);
+    color: #fff !important;
+  }
+
+  @media (max-width: 768px) {
+    .map-btn {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .map-btn {
+      padding: 0.7rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .map-address {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    line-height: 1.4;
+    padding: 1rem;
+    background: #f8fffe;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 174, 157, 0.1);
+  }
+
+  .map-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0f9f8 100%);
+    color: #999;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 174, 157, 0.1);
+    min-height: 120px;
+  }
+
+  /* Seção de agendamento moderna */
   .booking-section {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    max-width: 100%;
-    border-top: dashed 2px gray;
-    padding-top: 1rem;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f0f9f8;
+    margin-top: 1.5rem;
   }
 
   @media (max-width: 768px) {
     .booking-section {
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 1rem;
+      text-align: center;
     }
   }
 
   .price-info {
     display: flex;
     flex-direction: column;
-    text-align: center;
+    gap: 0.25rem;
+  }
+
+  .price-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
   }
 
   .price-value {
     color: #00ae9d !important;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.3rem;
   }
 
-  /* Botão de agendamento responsivo */
   .booking-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: #21BFA6;
-    border-radius: 4px;
-    color: #fff;
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%) !important;
+    border-radius: 12px;
+    color: #fff !important;
     font-weight: 600;
-    padding: 0.7rem 2rem;
+    padding: 1rem 2rem;
     text-decoration: none !important;
-    white-space: nowrap;
-    min-width: fit-content;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 174, 157, 0.25);
+    font-size: 1rem;
+  }
+
+  .booking-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 174, 157, 0.35);
+    color: #fff !important;
   }
 
   @media (max-width: 768px) {
     .booking-btn {
       width: 100%;
-      max-width: 280px;
-      padding: 0.8rem 1rem;
+      max-width: 300px;
+      padding: 0.9rem 1.5rem;
     }
   }
 
   @media (max-width: 576px) {
     .booking-btn {
-      padding: 0.7rem 0.5rem;
-      font-size: 0.9rem;
+      padding: 0.8rem 1rem;
+      font-size: 0.95rem;
     }
   }
 
-  /* Formulário de filtro responsivo */
-  .filter-form {
-    margin-bottom: 0 !important;
+  /* Filtros avançados modernos */
+  .advanced-filters {
+    background: linear-gradient(135deg, #f8fffe 0%, #eef9f7 100%);
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 174, 157, 0.1);
+  }
+
+  .filters-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-group {
+    position: relative;
+  }
+
+  .filter-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #00ae9d;
+    margin-bottom: 0.5rem;
+  }
+
+  .filter-input {
     width: 100%;
+    padding: 0.8rem;
+    border: 2px solid rgba(0, 174, 157, 0.1);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .filter-input:focus {
+    outline: none;
+    border-color: #00ae9d;
+    box-shadow: 0 0 0 3px rgba(0, 174, 157, 0.1);
+  }
+
+  .filter-actions {
     display: flex;
-    justify-content: end;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+  }
+
+  .filter-btn-primary {
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%);
+    color: white;
+  }
+
+  .filter-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 174, 157, 0.25);
+  }
+
+  .filter-btn-secondary {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #e9ecef;
+  }
+
+  .filter-btn-secondary:hover {
+    background: #e9ecef;
+  }
+
+  @media (max-width: 768px) {
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .filter-actions {
+      flex-direction: column;
+    }
+    
+    .filter-btn {
+      width: 100%;
+    }
+  }
+
+  /* Filtro de convênios moderno */
+  .filter-section {
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%);
+    padding: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .filter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse"><circle cx="7.5" cy="7.5" r="0.8" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>');
+  }
+
+  .filter-form {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    display: flex;
+    justify-content: center;
   }
 
   .filter-select-container {
     position: relative;
-    max-width: 20rem;
+    max-width: 320px;
     width: 100%;
-  }
-
-  @media (max-width: 768px) {
-    .filter-form {
-      justify-content: center;
-    }
-    
-    .filter-select-container {
-      max-width: 100%;
-    }
   }
 
   .filter-select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-    background: #fff;
+    background: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 1rem 3rem 1rem 1.2rem;
     width: 100%;
-    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .filter-select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
   }
 
   .filter-arrow {
-    pointer-events: none;
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
     width: 1.2rem;
     height: 1.2rem;
-    fill: #17ABA0;
+    fill: #00ae9d;
+    pointer-events: none;
+    transition: transform 0.3s ease;
   }
 
-  /* Paginação responsiva */
+  .filter-select:focus + .filter-arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  @media (max-width: 768px) {
+    .filter-section {
+      padding: 1rem 0;
+    }
+    
+    .filter-select-container {
+      max-width: 100%;
+      margin: 0 1rem;
+    }
+  }
+
+  /* Paginação moderna */
   .pagination {
     text-align: center;
-    margin-bottom: 2rem;
+    margin: 2rem 0 0 0;
+    padding-bottom: 3rem;
   }
 
   .pagination .step-links {
@@ -381,305 +695,345 @@
   }
 
   .pagination a {
-    padding: 0.5rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.2rem;
     text-decoration: none !important;
-    color: #fff;
-    background: #21BFA6 !important;
+    color: #fff !important;
+    background: linear-gradient(135deg, #00ae9d 0%, #17ABA0 100%);
     font-weight: 600;
-    border-radius: 4px;
-    white-space: nowrap;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 174, 157, 0.25);
+    font-size: 0.9rem;
+  }
+
+  .pagination a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 174, 157, 0.35);
+  }
+
+  .pagination .current {
+    color: #666 !important;
+    font-weight: 600;
+    font-size: 1rem;
+    background: #f8fffe;
+    padding: 0.75rem 1.2rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 174, 157, 0.1);
   }
 
   @media (max-width: 576px) {
     .pagination a {
-      padding: 0.4rem 0.6rem;
-      font-size: 0.9rem;
-    }
-  }
-
-  /* Modal responsivo */
-  @media (max-width: 576px) {
-    .modal-dialog {
-      margin: 0.5rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
     }
     
-    .modal-content {
-      border-radius: 8px;
+    .pagination .current {
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
     }
   }
 
-  /* Footer responsivo */
-  footer {
-    background: #17ABA0;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    margin-top: auto;
+  /* Modal moderno */
+  .modern-modal {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .modern-modal .modal-header {
+    background: linear-gradient(135deg, #f8fffe 0%, #f0f9f8 100%);
+    border-bottom: 1px solid rgba(0, 174, 157, 0.1);
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem;
+  }
+
+  .modern-modal .modal-title {
+    color: #00ae9d;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  .modern-modal .modal-body {
+    padding: 2rem;
+  }
+
+  .convenios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .convenio-tag {
+    background: linear-gradient(135deg, #f0f9f8 0%, #e6f7f5 100%);
+    color: #00ae9d;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid rgba(0, 174, 157, 0.2);
   }
 
   @media (max-width: 576px) {
-    footer {
-      padding: 0.75rem 0.5rem;
-      font-size: 0.9rem;
+    .modern-modal .modal-content {
+      margin: 0.5rem;
+      border-radius: 16px;
+    }
+    
+    .modern-modal .modal-header {
+      border-radius: 16px 16px 0 0;
+      padding: 1rem;
+    }
+    
+    .modern-modal .modal-body {
+      padding: 1.5rem;
     }
   }
 
   /* Container principal responsivo */
-  .conteudo-com-footer {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #EDF5F2;
+  .main-content {
+    background: linear-gradient(135deg, #f8fffe 0%, #eef9f7 100%);
+    min-height: calc(100vh - 100px);
+    padding: 2rem 0;
   }
 
-  .flex-grow-1 {
-    flex-grow: 1;
-  }
-
-  /* Ajustes para o cabeçalho da página */
-  .page-header {
-    background: #17ABA0;
-    color: #fff;
-    padding: 1rem;
+  .professionals-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
   @media (max-width: 768px) {
-    .page-header {
-      padding: 0.75rem 0.5rem;
+    .main-content {
+      padding: 1rem 0;
     }
-  }
-
-  /* Estilos específicos do mapa */
-  .map-address {
-    font-size: 0.9rem;
-    color: #666;
-    text-align: center;
-    margin-top: 0.5rem;
-    line-height: 1.3;
-  }
-
-  .map-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0f0f0;
-    color: #666;
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 1rem;
+    
+    .professionals-container {
+      padding: 0 0.5rem;
+    }
   }
 </style>
 
-<div class="conteudo-com-footer">
-  <div class="flex-grow-1">
-    <div class="fluid-container w-100">
-      <!-- Cabeçalho da página -->
-      <div class="mt-3 mb-3 container d-flex flex-column align-items-center justify-content-center">
-        <div class="listarHeader d-flex w-100 justify-content-between align-items-center">
-          <div class="d-flex justify-content-center flex-column align-items-start">
-            <span style="color:#17ABA0; font-size:1.3rem; font-weight:600;" id="tipoProfissionalSpan"></span>
-            <div class="d-flex align-items-center" style="gap:.5rem;">
-              <span style="font-weight:600;color:gray; font-size:1.1rem;">&gt;</span>
-              <span id="especialidadeSpan" style="font-weight:600;color:gray;"></span>
-            </div>
-            <div class="d-flex" style="gap:.5rem;">
-              <span id="cidadeSpan" style="font-weight:600;color:gray;"></span>
-              <span id="estadoSpan" style="font-weight:600;color:gray;"></span>
-            </div>
-          </div>
-          <div class="d-flex align-items-center">
-            <img style="max-height:3rem;" id="suaImagem" src="">
-          </div>
+<div class="modern-container">
+  <!-- Header moderno -->
+  <div class="modern-header">
+    <div class="header-content">
+      <div class="breadcrumb-modern">
+        <h1 class="specialist-title" id="tipoProfissionalSpan"></h1>
+        <div class="breadcrumb-path">
+          <span id="especialidadeSpan"></span>
+          <span class="breadcrumb-separator">&gt;</span>
+          <span id="cidadeSpan"></span>
+          <span id="estadoSpan"></span>
         </div>
       </div>
-
-      <!-- Filtro de convênios -->
-      <div class="page-header">
-        <div class="container">
-          <form id="cidade_form" class="filter-form">
-            <div class="filter-select-container">
-              <select class="filter-select" id="convenios_select">
-                <!-- Opções de cidade aqui -->
-              </select>
-              <svg class="filter-arrow" viewBox="0 0 20 20">
-                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-              </svg>
-            </div>
-          </form>
-        </div>
+      <div class="header-icon">
+        <i class="bi bi-hospital" id="suaImagem"></i>
       </div>
     </div>
+  </div>
 
-    <!-- Lista de profissionais -->
-    <div class="fluid-container" style="background:#f3f3f3; padding: 1rem 0;">
-      <div class="fluid-container d-flex justify-content-center">
-        <div class="profissionalDiv w-100">
-          {% for clinica in clinicas %}
-          <div class="professional-card">
-            <!-- Conteúdo principal do card -->
-            <div class="card-main-content">
-              <!-- Informações principais do profissional -->
-              <div class="prof-info-container">
-                <img class="profImg" src="{{ clinica.foto.url }}" alt="Foto da cliníca {{ clinica.nome }}">
-                <div class="prof-details">
-                  <h3 class="prof-name">{{ clinica.nome }}</h3>
-                  
-                  <!-- Especialidade e registro -->
-                  {% for especialidade in clinica.especialidades.all %}
-                  {% if forloop.first %}
-                  <div class="prof-specialty">
-                    {{ especialidade.nome }}<br>
-                    Número de Registro: {{ clinica.codigo|default:"Não informado" }}
-                  </div>
-                  {% endif %}
-                  {% endfor %}
+  <!-- Filtro de convênios -->
+  <div class="filter-section">
+    <div class="container">
+      <form class="filter-form">
+        <div class="filter-select-container">
+          <select class="filter-select" id="convenios_select">
+            <option value="">Todos os convênios</option>
+            <!-- Opções serão carregadas dinamicamente -->
+          </select>
+          <svg class="filter-arrow" viewBox="0 0 20 20">
+            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+          </svg>
+        </div>
+      </form>
+    </div>
+  </div>
 
-                  <!-- Link para perfil -->
-                  <a class="text-decoration-underline fw-bold" style="color:#17ABA0;" href="{% url 'perfil_clinica' clinica.id %}">
-                    Ver Perfil
-                  </a>
-
-                  <!-- Avaliações -->
-                  {% load floor %}
-                  <div class="rating-display">
-                    <div class="rating d-flex">
-                      {% if clinica.media %}
-                        {% with full_stars=clinica.media|floor half_stars=clinica.media|floatformat:"-1"|slice:"-1" %}
-                          {% for i in "12345"|make_list %}
-                            {% if i|add:"0" <= full_stars|add:"0" %}
-                              <span class="star1 full">&#9733;</span>
-                            {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
-                              <span class="star1 half">&#189;</span>
-                            {% else %}
-                              <span class="star1">&#9734;</span>
-                            {% endif %}
-                          {% endfor %}
-                        {% endwith %}
-                      {% else %}
-                        {% for i in "12345"|make_list %}
-                          <span class="star1">&#9734;</span>
-                        {% endfor %}
-                      {% endif %}
-                    </div>
-                    {% if clinica.total_avaliacoes %}
-                    <span class="totalAV">{{ clinica.total_avaliacoes }} opiniões</span>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Convênios -->
-              <div class="convenios-container">
-                {% for convenio in clinica.convenios.all %}
-                  {% if forloop.counter < 3 %}
-                    <span class="convenio-item">{{ convenio.nome }}</span>
-                  {% endif %}
-                {% endfor %}
-
-                {% if clinica.convenios.all.count > 2 %}
-                  <a href="#" class="text-decoration-underline fw-bold" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">
-                    Ver todos os convênios
-                  </a>
-                {% endif %}
-              </div>
-
-              <!-- Modal com todos os convênios -->
-              <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">Convênios Aceitos</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      {% for convenio in clinica.convenios.all %}
-                      <span class="convenio-item d-inline-block mb-2">{{ convenio.nome }}</span>
-                      {% endfor %}
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Seção de agendamento -->
-              <div class="booking-section">
-                <div class="price-info">
-                  <span>Valor da consulta:</span>
-                  <span class="price-value">
-                    {% if clinica.preco and clinica.preco|floatformat %}
-                        R$ {{ clinica.preco|floatformat:2 }}
-                    {% else %}
-                      Não informado
-                    {% endif %}
-                  </span>
-                </div>
-
-                {% if user.is_authenticated %}
-                  <a class="agendamento-btn booking-btn" 
-                     data-phone="{{ clinica.telefone }}" 
-                     data-nome="{{clinica.nome}}" 
-                     href="#">
-                    <i class="bi bi-whatsapp"></i> Agendar Consulta
-                  </a>
-                {% else %}
-                  <a class="booking-btn" href="{% url 'login' %}">
-                    <i class="bi bi-whatsapp"></i> Agendar Consulta
-                  </a>
-                {% endif %}
-              </div>
-            </div>
-
-            <!-- Seção do mapa à direita -->
-            <div class="card-map-section">
-              {% for enderecos in clinica.enderecos.all %}
+  <!-- Lista de clínicas -->
+  <div class="main-content">
+    <div class="professionals-container">
+      {% for clinica in clinicas %}
+      <div class="professional-card">
+        <!-- Conteúdo principal do card -->
+        <div class="card-main-content">
+          <!-- Informações principais da clínica -->
+          <div class="prof-info-container">
+            <img class="profImg" src="{{ clinica.foto.url }}" alt="Foto da clínica {{ clinica.nome }}">
+            <div class="prof-details">
+              <h3 class="prof-name">{{ clinica.nome }}</h3>
+              
+              <!-- Especialidade e registro -->
+              {% for especialidade in clinica.especialidades.all %}
               {% if forloop.first %}
-                {% if enderecos.latitude != None and enderecos.longitude != None %}
-                  <a class="btn w-100" href="https://www.google.com/maps/search/?api=1&query={{ enderecos.rua }}{% if enderecos.numero %}, {{ enderecos.numero }}{% endif %}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}" target="_blank" style="border-radius:8px; font-weight:600; color: #fff; background-color: #21BFA6;">
-                    <i class="bi bi-geo-alt-fill"></i> Ver no mapa
-                  </a>
-                {% else %}
-                  <div class="professional-map map-placeholder">
-                    <div>
-                      <i class="bi bi-geo-alt" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><br>
-                      Localização não disponível
-                    </div>
-                  </div>
-                {% endif %}
-                <div class="map-address">
-                  <i class="bi bi-geo-alt-fill"></i>
-                  {{ enderecos.rua }}{% if enderecos.numero %}, {{ enderecos.numero }}{% endif %}, <br> {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}
-                </div>
+              <div class="prof-specialty">
+                {{ especialidade.nome }}<br>
+                <strong>Registro:</strong> {{ clinica.codigo|default:"Não informado" }}
+              </div>
               {% endif %}
               {% endfor %}
+
+              <!-- Link para perfil -->
+              <a class="profile-link" href="{% url 'perfil_clinica' clinica.id %}">
+                <i class="bi bi-building"></i>
+                Ver Perfil Completo
+              </a>
+
+              <!-- Avaliações -->
+              {% load floor %}
+              <div class="rating-display">
+                <div class="rating">
+                  {% if clinica.media %}
+                    {% with full_stars=clinica.media|floor half_stars=clinica.media|floatformat:"-1"|slice:"-1" %}
+                      {% for i in "12345"|make_list %}
+                        {% if i|add:"0" <= full_stars|add:"0" %}
+                          <span class="star1 full">&#9733;</span>
+                        {% elif i|add:"0" == full_stars|add:"0"|add:1 and half_stars == "5" %}
+                          <span class="star1 half">&#189;</span>
+                        {% else %}
+                          <span class="star1">&#9734;</span>
+                        {% endif %}
+                      {% endfor %}
+                    {% endwith %}
+                  {% else %}
+                    {% for i in "12345"|make_list %}
+                      <span class="star1">&#9734;</span>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+                {% if clinica.total_avaliacoes %}
+                <span class="totalAV">{{ clinica.total_avaliacoes }} {{ clinica.total_avaliacoes|pluralize:"avaliação,avaliações" }}</span>
+                {% endif %}
+              </div>
             </div>
           </div>
+
+          <!-- Convênios -->
+          <div class="convenios-container">
+            {% for convenio in clinica.convenios.all %}
+              {% if forloop.counter <= 3 %}
+                <span class="convenio-item">{{ convenio.nome }}</span>
+              {% endif %}
+            {% endfor %}
+
+            {% if clinica.convenios.all.count > 3 %}
+              <a href="#" class="convenios-link" data-bs-toggle="modal" data-bs-target="#conveniosModal-{{ clinica.id }}">
+                +{{ clinica.convenios.all.count|add:"-3" }} convênios
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Modal com todos os convênios -->
+          <div class="modal fade" id="conveniosModal-{{ clinica.id }}" tabindex="-1" aria-labelledby="conveniosModalLabel-{{ clinica.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content modern-modal">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="conveniosModalLabel-{{ clinica.id }}">
+                    <i class="bi bi-card-checklist me-2"></i>
+                    Convênios Aceitos
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="convenios-grid">
+                    {% for convenio in clinica.convenios.all %}
+                    <span class="convenio-tag">{{ convenio.nome }}</span>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção de agendamento -->
+          <div class="booking-section">
+            <div class="price-info">
+              <span class="price-label">Valor da consulta</span>
+              <span class="price-value">
+                {% if clinica.preco and clinica.preco|floatformat %}
+                  R$ {{ clinica.preco|floatformat:2}}
+                {% else %}
+                  Consultar valor
+                {% endif %}
+              </span>
+            </div>
+
+            {% if user.is_authenticated %}
+              <a class="agendamento-btn booking-btn" 
+                 data-phone="{{ clinica.telefone }}" 
+                 data-nome="{{clinica.nome}}" 
+                 href="#">
+                <i class="bi bi-whatsapp"></i> 
+                Agendar Consulta
+              </a>
+            {% else %}
+              <a class="booking-btn" href="{% url 'login' %}">
+                <i class="bi bi-calendar-plus"></i> 
+                Entrar para Agendar
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Seção do mapa à direita -->
+        <div class="card-map-section">
+          {% for enderecos in clinica.enderecos.all %}
+          {% if forloop.first %}
+            {% if enderecos.latitude != None and enderecos.longitude != None %}
+              <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query={{ enderecos.rua }}{% if enderecos.numero %}, {{ enderecos.numero }}{% endif %}, {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}" target="_blank">
+                <i class="bi bi-geo-alt-fill"></i> 
+                Ver Localização
+              </a>
+            {% else %}
+              <div class="map-placeholder">
+                <div>
+                  <i class="bi bi-geo-alt" style="font-size: 2rem; margin-bottom: 0.5rem; color: #ccc;"></i><br>
+                  Localização não disponível
+                </div>
+              </div>
+            {% endif %}
+            <div class="map-address">
+              <i class="bi bi-geo-alt-fill" style="color: #00ae9d;"></i>
+              {{ enderecos.rua }}{% if enderecos.numero %}, {{ enderecos.numero }}{% endif %}<br>
+              {{ enderecos.bairro }}, {{ enderecos.cidade }} - {{ enderecos.estado }}
+            </div>
+          {% endif %}
           {% endfor %}
         </div>
       </div>
+      {% endfor %}
     </div>
+  </div>
 
-    <!-- Paginação -->
-    {% load url_filters %}
-    <div class="container p-2 mb-4">
+  <!-- Paginação -->
+  {% load url_filters %}
+  <div class="professionals-container">
+    <div class="pagination">
       {% with queries=request.GET.copy %}
-      <div class="pagination">
-        <div class="step-links">
-          {% if clinicas.has_previous %}
-            <a href="?{{ request.GET|add_page_to_query:1 }}">&lt;&lt; Primeira</a>
-            <a href="?{{ request.GET|add_page_to_query:clinicas.previous_page_number }}">&lt; Anterior</a>
-          {% endif %}
+      <div class="step-links">
+        {% if clinicas.has_previous %}
+          <a href="?{{ request.GET|add_page_to_query:1 }}">
+            <i class="bi bi-chevron-double-left"></i> Primeira
+          </a>
+          <a href="?{{ request.GET|add_page_to_query:clinicas.previous_page_number }}">
+            <i class="bi bi-chevron-left"></i> Anterior
+          </a>
+        {% endif %}
 
-          <span class="current px-3">
-            Página {{ clinicas.number }} de {{ clinicas.paginator.num_pages }}
-          </span>
+        <span class="current">
+          Página {{ clinicas.number }} de {{ clinicas.paginator.num_pages }}
+        </span>
 
-          {% if clinicas.has_next %}
-            <a href="?{{ request.GET|add_page_to_query:clinicas.next_page_number }}">Próxima &gt;</a>
-            <a href="?{{ request.GET|add_page_to_query:clinicas.paginator.num_pages }}">Última &gt;&gt;</a>
-          {% endif %}
-        </div>
+        {% if clinicas.has_next %}
+          <a href="?{{ request.GET|add_page_to_query:clinicas.next_page_number }}">
+            Próxima <i class="bi bi-chevron-right"></i>
+          </a>
+          <a href="?{{ request.GET|add_page_to_query:clinicas.paginator.num_pages }}">
+            Última <i class="bi bi-chevron-double-right"></i>
+          </a>
+        {% endif %}
       </div>
       {% endwith %}
     </div>
@@ -691,6 +1045,18 @@
 
 <!-- Scripts -->
 <script>
+// Função para limpar todos os filtros
+function clearAllFilters() {
+  const conveniosSelect = document.getElementById('convenios_select');
+  if (conveniosSelect) {
+    conveniosSelect.value = '';
+  }
+  
+  // Remover todos os parâmetros da URL e redirecionar
+  const currentPath = window.location.pathname;
+  window.location.href = currentPath;
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   // JavaScript para botões de agendamento WhatsApp
   let agendamentoBtns = document.querySelectorAll('.agendamento-btn');
@@ -706,7 +1072,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  // Inicializar mapas para cada clinica
+  // Inicializar mapas para cada clínica
   let mapElements = document.querySelectorAll('.professional-map[data-latitude]');
   mapElements.forEach(function(mapElement) {
     let lat = parseFloat(mapElement.getAttribute('data-latitude'));
