@@ -54,6 +54,7 @@ CORS_ALLOWED_ORIGINS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'jazzmin', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -197,7 +198,7 @@ else:
 
 # Login/Logout
 LOGIN_URL = 'login'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/admin/login'
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -267,22 +268,26 @@ JAZZMIN_SETTINGS = {
     "site_icon": True,
     "welcome_sign": "Admin SAUDEBRAS",
     "copyright": "SAUDEBRAS",
-    "search_model": ["auth.User", "auth.Group"],
     "user_avatar": None,
-    
-    "topmenu_links": [
-        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"model": "auth.User"},
-    ],
-    
-    "usermenu_links": [
-        {"model": "auth.user"}
-    ],
     
     "show_sidebar": True,
     "navigation_expanded": True,
     "hide_apps": [],
     "hide_models": [],
+    
+    # Configuração do menu superior com botão de logout
+    "topmenu_links": [
+        # Botão de logout direto (alternativa)
+        {"name": "Logout", "url": "admin:logout", "icon": "fas fa-sign-out-alt"},
+    ],
+    
+    # Links do menu do usuário (dropdown no canto superior direito)
+    "usermenu_links": [
+        {"name": "Perfil", "url": "admin:auth_user_change", "icon": "fas fa-user"},
+        {"name": "Alterar Senha", "url": "admin:password_change", "icon": "fas fa-key"},
+        {"model": "auth.user"},
+        {"name": "Logout", "url": "admin:logout", "icon": "fas fa-sign-out-alt"},
+    ],
     
     "icons": {
         "auth": "fas fa-users-cog",
@@ -302,31 +307,40 @@ JAZZMIN_SETTINGS = {
     "language_chooser": False,
 }
 
+# UI Tweaks - Tema Escuro Moderno
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
     "footer_small_text": False,
-    "body_small_text": True,
+    "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-light",
-    "accent": "accent-navy",
-    "navbar": "navbar-cyan navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": False,
+    
+    # Esquema de cores escuro - Moderno e profissional
+    "brand_colour": "navbar-dark",
+    "accent": "accent-light",
+    "navbar": "navbar-dark navbar-gray-dark",  # Navbar escura
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    
+    # Layout escuro
     "layout_boxed": False,
     "footer_fixed": False,
-    "sidebar_fixed": False,
-    "sidebar": "sidebar-light-info",
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-dark",  # Sidebar completamente escura
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": True,
-    "sidebar_nav_legacy_style": True,
-    "sidebar_nav_flat_style": False,
-    "theme": "default",
-    "dark_mode_theme": None,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    
+    # Tema escuro moderno
+    "theme": "darkly",  # Tema escuro principal
+    "dark_mode_theme": "darkly",
+    
+    # Botões para tema escuro
     "button_classes": {
         "primary": "btn-primary",
-        "secondary": "btn-secondary",
+        "secondary": "btn-outline-light",
         "info": "btn-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
