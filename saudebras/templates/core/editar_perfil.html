@@ -1079,12 +1079,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('confirmPassword').value = '';
         // Reset dos requisitos de senha
         updatePasswordRequirementsEdit('');
-        updateSalvarSenhaButton();
         
-        // Garantir que o botão inicie com cursor bloqueado
+        // Garantir que o botão seja resetado para o estado inicial desabilitado
         const btn = document.getElementById('btnSalvarSenha');
         if (btn) {
+            btn.disabled = true;
             btn.classList.add('btn-disabled-cursor');
+            btn.classList.add('force-not-allowed');
+            btn.style.backgroundColor = '#a1a1aa';
+            btn.style.cursor = 'not-allowed';
+            btn.style.color = '#ffffff';
         }
     }
     
@@ -1241,11 +1245,20 @@ function updateSalvarSenhaButton() {
         const isDisabled = !(isPasswordValidEdit(passwordInput.value) && validatePasswordMatchEdit());
         btn.disabled = isDisabled;
         
-        // Adicionar/remover classe de cursor bloqueado
         if (isDisabled) {
+            // Estado desabilitado - cor cinza e cursor bloqueado
             btn.classList.add('btn-disabled-cursor');
+            btn.classList.add('force-not-allowed');
+            btn.style.backgroundColor = '#a1a1aa';
+            btn.style.cursor = 'not-allowed';
+            btn.style.color = '#ffffff';
         } else {
+            // Estado habilitado - cor verde e cursor normal
             btn.classList.remove('btn-disabled-cursor');
+            btn.classList.remove('force-not-allowed');
+            btn.style.backgroundColor = '#00ae9d';
+            btn.style.cursor = 'pointer';
+            btn.style.color = '#ffffff';
         }
     }
 }
@@ -1275,7 +1288,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (passwordInput) {
                 updatePasswordRequirementsEdit(passwordInput.value);
                 
-                // Garantir cursor bloqueado inicial
+                // Garantir estado inicial desabilitado
                 const btn = document.getElementById('btnSalvarSenha');
                 if (btn) {
                     btn.disabled = true;
@@ -1283,6 +1296,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     btn.classList.add('force-not-allowed');
                     btn.style.backgroundColor = '#a1a1aa';
                     btn.style.cursor = 'not-allowed';
+                    btn.style.color = '#ffffff';
                     btn.setAttribute('data-cursor', 'not-allowed');
                     
                     // Event listener adicional para garantir o cursor
@@ -1302,6 +1316,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Função para forçar cursor not-allowed em botões desabilitados
+function forceNotAllowedCursor(e) {
+    if (e.target.disabled) {
+        e.target.style.cursor = 'not-allowed';
+    }
+}
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
