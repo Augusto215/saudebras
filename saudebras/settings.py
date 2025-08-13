@@ -154,9 +154,6 @@ USE_L10N = True
 # Diretórios onde estão os arquivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'saudebras', 'static'),  # static do app saudebras
-    os.path.join(BASE_DIR, 'usuarios', 'static'),   # static do app usuarios (se existir)
-    os.path.join(BASE_DIR, 'home', 'static'),       # static do app home (se existir)
-    os.path.join(BASE_DIR, 'core', 'static'),       # static do app core (se existir)
 ]
 
 # URL para acessar arquivos estáticos
