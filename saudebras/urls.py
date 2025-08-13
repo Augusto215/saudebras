@@ -38,8 +38,6 @@ urlpatterns = [
 #? Arquivos estaticos
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Configuração dos handlers de erro personalizados
 handler404 = 'core.views.handler404'

@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%9zlaip=y$6^+4h384l^b!!t#%w2a7n!+92wn(a5eu3$kr92!e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Reativado temporariamente para debug
+DEBUG = TRUE  # Reativado temporariamente para debug
 if not DEBUG:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
     WHITENOISE_USE_FINDERS = True
