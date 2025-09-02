@@ -30,10 +30,60 @@
   }
 }
 
-</style>
-       
+/* Estilos para os botões principais */
+.box-icon {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
 
-      
+.box-icon:hover {
+  transform: scale(1.15);
+  background: linear-gradient(135deg, #00ae9d, #00c4b0);
+  box-shadow: 0 8px 25px rgba(0, 174, 157, 0.3);
+}
+
+.box-icon:hover img {
+  filter: brightness(0) invert(1);
+}
+
+/* Estilos específicos para os itens da lista */
+.icones li {
+  list-style: none;
+  margin: 0.5rem;
+}
+
+.icones li a {
+  text-decoration: none;
+  display: block;
+}
+
+</style>
+
+<script>
+// JavaScript para garantir que a cor do texto mude no hover
+document.addEventListener('DOMContentLoaded', function() {
+  const boxIcons = document.querySelectorAll('.box-icon');
+  
+  boxIcons.forEach(box => {
+    const textElements = box.querySelectorAll('span, .text-button, .urgencias');
+    
+    box.addEventListener('mouseenter', function() {
+      textElements.forEach(element => {
+        element.style.setProperty('color', '#fff', 'important');
+      });
+    });
+    
+    box.addEventListener('mouseleave', function() {
+      textElements.forEach(element => {
+        element.style.setProperty('color', '#00AB9B', 'important');
+      });
+    });
+  });
+});
+</script>
         
 <div id="index7" class="fluid-container" style="background:#DEF5EF">
   <div class=" mt-4 mb-4 container1">
@@ -50,8 +100,8 @@
                 
                 </h2>
             
-                 <span class=" main-text-mobile mb-4" style="display:none; font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important;" id="elementTxt">Agende agora sua consulta ou <br>exames com valores reduzidos</span>
-                 <span class="subtext main-text-desktop mb-4 text-center" style="font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important;" id="elementTxt">Agende agora sua consulta ou exames com valores reduzidos</span>
+                 <span class=" main-text-mobile mb-4" style="display:none; font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important;" id="elementTxt">Agende agora suas consultas e <br>exames com preços reduzidos</span>
+                 <span class="subtext main-text-desktop mb-4 text-center" style="font-size:1.4rem; color:#00ae9d !important; font-weight:500; font-family:'Daxline', sans-serif !important;" id="elementTxt">Agende agora suas consultas e exames com preços reduzidos</span>
 
               <div class="main-options d-flex flex-column w-100">
                  <div class="icones mb-4 d-flex justify-content-center align-items-center w-100 mb-2">
@@ -59,7 +109,7 @@
                        <a href="{% url 'pesquisarProfissionais' tipo_profissional='Médico' %}">
                           <span class="box-icon d-flex align-items-center ">
                              <img style="max-height:5.5rem; margin-right:.4rem;" class="p-1" src="{%static 'img/estetoscopio-instrumento-medico-1.svg' %}">
-                             <div class="flex-icon text-left"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1rem !important; text-align:lstart! important;">Consultas    
+                             <div class="flex-icon text-left"><span class="text-button" style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1rem !important; text-align:lstart! important;">Consultas    
                                 Médicas</span>
                           </span>
                           </span>
@@ -70,7 +120,7 @@
                        <a href="{% url 'pesquisarProfissionais' tipo_profissional='Dentista' %}  ">
                           <span class="box-icon d-flex align-items-center ">
                              <img style="max-height:5.5rem; margin-right:.4rem;" class="p-1" src="{%static 'img/cuidado-dental.svg' %}">
-                             <div class="flex-icon text-left"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1rem !important; text-align:lstart! important;">Consultas Odonto</span>
+                             <div class="flex-icon text-left"><span class="text-button" style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1rem !important; text-align:lstart! important;">Consultas Odonto</span>
                           </span>
                           </span>
                           </div>
@@ -79,7 +129,7 @@
                     <li>
                       <a href="{% url 'pesquisarClinicas' tipo_clinica='Clínica' %}  "> <span class="box-icon d-flex align-items-center ">
                           <img style="max-height:5.5rem; margin-right:.4rem;" class="p-1" src="{%static 'img/diagnostico.svg' %}">
-                          <div class="flex-icon text-left"><span  style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1rem !important; text-align:start !important;">Clínicas e Laboratórios</span>
+                          <div class="flex-icon text-left"><span class="text-button" style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800 !important;font-size:1rem !important; text-align:start !important;">Exames e Vacinas</span>
                        </span>
                        </span>
                        </div>
@@ -89,7 +139,7 @@
                       <a href="{% url 'pesquisarClinicas' tipo_clinica='Emergência' %}  ">
                       <span class="box-icon d-flex align-items-center ">
                          <img style="max-height:5.5rem; margin-right:.4rem;" class="p-1" src="{%static 'img/ambulancia.svg' %}">
-                         <div class="flex-icon  d-flex  justify-content-center"><span class="urgencias"   style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800;font-size:1rem !important; text-align:center;">Urgências e<br> Emergências 24h</span>
+                         <div class="flex-icon d-flex justify-content-center"><span class="urgencias text-button" style="font-family:'HUMNST' !important; color:#00AB9B !important; font-weight:800;font-size:1rem !important; text-align:center;">Urgências e<br> Emergências 24h</span>
                       </span>
                       </span>
                       </div>
@@ -125,7 +175,7 @@
               </div>
            </div>
            <div class="div-img d-flex justify-content-end align-items-center">
-           <img style="max-width:100%;" src="{%static 'img/medicos ia.png' %}">
+           <img style="max-width:100%;" src="{%static 'img/new-medicos.png' %}">
            </div>
 
         </div>

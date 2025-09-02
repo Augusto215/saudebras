@@ -202,6 +202,207 @@
           padding: 0.6rem 0.8rem !important;
         }
       }
+
+       /* Estilos específicos para os botões de Cadastrar */
+      .dropdown-toggle.criarConta,
+      .nav-link.dropdown-toggle[style*="color:#00ae9d"] {
+        background-color: #00ae9d !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        padding: 0.7rem 1rem !important;
+        font-weight: 600 !important;
+        border: none !important;
+      }
+
+      .dropdown-toggle.criarConta:hover,
+      .nav-link.dropdown-toggle[style*="color:#00ae9d"]:hover {
+        background-color: #00956a !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+      }
+
+      /* Força o estilo verde nos botões de cadastrar */
+      .nav-link.dropdown-toggle {
+        background-color: #00ae9d !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        padding: 0.7rem 1rem !important;
+        font-weight: 600 !important;
+      }
+
+      .nav-link.dropdown-toggle:hover {
+        background-color: #00956a !important;
+        color: #ffffff !important;
+      }
+
+      /* Estilos para os itens do dropdown de Cadastrar */
+      .dropdown-menu .dropdown-item {
+        padding: 0.7rem 1rem !important;
+        transition: all 0.2s ease !important;
+        border-radius: 4px !important;
+        margin: 0.2rem !important;
+        font-weight: 500 !important;
+      }
+
+      .dropdown-menu .dropdown-item:hover {
+        background-color: #00ae9d !important;
+        color: #ffffff !important;
+        transform: translateX(5px);
+      }
+
+      /* Força o estilo verde nos itens do dropdown mesmo com estilos inline */
+      .dropdown-menu .dropdown-item[style*="color:#00ae9d"]:hover {
+        background-color: #00ae9d !important;
+        color: #ffffff !important;
+      }
+
+      /* Estilos para o botão Entrar */
+      .nav-link[href*="login"]:not(.logout-link) {
+        border: 2px solid #00ae9d !important;
+        border-radius: 6px !important;
+        padding: 0.5rem 0.8rem !important; /* Reduzido para compensar a borda */
+        transition: all 0.3s ease !important;
+        color:#00ae9d !important;
+        box-sizing: border-box !important;
+        margin-right: 3rem !important; /* Espaçamento maior da extremidade */
+      }
+
+      .nav-link[href*="login"]:not(.logout-link):hover {
+        background-color: #00ae9d !important;
+        color: #ffffff !important;
+        border-color: #00ae9d !important;
+      }
+
+      /* Fazer o ícone do botão Entrar ficar branco no hover */
+      .nav-link[href*="login"]:not(.logout-link):hover i {
+        color: #ffffff !important;
+      }
+
+      /* Garantir que Cadastrar e Entrar tenham o mesmo tamanho em todas as telas */
+      @media (min-width: 992px) {
+        /* Desktop - força mesmo padding e tamanho para ambos os botões */
+        .nav-link.dropdown-toggle,
+        .dropdown-toggle.criarConta {
+          padding: 0.7rem 1rem !important;
+          min-width: 120px !important;
+          text-align: center !important;
+        }
+        
+        .nav-link[href*="login"]:not(.logout-link) {
+          padding: 0.5rem 0.8rem !important; /* Menos padding para compensar borda */
+          min-width: 120px !important;
+          text-align: center !important;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        /* Mobile - ajusta padding para telas menores mantendo proporção */
+        .nav-link.dropdown-toggle,
+        .dropdown-toggle.criarConta {
+          padding: 0.6rem 0.8rem !important;
+          min-width: 100px !important;
+          text-align: center !important;
+          font-size: 14px !important;
+        }
+        
+        .nav-link[href*="login"]:not(.logout-link) {
+          padding: 0.4rem 0.6rem !important; /* Menos padding para compensar borda */
+          min-width: 100px !important;
+          text-align: center !important;
+          font-size: 14px !important;
+        }
+      }
+
+      @media (max-width: 576px) {
+        /* Mobile pequeno - ajusta ainda mais para telas muito pequenas */
+        .nav-link.dropdown-toggle,
+        .dropdown-toggle.criarConta {
+          padding: 0.5rem 0.6rem !important;
+          min-width: 90px !important;
+          font-size: 13px !important;
+        }
+        
+        .nav-link[href*="login"]:not(.logout-link) {
+          padding: 0.3rem 0.4rem !important; /* Menos padding para compensar borda */
+          min-width: 90px !important;
+          font-size: 13px !important;
+        }
+      }
+
+      /* Força altura igual para ambos os botões */
+      .nav-link.dropdown-toggle,
+      .dropdown-toggle.criarConta,
+      .nav-link[href*="login"]:not(.logout-link) {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        height: 44px !important; /* Altura fixa igual */
+        line-height: 1 !important;
+      }
+
+      @media (max-width: 991.98px) {
+        .nav-link.dropdown-toggle,
+        .dropdown-toggle.criarConta,
+        .nav-link[href*="login"]:not(.logout-link) {
+          height: 40px !important; /* Altura menor no mobile */
+        }
+
+        /* Estilos específicos para versões mobile dos botões Entrar */
+        .contato-li .nav-link[href*="login"],
+        .contato-li-ul .nav-link[href*="login"] {
+          border: 2px solid #00ae9d !important;
+          border-radius: 6px !important;
+          padding: 0.4rem 0.6rem !important;
+          min-width: 100px !important;
+          text-align: center !important;
+          font-size: 14px !important;
+          color: #00ae9d !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          transition: all 0.3s ease !important;
+          box-sizing: border-box !important;
+          height: 40px !important; /* Mesma altura dos botões Cadastrar */
+        }
+
+        .contato-li .nav-link[href*="login"]:hover,
+        .contato-li-ul .nav-link[href*="login"]:hover {
+          background-color: #00ae9d !important;
+          color: #ffffff !important;
+          border-color: #00ae9d !important;
+        }
+
+        /* Fazer as imagens dos botões Entrar mobile ficarem brancas no hover */
+        .contato-li .nav-link[href*="login"]:hover img,
+        .contato-li-ul .nav-link[href*="login"]:hover img {
+          filter: brightness(0) invert(1) !important;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .nav-link.dropdown-toggle,
+        .dropdown-toggle.criarConta,
+        .nav-link[href*="login"]:not(.logout-link) {
+          height: 36px !important; /* Altura menor no mobile pequeno */
+        }
+
+        /* Estilos específicos para versões mobile pequeno dos botões Entrar */
+        .contato-li .nav-link[href*="login"],
+        .contato-li-ul .nav-link[href*="login"] {
+          padding: 0.3rem 0.4rem !important;
+          min-width: 90px !important;
+          font-size: 13px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-sizing: border-box !important;
+          margin-right: 3rem !important; /* Espaçamento maior da extremidade no mobile */
+          height: 36px !important; /* Mesma altura dos botões Cadastrar */
+        }
+      }
+
     </style>
 
 </head>
@@ -214,7 +415,7 @@
           <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
           <li>
            
-            <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerProfissional'%}">Sou Profissional da Saúde</a>
+            <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerProfissional'%}">Sou Profissional</a>
           </li>
           <li>
             <a class="dropdown-item" style="color:#00ae9d " href="{% url 'registerClinica'%}">Clínicas ou Hospitais</a>
@@ -258,6 +459,14 @@
       </li>
 
       <li class="nav-item">
+        <a href="{% url 'loja' %}" class="nav-link">Loja</a>
+      </li>
+
+      <li class="nav-item">
+        <a href="{% url 'duvidas_frequentes' %}" class="nav-link">FAQ</a>
+      </li>
+
+      <li class="nav-item">
         <a href="{% url 'contato' %}" class="nav-link">Contato</a>
       </li>
 
@@ -266,7 +475,7 @@
         <div class="dropdown">
           <a class="d-flex nav-link dropdown-toggle criarConta" style="color:#00ae9d;" type="button" id="dropdownMenuButton" aria-expanded="false"> 
             <i style="font-size:1.3rem !important;" class="bi bi-person"></i>
-            &nbsp;<span>Criar Conta</span>
+            &nbsp;<span>Cadastrar</span>
           </a>
           <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
@@ -281,7 +490,7 @@
       </li>
 
       <li class="nav-item">
-        <a href="{%url 'login' %}" class="nav-link"><i style="font-size:1.3rem;" class="bi bi-box-arrow-in-right"></i>
+        <a href="{%url 'login' %}" class="nav-link"><i style="font-size:1.3rem; color:#00ae9d !important" class="bi bi-box-arrow-in-right"></i>
           &nbsp; Entrar</a>
       </li>
 
@@ -303,7 +512,7 @@
               <button style="border:none;" class="navbar-toggler" type="button" data-bs-toggle="collapse"  aria-controls="navbarNavDropdown" data-bs-target="#navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <img style="height:1.5rem;" src="{%static 'img/menu-button-of-three-horizontal-lines.png'%}" alt="toggle icon"> <!-- Imagem personalizada -->
             </button>
-              <a class="navbar-brand" href="{%url 'home'%}"><img style="max-height: 3rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
+              <a class="navbar-brand ps-5" href="{%url 'home'%}"><img style="max-height: 3rem !important;" src="{%static 'img/saudebras-logo.png' %}"></a>
               <div class="collapse navbar-collapse justify-content-end"  id="navbarNavDropdown2">
                 <ul class="navbar-nav" style="gap:1rem; flex-wrap: nowrap;">
          
@@ -311,9 +520,6 @@
                   <a href="{% url 'home' %}" class="nav-link">Início</a>
                 </li>
 
-            
-                 
-                  
                 {% if user.is_authenticated != True %}  
                 {%endif%}
                 {% if request.is_profissional %}
@@ -334,8 +540,8 @@
   
                 {% if user.is_authenticated != True %}
 
-                  <li class="contato-li-ul" style="list-style: none; display: none; align-items: center; color:#00ae9d">
-                    <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem;" src="{% static 'img/log-in.png' %}"></a>
+                  <li class="contato-li-ul" style="list-style: none; display: none; align-items: center; color:#00ae9d !important">
+                    <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.5rem; color:#00ae9d !important" src="{% static 'img/log-in.png' %}"></a>
             </li>
 
               {% else %}
@@ -354,6 +560,14 @@
                 <a href="{%url 'vantagens' %}" class="nav-link">Vantagens</a>
               </li>
 
+              <li class="nav-item">
+                <a href="{% url 'loja' %}" class="nav-link">Loja</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'duvidas_frequentes' %}" class="nav-link">Dúvidas Frequentes</a>
+              </li>
+
               <li class="nav-item" style="display: none;">
                 <a href="{% url 'artigos' %}" class="nav-link">Artigos</a>
               </li>
@@ -366,8 +580,8 @@
 
               <li class="nav-item">
                 <div class="dropdown">
-                  <a class="nav-link dropdown-toggle" style="color:#00ae9d;" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                  Cadastro
+                  <a class="nav-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  Cadastrar
                   </a>
                   <ul style="margin:0 !important; padding-left:0 !important;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <li><a class="dropdown-item" href="{%url 'registerCliente' %}">Sou Paciente</a></li>
@@ -385,7 +599,7 @@
               {% if user.is_authenticated != True %}
 
               <li class="contato-li" style="list-style: none; display: flex; align-items: center;">
-                <a  href="{%url 'login' %}" class="nav-link">Login&nbsp;<img style="height:1.2rem;" src="{% static 'img/log-in.png' %}"></a>
+                <a  href="{%url 'login' %}" class="nav-link">Entrar&nbsp;<img style="height:1.2rem; color:#00ae9d !important" src="{% static 'img/log-in.png' %}"></a>
         </li>
 
           {% else %}
@@ -471,7 +685,7 @@
   <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-              <h5 class="modal-title" id="loginModalLabel">Login</h5>
+              <h5 class="modal-title" id="loginModalLabel">Entrar</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -485,7 +699,7 @@
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                      <button type="submit" class="btn btn-primary">Login</button>
+                      <button type="submit" class="btn btn-primary">Entrar</button>
                   </div>
           </div>
          
