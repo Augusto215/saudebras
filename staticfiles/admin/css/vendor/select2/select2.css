@@ -48,7 +48,7 @@
         -webkit-appearance: none; }
 
 .select2-dropdown {
-  background-color: white;
+  background-color: #fff;
   border: 1px solid #aaa;
   border-radius: 4px;
   box-sizing: border-box;
@@ -176,7 +176,7 @@
   border-width: 0 4px 5px 4px; }
 
 .select2-container--default .select2-selection--multiple {
-  background-color: white;
+  background-color: #fff;
   border: 1px solid #aaa;
   border-radius: 4px;
   cursor: text; }
@@ -288,7 +288,7 @@
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
   background-color: #5897fb;
-  color: white; }
+  color: #fff; }
 
 .select2-container--default .select2-results__group {
   cursor: default;
@@ -387,7 +387,7 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEEEEEE', endColorstr='#FFFFFFFF', GradientType=0); }
 
 .select2-container--classic .select2-selection--multiple {
-  background-color: white;
+  background-color: #fff;
   border: 1px solid #aaa;
   border-radius: 4px;
   cursor: text;
@@ -449,7 +449,7 @@
   box-shadow: none; }
 
 .select2-container--classic .select2-dropdown {
-  background-color: white;
+  background-color: #fff;
   border: 1px solid transparent; }
 
 .select2-container--classic .select2-dropdown--above {
@@ -470,7 +470,7 @@
 
 .select2-container--classic .select2-results__option--highlighted[aria-selected] {
   background-color: #3875d7;
-  color: white; }
+  color: #fff; }
 
 .select2-container--classic .select2-results__group {
   cursor: default;

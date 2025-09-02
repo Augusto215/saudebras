@@ -42,7 +42,7 @@
 /* Header da página */
 .page-header {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-  color: white;
+  color: #fff;
   padding: 1rem 0;
   position: sticky;
   top: 0;
@@ -62,7 +62,7 @@
 .back-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
-  color: white;
+  color: #fff;
   width: 45px;
   height: 45px;
   border-radius: 50%;
@@ -95,7 +95,7 @@
 .action-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
-  color: white;
+  color: #fff;
   width: 45px;
   height: 45px;
   border-radius: 50%;
@@ -218,7 +218,7 @@
 .convenio-tag,
 .info-tag {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  color: white;
+  color: #fff;
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -250,7 +250,7 @@
 
 .see-more-btn:hover {
   background: var(--primary-color);
-  color: white;
+  color: #fff;
   transform: scale(1.05);
 }
 
@@ -373,7 +373,7 @@
 .appointment-btn,
 .contact-btn {
   background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
-  color: white;
+  color: #fff;
   border: none;
   padding: 0.8rem 2rem;
   border-radius: 25px;
@@ -390,7 +390,7 @@
 .contact-btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
-  color: white;
+  color: #fff;
 }
 
 .appointment-btn i,
@@ -558,7 +558,7 @@
 
 .map-btn {
   background: var(--primary-color);
-  color: white;
+  color: #fff;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -628,7 +628,7 @@
 
 .service-card:hover {
   background: var(--primary-color);
-  color: white;
+  color: #fff;
   transform: translateY(-2px);
   box-shadow: var(--shadow);
 }
@@ -639,7 +639,7 @@
 }
 
 .service-card:hover i {
-  color: white;
+  color: #fff;
 }
 
 /* Modais */
@@ -651,7 +651,7 @@
 
 .modern-modal .modal-header {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  color: white;
+  color: #fff;
   border-bottom: none;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
@@ -794,7 +794,7 @@
 
 .submit-review-btn {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  color: white;
+  color: #fff;
   border: none;
   padding: 1rem 2rem;
   border-radius: 25px;
@@ -1104,7 +1104,7 @@
 /* Estados de hover para botões */
 .btn-custom {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  color: white;
+  color: #fff;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 25px;
@@ -1116,7 +1116,7 @@
 .btn-custom:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
-  color: white;
+  color: #fff;
 }
 
 .btn-outline-custom {
@@ -1131,7 +1131,7 @@
 
 .btn-outline-custom:hover {
   background: var(--primary-color);
-  color: white;
+  color: #fff;
   transform: translateY(-1px);
 }
 

@@ -76,6 +76,14 @@ def artigos(request):
     
     return render(request, 'core/artigos.html')
 
+def duvidas_frequentes(request):
+    
+    return render(request, 'core/duvidas_frequentes.html')
+
+def loja(request):
+    
+    return render(request, 'core/loja.html')
+
 
 def suporte(request):
     

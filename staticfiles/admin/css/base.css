@@ -1154,7 +1154,7 @@ a.deletelink:focus, a.deletelink:hover {
 }
 
 .paginator a:focus, .paginator a:hover {
-    color: white;
+    color: #fff;
     background: var(--link-hover-color);
 }
 
