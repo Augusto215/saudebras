@@ -1,68 +1,36 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+import json
+import logging
+import re
+import requests
+import stripe
+import time
+
+from geopy.geocoders import Nominatim
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib import messages
 from django.core.serializers import serialize
 from django.core.files.storage import default_storage
-from django.db.models import Q
-from django.db import IntegrityError, transaction
-from django.db import OperationalError
-from django.views.decorators.csrf import csrf_exempt
-from django.core.mail import send_mail
-from django.contrib.auth import update_session_auth_hash
-import logging
-import json
-import requests
-import re
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash, authenticate
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.db import transaction
-import json
-from django.contrib.auth.forms import PasswordChangeForm
-logger = logging.getLogger(__name__)
-
-from django.http import JsonResponse
-from django.contrib.auth import authenticate
-
-import stripe
-import requests
-from geopy.geocoders import Nominatim
-import time
-from usuarios.forms import *
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-
-from django.contrib.auth.models import User
-from django.core.mail import EmailMultiAlternatives
+from django.db.models import Q
+from django.db import IntegrityError, transaction, OperationalError
+from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.http import HttpResponse
-from django.contrib.auth.tokens import default_token_generator
-
-
-
-
-from .forms import *
-import uuid
-from .models import *
-from datetime import timedelta
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-from .models import Bairro, Cidade, Estado # Adicionei as importações dos modelos Dentista e Medico
-import requests
-from django.contrib import messages
-from usuarios.models import Especialidade
-
 from django.forms import formset_factory
 
+from .forms import *
+from .models import *
 
-from django.shortcuts import render, redirect
-from .forms import ClienteRegistrationForm, ProfissionalRegistrationForm
-from .models import Cliente, Profissional, Estado, Cidade, Bairro
+logger = logging.getLogger(__name__)
 
 
 
@@ -87,7 +55,7 @@ def registerCliente(request):
             email = request.POST.get('email')
             if email:
                 # Verifica em Cliente, Profissional e Clinica
-                from usuarios.models import Cliente, Profissional, Clinica
+                from usuarios.models import Clinica
                 email_exists = (
                     Cliente.objects.filter(email=email).exists() or
                     Profissional.objects.filter(email=email).exists() or
@@ -103,10 +71,13 @@ def registerCliente(request):
         endereco_data_str = request.POST.get('endereco_data', '')
         endereco_data = None
         
+        print(f"DEBUG: endereco_data_str recebido: {endereco_data_str}")
+        
         if endereco_data_str:
             try:
                 import json
                 endereco_data = json.loads(endereco_data_str)
+                print(f"DEBUG: endereco_data parsed: {endereco_data}")
             except json.JSONDecodeError:
                 messages.error(request, 'Dados de endereço inválidos.')
                 return render(request, 'core/registroClientes.html', {'form': form})
@@ -127,9 +98,24 @@ def registerCliente(request):
             data = response.json()
             
             if response.status_code == 200 and not data.get('erro'):
-                estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                # Usar dados do usuário, não do ViaCEP
+                estado_nome = endereco_data.get('estado', data.get('uf', ''))
+                cidade_nome = endereco_data.get('cidade', data.get('localidade', ''))
+                bairro_nome = endereco_data.get('bairro', data.get('bairro', ''))
+                rua = endereco_data.get('rua', data.get('logradouro', ''))
+                numero = endereco_data.get('numero', '')
+                
+                print(f"DEBUG: Criando cliente com endereço:")
+                print(f"  Estado: {estado_nome}")
+                print(f"  Cidade: {cidade_nome}")
+                print(f"  Bairro: {bairro_nome}")
+                print(f"  Rua: {rua}")
+                print(f"  Número: {numero}")
+                print(f"  CEP: {cep}")
+                
+                estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
 
                 user = Cliente(
                     nome=form.cleaned_data['nome'],
@@ -141,11 +127,16 @@ def registerCliente(request):
                     estado=estado,
                     cidade=cidade,
                     bairro=bairro,
+                    rua=rua,
+                    numero=numero,
                     cep=cep,
                 )
 
                 user.set_password(form.cleaned_data['password1'])
                 user.save()
+                
+                print(f"DEBUG: Cliente salvo com ID: {user.id}")
+                print(f"DEBUG: Endereço salvo - Rua: {user.rua}, Número: {user.numero}, Bairro: {user.bairro.nome if user.bairro else 'None'}")
 
                 return redirect('sucessoCliente')
             else:
@@ -258,18 +249,23 @@ def registerProfissional(request):
                                 data = response.json()
 
                                 if response.status_code == 200 and not data.get('erro'):
-                                    estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                                    cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                                    bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-                                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                                    endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                                    latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
-
-                                    complemento_atual = endereco_info.get('complemento', '')
+                                    # Usar dados do usuário, não do ViaCEP
+                                    estado_nome = endereco_info.get('estado', data.get('uf', ''))
+                                    cidade_nome = endereco_info.get('cidade', data.get('localidade', ''))
+                                    bairro_nome = endereco_info.get('bairro', data.get('bairro', ''))
+                                    rua = endereco_info.get('rua', data.get('logradouro', ''))
                                     numero = endereco_info.get('numero', '')
+                                    complemento_atual = endereco_info.get('complemento', '')
+                                    
+                                    estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                                    cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                                    bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
+                                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                                    endereco_completo = f"{rua}, {bairro_nome}, {cidade_nome}, {estado_nome}, {cep}"
+                                    latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
                                     
                                     endereco, _ = Endereco.objects.get_or_create(
-                                        rua=data['logradouro'],
+                                        rua=rua,
                                         numero=numero,
                                         complemento=complemento_atual,
                                         bairro=bairro,
@@ -292,21 +288,35 @@ def registerProfissional(request):
                     # Formato antigo para compatibilidade
                     ceps = request.POST.getlist('cep[]')
                     complementos = request.POST.getlist('complemento[]')
+                    numeros = request.POST.getlist('numero[]')
+                    ruas = request.POST.getlist('rua[]')
+                    bairros_user = request.POST.getlist('bairro[]')
+                    cidades_user = request.POST.getlist('cidade[]')
+                    estados_user = request.POST.getlist('estado[]')
+                    
                     for i, cep in enumerate(ceps):
                         response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
                         data = response.json()
 
                         if response.status_code == 200 and not data.get('erro'):
-                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                            # Usar dados do usuário se disponíveis, senão usar ViaCEP
+                            estado_nome = estados_user[i] if i < len(estados_user) and estados_user[i] else data['uf']
+                            cidade_nome = cidades_user[i] if i < len(cidades_user) and cidades_user[i] else data['localidade']
+                            bairro_nome = bairros_user[i] if i < len(bairros_user) and bairros_user[i] else data['bairro']
+                            rua = ruas[i] if i < len(ruas) and ruas[i] else data['logradouro']
+                            numero = numeros[i] if i < len(numeros) else ''
+                            complemento_atual = complementos[i] if i < len(complementos) else ''
+                            
+                            estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                            cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                            bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
                             cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                            endereco_completo = f"{rua}, {bairro_nome}, {cidade_nome}, {estado_nome}, {cep}"
                             latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
 
-                            complemento_atual = complementos[i] if i < len(complementos) else ''
                             endereco, _ = Endereco.objects.get_or_create(
-                                rua=data['logradouro'],
+                                rua=rua,
+                                numero=numero,
                                 complemento=complemento_atual,
                                 bairro=bairro,
                                 cidade=cidade,
@@ -526,23 +536,28 @@ def registerClinica(request):
                                 data = response.json()
                                 
                                 if response.status_code == 200 and not data.get('erro'):
-                                    estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                                    cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                                    bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
-                                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                                    endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
-                                    latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
-                                    
-
+                                    # Usar dados do usuário, não do ViaCEP
+                                    estado_nome = endereco_info.get('estado', data.get('uf', ''))
+                                    cidade_nome = endereco_info.get('cidade', data.get('localidade', ''))
+                                    bairro_nome = endereco_info.get('bairro', data.get('bairro', ''))
+                                    rua = endereco_info.get('rua', data.get('logradouro', ''))
                                     complemento_atual = endereco_info.get('complemento', '')
                                     numero_raw = endereco_info.get('numero', '')
+                                    
                                     try:
                                         numero = int(numero_raw) if str(numero_raw).strip() != '' else None
                                     except (ValueError, TypeError):
                                         numero = None
+                                    
+                                    estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                                    cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                                    bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
+                                    cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
+                                    endereco_completo = f"{rua}, {bairro_nome}, {cidade_nome}, {estado_nome}, {cep}"
+                                    latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
 
                                     endereco, _ = Endereco.objects.get_or_create(
-                                        rua=data['logradouro'],
+                                        rua=rua,
                                         numero=numero,
                                         complemento=complemento_atual,
                                         bairro=bairro,
@@ -565,21 +580,40 @@ def registerClinica(request):
                     # Formato antigo para compatibilidade
                     ceps = request.POST.getlist('cep[]')
                     complementos = request.POST.getlist('complemento[]')
+                    numeros = request.POST.getlist('numero[]')
+                    ruas = request.POST.getlist('rua[]')
+                    bairros_user = request.POST.getlist('bairro[]')
+                    cidades_user = request.POST.getlist('cidade[]')
+                    estados_user = request.POST.getlist('estado[]')
+                    
                     for i, cep in enumerate(ceps):
                         response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
                         data = response.json()
                         
                         if response.status_code == 200 and not data.get('erro'):
-                            estado, _ = Estado.objects.get_or_create(nome=data['uf'])
-                            cidade, _ = Cidade.objects.get_or_create(nome=data['localidade'], estado=estado)
-                            bairro, _ = Bairro.objects.get_or_create(nome=data['bairro'], cidade=cidade)
+                            # Usar dados do usuário se disponíveis, senão usar ViaCEP
+                            estado_nome = estados_user[i] if i < len(estados_user) and estados_user[i] else data['uf']
+                            cidade_nome = cidades_user[i] if i < len(cidades_user) and cidades_user[i] else data['localidade']
+                            bairro_nome = bairros_user[i] if i < len(bairros_user) and bairros_user[i] else data['bairro']
+                            rua = ruas[i] if i < len(ruas) and ruas[i] else data['logradouro']
+                            numero_raw = numeros[i] if i < len(numeros) else ''
+                            complemento_atual = complementos[i] if i < len(complementos) else ''
+                            
+                            try:
+                                numero = int(numero_raw) if str(numero_raw).strip() != '' else None
+                            except (ValueError, TypeError):
+                                numero = None
+                            
+                            estado, _ = Estado.objects.get_or_create(nome=estado_nome)
+                            cidade, _ = Cidade.objects.get_or_create(nome=cidade_nome, estado=estado)
+                            bairro, _ = Bairro.objects.get_or_create(nome=bairro_nome, cidade=cidade)
                             cep_obj, _ = CEP.objects.get_or_create(codigo=cep)
-                            endereco_completo = f"{data['logradouro']}, {data['bairro']}, {data['localidade']}, {data['uf']}, {data['cep']}"
+                            endereco_completo = f"{rua}, {bairro_nome}, {cidade_nome}, {estado_nome}, {cep}"
                             latitude, longitude = obter_coordenadas(endereco_completo, "AIzaSyCBd2FPXoFej_0ooiHJfRjCZFzIADYSUIY")
                             
-                            complemento_atual = complementos[i] if i < len(complementos) else ''
                             endereco, _ = Endereco.objects.get_or_create(
-                                rua=data['logradouro'],
+                                rua=rua,
+                                numero=numero,
                                 complemento=complemento_atual,
                                 bairro=bairro,
                                 cidade=cidade,
